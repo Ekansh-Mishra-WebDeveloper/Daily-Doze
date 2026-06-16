@@ -1,0 +1,2475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#121212" />
+  <title>UltraFit Gym | Trainer Portal</title>
+
+  <!-- PWA manifest & service worker for trainer app -->
+  <link rel="manifest" href="trainer-manifest.json">
+  <link rel="apple-touch-icon" href="ultrafit_logo.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Trainer UltraFit Gym">
+
+  <!-- External CSS -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+  <style>
+    /* ========== GLOBAL & NAVBAR (unchanged – perfectly working) ========== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+    }
+    body {
+      background-color: #121212;
+      font-family: 'Montserrat', 'Archivo', sans-serif;
+      color: #eaeaea;
+      overflow-x: hidden;
+    }
+    input, textarea { user-select: text; }
+    .container { max-width: 1300px; margin: 0 auto; padding: 0 2rem; }
+
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      background: transparent;
+      transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      padding: 1.2rem 0;
+    }
+    .navbar.scrolled {
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      padding: 0.7rem 0;
+    }
+    .nav-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .nav-logo-img {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid rgba(255,215,0,0.4);
+    }
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+    }
+    .logo-ultra { color: #ffffff; }
+    .logo-fit { color: #FFD700; }
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+      align-items: center;
+    }
+    .nav-link {
+      color: #f0f0f0;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: 0.2s;
+      padding: 0.5rem 0;
+      position: relative;
+    }
+    .nav-link:not(.profile-nav):hover { color: #FFD700; }
+    .nav-link:not(.profile-nav)::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: #FFD700;
+      transform: scaleX(0);
+      transition: transform 0.2s ease;
+    }
+    .nav-link:not(.profile-nav):hover::after { transform: scaleX(1); }
+    .profile-nav {
+      background: #FFD700;
+      color: #121212 !important;
+      padding: 0.6rem 1.6rem !important;
+      border-radius: 40px;
+      font-weight: 700;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+    .profile-nav:hover {
+      background: #e6c300;
+      transform: translateY(-2px);
+    }
+    .hamburger {
+      display: none;
+      font-size: 1.8rem;
+      cursor: pointer;
+      color: #FFD700;
+      min-width: 44px;
+      text-align: center;
+    }
+    @media (max-width: 900px) {
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        background: rgba(0,0,0,0.95);
+        backdrop-filter: blur(12px);
+        padding: 1.5rem;
+        gap: 1.2rem;
+        text-align: center;
+      }
+      .nav-links.active { display: flex; }
+      .hamburger { display: block; }
+      .container { padding: 0 1.5rem; }
+      .profile-nav { padding: 0.5rem 1.2rem !important; }
+    }
+
+    /* ========== HERO SECTION ========== */
+    .hero {
+      position: relative;
+      height: 100vh;
+      min-height: 700px;
+      overflow: hidden;
+    }
+    .hero-video-wrapper {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .hero-video-wrapper video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #000000aa, #121212cc);
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 0 1rem;
+    }
+    .hero-logo-img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid rgba(255,215,0,0.6);
+      margin-bottom: 1.5rem;
+      animation: fadeInScale 0.6s ease-out;
+    }
+    @keyframes fadeInScale {
+      0% { opacity: 0; transform: scale(0.8); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    .hero-brand {
+      background: linear-gradient(120deg, #fff, #FFD700);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-size: 5rem;
+      font-weight: 800;
+      letter-spacing: 4px;
+      margin-bottom: 0.5rem;
+    }
+    .hero-title {
+      font-size: 2.2rem;
+      font-weight: 500;
+      letter-spacing: 2px;
+      color: #ddd;
+      margin-bottom: 1.8rem;
+      text-transform: uppercase;
+    }
+    .btn-primary {
+      background: #FFD700;
+      border: none;
+      padding: 1rem 2.5rem;
+      font-weight: 800;
+      font-size: 1.1rem;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: #121212;
+    }
+    .btn-primary:hover {
+      background: #e6c300;
+      transform: scale(1.02);
+      box-shadow: 0 0 15px rgba(255,215,0,0.4);
+    }
+    .live-status {
+      position: absolute;
+      bottom: 2rem;
+      left: 2rem;
+      background: #000000b3;
+      backdrop-filter: blur(8px);
+      padding: 0.5rem 1.2rem;
+      border-radius: 60px;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-weight: 500;
+      font-size: 0.9rem;
+      border-left: 2px solid #FFD700;
+      z-index: 3;
+    }
+    .pulse-dot {
+      width: 10px;
+      height: 10px;
+      background-color: #2ecc2e;
+      border-radius: 50%;
+      animation: pulse 1.4s infinite;
+    }
+    .pulse-dot.red {
+      background-color: #e74c3c;
+      animation: pulseRed 1.4s infinite;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 #2ecc2e; opacity: 1; }
+      70% { box-shadow: 0 0 0 8px #2ecc2e66; opacity: 0.8; }
+      100% { box-shadow: 0 0 0 0 rgba(46,204,46,0); }
+    }
+    @keyframes pulseRed {
+      0% { box-shadow: 0 0 0 0 #e74c3c; opacity: 1; }
+      70% { box-shadow: 0 0 0 8px #e74c3c66; opacity: 0.8; }
+      100% { box-shadow: 0 0 0 0 rgba(231,76,60,0); }
+    }
+
+    /* ========== SECTIONS ========== */
+    .section {
+      padding: 4rem 0;
+      border-bottom: 1px solid rgba(255,215,0,0.2);
+    }
+    .section-title {
+      font-size: 2.5rem;
+      text-align: center;
+      background: linear-gradient(120deg, #fff, #FFD700);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 2rem;
+      font-weight: 700;
+    }
+    .btn-outline-gold {
+      background: transparent;
+      border: 1.5px solid #FFD700;
+      color: #FFD700;
+      padding: 0.8rem 2rem;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.8rem;
+      backdrop-filter: blur(4px);
+    }
+    .btn-outline-gold:hover {
+      background: rgba(255,215,0,0.1);
+      transform: translateY(-2px);
+    }
+    .btn-solid-gold {
+      background: #FFD700;
+      border: none;
+      color: #121212;
+      padding: 0.8rem 2rem;
+      border-radius: 60px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.8rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    .btn-solid-gold:hover {
+      background: #e6c300;
+      transform: scale(1.02);
+    }
+    .btn-yellow-small {
+      background: #FFD700;
+      border: none;
+      color: #121212;
+      padding: 0.4rem 1rem;
+      border-radius: 40px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .button-group-center {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    /* Stats cards */
+    .stats-row {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 2rem 0;
+    }
+    .stat-card {
+      background: rgba(26,26,26,0.7);
+      backdrop-filter: blur(12px);
+      border-radius: 28px;
+      padding: 1.8rem 1.5rem;
+      text-align: center;
+      flex: 1;
+      min-width: 150px;
+      border: 1px solid rgba(255,215,0,0.2);
+      transition: all 0.3s;
+    }
+    .stat-card:hover {
+      transform: translateY(-5px);
+      border-color: #FFD700;
+    }
+    .stat-number {
+      font-size: 2.8rem;
+      font-weight: 800;
+    }
+    .stat-number.green { color: #2ecc2e; }
+    .stat-number.blue { color: #3498db; }
+    .stat-number.red { color: #e74c3c; }
+
+    /* Modals & Popups */
+    .premium-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.94);
+      backdrop-filter: blur(20px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 5000;
+      animation: fadeIn 0.2s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .premium-modal-card {
+      background: #121212;
+      border: 1px solid #FFD700;
+      border-radius: 40px;
+      width: 90%;
+      max-width: 800px;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 2rem;
+      box-shadow: 0 30px 50px rgba(0,0,0,0.5);
+      animation: scaleUp 0.3s cubic-bezier(0.2,0.9,0.4,1.1);
+    }
+    @keyframes scaleUp {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .modal-close-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1.5rem;
+      background: transparent;
+      border: none;
+      color: #FFD700;
+      font-size: 1.8rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .modal-close-btn:hover {
+      transform: scale(1.1);
+      color: #e6c300;
+    }
+    .modal-title-center {
+      text-align: center;
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(120deg, #fff, #FFD700);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: 700;
+    }
+
+    /* Add Member Modal styles (with avatar at top) */
+    .profile-avatar-wrapper {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 0.5rem;
+    }
+    .modal-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #FFD700;
+    }
+    .click-to-upload {
+      text-align: center;
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+      color: #FFD700;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: #aaa;
+      margin-bottom: 0.3rem;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      background: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 20px;
+      padding: 0.7rem 1rem;
+      color: white;
+      font-family: inherit;
+    }
+    .image-upload-area {
+      border: 2px dashed #FFD700;
+      border-radius: 20px;
+      padding: 1rem;
+      text-align: center;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      background: rgba(0,0,0,0.3);
+    }
+
+    /* Member attendance row */
+    .member-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #1e1e1e;
+      margin: 0.8rem 0;
+      padding: 0.8rem 1.2rem;
+      border-radius: 80px;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+    }
+    .member-row:hover { background: #2a2a2a; }
+    .member-avatar-small {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #FFD700;
+    }
+    .member-name {
+      flex: 1;
+      font-weight: 600;
+      margin-left: 0.5rem;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 0.8rem;
+    }
+    .btn-checkin, .btn-checkout {
+      padding: 0.5rem 1.2rem;
+      border-radius: 40px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: transparent;
+      border: 1.5px solid;
+    }
+    .btn-checkin { border-color: #2ecc2e; color: #2ecc2e; }
+    .btn-checkin:hover { background: #2ecc2e20; transform: scale(1.02); }
+    .btn-checkin:active { background: #2ecc2e; color: #121212; }
+    .btn-checkin.disabled, .btn-checkin:disabled {
+      background: #555;
+      border-color: #555;
+      color: #aaa;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    .btn-checkout { border-color: #e74c3c; color: #e74c3c; }
+    .btn-checkout:hover { background: #e74c3c20; transform: scale(1.02); }
+    .btn-checkout:active { background: #e74c3c; color: white; }
+    .btn-checkout.disabled, .btn-checkout:disabled {
+      background: #555;
+      border-color: #555;
+      color: #aaa;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    /* Status badges */
+    .status-badge {
+      display: inline-block;
+      padding: 0.3rem 0.8rem;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .status-active {
+      background: #2ecc2e20;
+      color: #2ecc2e;
+      border: 1px solid #2ecc2e;
+    }
+    .status-inactive {
+      background: #e74c3c20;
+      color: #e74c3c;
+      border: 1px solid #e74c3c;
+    }
+    .fee-tag-paid {
+      background: #2ecc2e20;
+      color: #2ecc2e;
+      border: 1px solid #2ecc2e;
+    }
+    .fee-tag-unpaid {
+      background: #e74c3c20;
+      color: #e74c3c;
+      border: 1px solid #e74c3c;
+    }
+    .check-btn {
+      background: transparent;
+      border: 1px solid #FFD700;
+      color: #FFD700;
+      padding: 0.4rem 1rem;
+      border-radius: 40px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .check-btn:hover {
+      background: #FFD700;
+      color: #121212;
+    }
+
+    /* Filter bar */
+    .filter-bar {
+      display: flex;
+      gap: 0.8rem;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .filter-bar input {
+      flex: 1;
+      padding: 0.8rem;
+      border-radius: 40px;
+      background: #1e1e1e;
+      border: 1px solid #333;
+      color: white;
+    }
+    .filter-dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    .filter-btn-icon {
+      background: transparent;
+      border: 1px solid #FFD700;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      color: #FFD700;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .filter-btn-icon:hover {
+      background: rgba(255,215,0,0.1);
+    }
+    .filter-dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 50px;
+      background: #1e1e1e;
+      border: 1px solid #FFD700;
+      border-radius: 20px;
+      min-width: 140px;
+      z-index: 10;
+      overflow: hidden;
+    }
+    .filter-dropdown-content button {
+      display: block;
+      width: 100%;
+      padding: 0.8rem 1rem;
+      background: transparent;
+      border: none;
+      color: #eaeaea;
+      text-align: left;
+      cursor: pointer;
+    }
+    .filter-dropdown-content button:hover {
+      background: rgba(255,215,0,0.2);
+      color: #FFD700;
+    }
+    .filter-dropdown-content button.active {
+      background: #FFD700;
+      color: #121212;
+    }
+    .filter-dropdown.show .filter-dropdown-content {
+      display: block;
+    }
+
+    /* Staff attendance card */
+    .staff-attend-card {
+      background: linear-gradient(145deg, #1a1a1a, #111111);
+      border-radius: 40px;
+      padding: 2rem;
+      text-align: center;
+      max-width: 550px;
+      margin: 0 auto 2rem;
+      border: 1px solid rgba(255,215,0,0.3);
+    }
+    .staff-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 3px solid #FFD700;
+      margin-bottom: 1rem;
+    }
+    .time-display {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: #aaa;
+    }
+
+    /* Square popup (short duration) */
+    .square-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.9);
+      background: #121212;
+      border: 1px solid #FFD700;
+      border-radius: 24px;
+      padding: 2rem;
+      min-width: 280px;
+      text-align: center;
+      z-index: 8000;
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.2,0.9,0.4,1.1);
+      pointer-events: none;
+    }
+    .square-popup.show {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .animated-circle {
+      width: 70px;
+      height: 70px;
+      background: #FFD700;
+      border-radius: 50%;
+      margin: 0 auto 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pulseGold 0.5s ease-out;
+    }
+    @keyframes pulseGold {
+      0% { transform: scale(0.8); opacity: 0; }
+      70% { transform: scale(1.1); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .animated-circle i {
+      font-size: 2.5rem;
+      color: #121212;
+    }
+    .square-popup p {
+      font-size: 1rem;
+      color: #eaeaea;
+    }
+    .square-popup .small-text {
+      font-size: 0.8rem;
+      color: #aaa;
+      margin-top: 0.5rem;
+    }
+
+    /* Shift summary popup */
+    .shift-summary {
+      max-width: 450px;
+    }
+    .shift-summary h4 {
+      color: #FFD700;
+      margin: 1rem 0 0.5rem;
+    }
+    .shift-time-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(255,215,0,0.2);
+    }
+    .total-hours {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-top: 1rem;
+      padding-top: 0.5rem;
+      border-top: 2px solid #FFD700;
+      transition: color 0.3s;
+    }
+    .progress-bar-container {
+      background: #2a2a2a;
+      border-radius: 20px;
+      height: 12px;
+      width: 100%;
+      margin: 1rem 0;
+      overflow: hidden;
+    }
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: #2ecc2e;
+      border-radius: 20px;
+      transition: width 0.5s ease;
+    }
+    .progress-bar.gold {
+      background: #FFD700;
+      box-shadow: 0 0 8px #FFD700;
+      animation: sparkle 0.8s infinite alternate;
+    }
+    @keyframes sparkle {
+      0% { box-shadow: 0 0 0px #FFD700; opacity: 0.8; }
+      100% { box-shadow: 0 0 12px #FFD700; opacity: 1; }
+    }
+    .ok-button {
+      margin-top: 1.5rem;
+      background: #FFD700;
+      border: none;
+      padding: 0.6rem 1.5rem;
+      border-radius: 40px;
+      font-weight: 700;
+      cursor: pointer;
+      color: #121212;
+    }
+
+    /* Compact calendar for heatmaps */
+    .compact-calendar {
+      background: rgba(20,20,25,0.8);
+      border-radius: 24px;
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+    .compact-calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .compact-calendar-header h4 {
+      font-size: 1.1rem;
+      color: #FFD700;
+    }
+    .compact-month-nav button {
+      background: transparent;
+      border: 1px solid #FFD700;
+      color: #FFD700;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .compact-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+    .compact-weekday {
+      text-align: center;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #FFD700;
+    }
+    .compact-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+    .compact-day {
+      aspect-ratio: 1;
+      background: #1e1e1e;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 500;
+    }
+    .compact-day.empty { background: transparent; }
+    .compact-day.present { background: #2ecc2e20; border: 1px solid #2ecc2e; color: #2ecc2e; }
+    .compact-day.absent { background: #e74c3c20; border: 1px solid #e74c3c; color: #e74c3c; }
+    .compact-day.sunday { opacity: 0.6; }
+    .compact-day.future { opacity: 0.4; }
+    .compact-attendance-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      margin-top: 2px;
+    }
+    .present .compact-attendance-dot { background: #2ecc2e; }
+    .absent .compact-attendance-dot { background: #e74c3c; }
+
+    /* Profile modal fields */
+    .profile-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .profile-field {
+      width: 100%;
+      margin: 0.8rem 0;
+      text-align: left;
+    }
+    .profile-field label {
+      display: block;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: #aaa;
+      margin-bottom: 0.3rem;
+    }
+    .profile-field .value {
+      font-size: 1rem;
+      font-weight: 500;
+      padding: 0.5rem;
+      background: #1e1e1e;
+      border-radius: 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .profile-field .edit-btn {
+      background: transparent;
+      border: none;
+      color: #FFD700;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    .profile-field input, .profile-field select {
+      width: 100%;
+      padding: 0.8rem;
+      border-radius: 40px;
+      background: #1e1e1e;
+      border: 1px solid #333;
+      color: white;
+    }
+    .small-outline-btn {
+      background: transparent;
+      border: 1px solid #FFD700;
+      color: #FFD700;
+      padding: 0.4rem 1rem;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: 0.2s;
+      display: inline-block;
+    }
+    .small-outline-btn:hover {
+      background: rgba(255,215,0,0.1);
+    }
+    .amount-input {
+      width: 160px;
+      text-align: center;
+      background: #1e1e1e;
+      border: 1px solid #FFD700;
+      border-radius: 60px;
+      padding: 0.8rem 1rem;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #FFD700;
+      outline: none;
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+    .amount-input::-webkit-inner-spin-button,
+    .amount-input::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    /* ===== Profile modal avatar (small circular) ===== */
+    .profile-avatar-wrapper {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 1rem;
+    }
+    .profile-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #FFD700;
+    }
+    .profile-edit-icon {
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      background: #FFD700;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: 0.2s;
+      color: #121212;
+    }
+    .profile-edit-icon:hover {
+      transform: scale(1.1);
+    }
+
+    /* ===== Click to upload button (matching admin-members.html) ===== */
+    .click-to-upload {
+      text-align: center;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #FFD700;
+      cursor: pointer;
+      background: transparent;
+      border: 1.5px solid #FFD700;
+      border-radius: 40px;
+      padding: 0.4rem 1rem;
+      display: inline-block;
+      transition: all 0.2s ease;
+    }
+    .click-to-upload:hover {
+      background: #FFD700;
+      color: #121212;
+      transform: translateY(-1px);
+      box-shadow: 0 0 8px rgba(255,215,0,0.4);
+    }
+
+    /* ===== Phone & WhatsApp Icons (Golden Circle + Hover) ===== */
+    .contact-icons {
+      display: flex;
+      gap: 1rem;
+      font-size: 1.2rem;
+    }
+    .contact-icons i {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,215,0,0.1);
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .contact-icons i.fa-phone-alt {
+      color: #3498db; /* blue */
+    }
+    .contact-icons i.fa-whatsapp {
+      color: #25D366; /* green */
+    }
+    .contact-icons i:hover {
+      background: #FFD700;
+      transform: scale(1.05);
+    }
+    .contact-icons i.fa-phone-alt:hover {
+      color: #121212;
+    }
+    .contact-icons i.fa-whatsapp:hover {
+      color: #121212;
+    }
+
+    /* ===== DESKTOP LAYOUT FOR ACTION-ROW (restores original appearance) ===== */
+    .action-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-left: auto;
+    }
+
+    /* ===== MOBILE ONLY LAYOUT CHANGES (phone users) ===== */
+    @media (max-width: 768px) {
+      .container { padding: 0 1rem; }
+      .hero-brand { font-size: 2.8rem; }
+      .hero-title { font-size: 1.2rem; }
+      .premium-modal-card { padding: 1.5rem; }
+
+      /* General member row becomes grid for two‑line layout */
+      .member-row {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        align-items: center;
+        gap: 0.5rem 0.8rem;
+        border-radius: 20px;
+        padding: 0.8rem;
+      }
+
+      /* Attendance modal: pfp + name on first line, buttons on second line */
+      .member-row .member-avatar-small {
+        grid-row: 1;
+        grid-column: 1;
+        width: 44px;
+        height: 44px;
+      }
+      .member-row .member-name {
+        grid-row: 1;
+        grid-column: 2;
+        margin-left: 0;
+        text-align: left;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .member-row .action-buttons {
+        grid-row: 2;
+        grid-column: 1 / span 2;
+        justify-content: center;
+        width: 100%;
+      }
+
+      /* For logs and fees: the second row container takes both columns */
+      .member-row .action-row {
+        grid-row: 2;
+        grid-column: 1 / span 2;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        margin-left: 0;
+      }
+
+      /* Adjust tags and buttons size */
+      .status-badge {
+        font-size: 0.65rem;
+        padding: 0.2rem 0.6rem;
+      }
+      .check-btn, .btn-yellow-small {
+        padding: 0.3rem 0.8rem;
+        font-size: 0.75rem;
+      }
+
+      /* ===== SUBMIT FEES MODAL: tag on first line right, button centered below ===== */
+      #submitFeesModal .member-row {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 0.5rem;
+      }
+      #submitFeesModal .member-avatar-small {
+        grid-row: 1;
+        grid-column: 1;
+      }
+      #submitFeesModal .member-name {
+        grid-row: 1;
+        grid-column: 2;
+        margin-left: 0;
+      }
+      #submitFeesModal .tags-container {
+        grid-row: 1;
+        grid-column: 3;
+        justify-self: end;
+      }
+      #submitFeesModal .btn-yellow-small {
+        grid-row: 2;
+        grid-column: 1 / span 3;
+        justify-self: center;
+        width: auto;
+        padding: 0.4rem 1rem;
+      }
+    }
+
+    /* Staff heatmap zoom (inside the popup, not popup itself) */
+    #staffModal .compact-calendar {
+      transform: scale(0.95);
+      margin: 0 auto;
+    }
+
+    /* Center the Back button in member heatmap */
+    .back-button-centered {
+      display: flex;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+
+    footer {
+      background: #000;
+      padding: 3rem 0;
+      text-align: center;
+      border-top: 1px solid rgba(255,215,0,0.3);
+    }
+    .footer-links ul {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      list-style: none;
+      margin: 1rem 0;
+      flex-wrap: wrap;
+    }
+    .footer-links a { color: #ccc; text-decoration: none; }
+    .footer-links a:hover { color: #FFD700; }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN MODAL -->
+<div id="loginModal" class="premium-modal" style="display: flex;">
+  <div class="premium-modal-card" style="max-width: 400px; text-align: center;">
+    <h2 style="color:#FFD700;">Trainer Login</h2>
+    <input type="email" id="loginEmail" placeholder="Email" style="width:100%; margin:1rem 0; padding:0.8rem; border-radius:40px; background:#1e1e1e; border:1px solid #333; color:white;">
+    <input type="password" id="loginPassword" placeholder="Password" style="width:100%; margin:1rem 0; padding:0.8rem; border-radius:40px; background:#1e1e1e; border:1px solid #333; color:white;">
+    <button id="loginSubmitBtn" class="btn-primary">Login</button>
+    <div id="loginError" style="color:#e74c3c; margin-top:1rem;"></div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="mainContent" style="display: none;">
+
+<!-- NAVBAR -->
+<header class="navbar" id="navbar">
+  <div class="container nav-container">
+    <div class="logo-wrapper">
+      <img src="ultrafit_logo.png" alt="UltraFit Logo" class="nav-logo-img">
+      <div class="logo"><span class="logo-ultra">ULTRA</span><span class="logo-fit">FIT</span></div>
+    </div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#" class="nav-link profile-nav" id="profileBtn">Profile</a></li>
+      <li><a href="index.html" class="nav-link">Home</a></li>
+      <li><a href="diet.html" class="nav-link">Diet Plan</a></li>
+      <li><a href="workout.html" class="nav-link">Workout Plan</a></li>
+      <li><a href="members.html" class="nav-link">Gym Members</a></li>
+      <li><a href="shop.html" class="nav-link">Shop</a></li>
+    </ul>
+    <div class="hamburger" id="hamburger"><i class="fas fa-bars"></i></div>
+  </div>
+</header>
+
+<main>
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="hero-video-wrapper">
+      <video autoplay loop muted playsinline poster="https://images.pexels.com/photos/841130/pexels-photo-841130.jpeg?auto=compress&cs=tinysrgb&w=1600">
+        <source src="https://videos.pexels.com/video-files/4349242/4349242-uhd_2560_1440_25fps.mp4" type="video/mp4" />
+      </video>
+      <div class="hero-overlay"></div>
+    </div>
+    <div class="hero-content container">
+      <img src="ultrafit_logo.png" alt="UltraFit Logo" class="hero-logo-img">
+      <div class="hero-brand">ULTRAFIT</div>
+      <h1 class="hero-title">THE STANDARD OF STRENGTH</h1>
+      <button class="btn-primary" id="installTrainerAppBtn" style="margin-top: 1rem;"><i class="fas fa-mobile-alt"></i> Download Trainer App</button>
+      <div class="live-status" id="liveStatus">
+        <span class="pulse-dot" id="statusDot"></span>
+        <span id="statusText">Loading...</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- MEMBER ATTENDANCE SECTION -->
+  <div class="container section">
+    <h2 class="section-title">Attendance</h2>
+    <div class="button-group-center">
+      <button class="btn-solid-gold" id="takeAttendanceBtn">Attendance</button>
+      <button class="btn-outline-gold" id="logsBtn">Check</button>
+    </div>
+    <div class="stats-row" id="attendanceStats">
+      <div class="stat-card"><div class="stat-number green" id="presentToday">0</div><div>Present</div></div>
+      <div class="stat-card"><div class="stat-number blue" id="totalMembers">0</div><div>Total Members</div></div>
+    </div>
+    <div class="button-group-center">
+      <button class="btn-solid-gold" id="addMemberBtn">Add New Member</button>
+    </div>
+  </div>
+
+  <!-- STAFF ATTENDANCE SECTION -->
+  <div class="container section">
+    <h2 class="section-title">Staff Attendance</h2>
+    <div class="button-group-center">
+      <button class="btn-solid-gold" id="staffAttendanceBtn">Staff Attendance</button>
+      <button class="btn-outline-gold" id="staffLogsBtn">Check</button>
+    </div>
+    <div class="stats-row" id="staffStats">
+      <div class="stat-card"><div class="stat-number green" id="staffTimeToday">0</div><div>Time (hrs)</div></div>
+      <div class="stat-card"><div class="stat-number red" id="staffLeavesMonth">0</div><div>Leaves this month</div></div>
+    </div>
+  </div>
+
+  <!-- FEES SECTION -->
+  <div class="container section">
+    <h2 class="section-title">Fee Management</h2>
+    <div class="stats-row" id="feeStats">
+      <div class="stat-card"><div class="stat-number green" id="paidCount">0</div><div>Fees Paid</div></div>
+      <div class="stat-card"><div class="stat-number red" id="unpaidCount">0</div><div>Not Paid</div></div>
+    </div>
+    <div class="button-group-center">
+      <button class="btn-solid-gold" id="submitFeesBtn">Submit Fees</button>
+      <button class="btn-outline-gold" id="checkFeesBtn">Check Fees</button>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="container footer-grid">
+    <div class="footer-links">
+      <h4>UltraFit Gym</h4>
+      <ul>
+        <li><a href="privacy.html">Privacy Policy</a></li>
+        <li><a href="refund.html">Refund Policy</a></li>
+        <li><a href="terms.html">Terms & Conditions</a></li>
+      </ul>
+      <p class="credit">Designed by <a href="https://ekansh-mishra-webdeveloper.github.io/Brand-Bazar/" target="_blank">Brand Bazaar</a></p>
+    </div>
+  </div>
+</footer>
+
+<!-- MODALS -->
+<div id="attendanceModal" class="premium-modal"><div class="premium-modal-card" id="attendanceModalContent"></div></div>
+<div id="logsModal" class="premium-modal"><div class="premium-modal-card" id="logsModalContent"></div></div>
+<div id="feesModal" class="premium-modal"><div class="premium-modal-card" id="feesModalContent"></div></div>
+<div id="staffModal" class="premium-modal"><div class="premium-modal-card" id="staffModalContent"></div></div>
+<div id="profileModal" class="premium-modal"><div class="premium-modal-card" id="profileModalContent"></div></div>
+<div id="addMemberModal" class="premium-modal"><div class="premium-modal-card" id="addMemberModalContent"></div></div>
+<div id="submitFeesModal" class="premium-modal"><div class="premium-modal-card" id="submitFeesModalContent"></div></div>
+<div id="durationModal" class="premium-modal"><div class="premium-modal-card" id="durationModalContent"></div></div>
+<div id="paymentAmountModal" class="premium-modal"><div class="premium-modal-card" id="paymentAmountModalContent"></div></div>
+<div id="squarePopup" class="square-popup"><div class="animated-circle"><i class="fas fa-check"></i></div><p id="popupText"></p><div class="small-text" id="popupSubtext"></div></div>
+<div id="shiftSummaryPopup" class="square-popup shift-summary"><div id="shiftSummaryContent"></div></div>
+
+</div>
+
+<script>
+  // ========== AUTHENTICATION ==========
+  const API_BASE = '/api';
+  let trainerToken = localStorage.getItem('trainerToken');
+  let isAuthenticated = !!trainerToken;
+  let currentTrainer = null;
+
+  const loginModal = document.getElementById('loginModal');
+  const mainContent = document.getElementById('mainContent');
+  function showLoginModal() { loginModal.style.display = 'flex'; }
+  if (!isAuthenticated) showLoginModal();
+  else { loginModal.style.display = 'none'; mainContent.style.display = 'block'; fetchTrainerData(); }
+
+  document.getElementById('loginSubmitBtn').addEventListener('click', async () => {
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    try {
+      const res = await fetch(`${API_BASE}/auth/trainer-login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (res.ok && data.token) {
+        trainerToken = data.token;
+        localStorage.setItem('trainerToken', trainerToken);
+        currentTrainer = data.trainer;
+        loginModal.style.display = 'none';
+        mainContent.style.display = 'block';
+        initTrainerPanel();
+      } else {
+        document.getElementById('loginError').innerText = data.error || 'Invalid credentials';
+      }
+    } catch (err) {
+      document.getElementById('loginError').innerText = 'Login failed';
+    }
+  });
+
+  async function fetchTrainerData() {
+    try {
+      const res = await fetch(`${API_BASE}/auth/trainer/profile`, {
+        headers: { 'Authorization': `Bearer ${trainerToken}` }
+      });
+      if (res.ok) {
+        currentTrainer = await res.json();
+        initTrainerPanel();
+      } else {
+        localStorage.removeItem('trainerToken');
+        showLoginModal();
+      }
+    } catch(e) { console.error(e); }
+  }
+
+  // ========== LIVE GYM STATUS ==========
+  function updateLiveStatus() {
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const currentTime = hours + minutes/60;
+    let isOpen = false;
+    let nextOpenTime = "";
+    if (currentTime >= 5 && currentTime < 10) isOpen = true;
+    else if (currentTime >= 17 && currentTime < 21) isOpen = true;
+    if (!isOpen) {
+      if (currentTime < 5) nextOpenTime = "5:00 AM";
+      else if (currentTime < 10) nextOpenTime = "5:00 PM";
+      else if (currentTime < 17) nextOpenTime = "5:00 PM";
+      else if (currentTime < 21) nextOpenTime = "5:00 AM (tomorrow)";
+      else nextOpenTime = "5:00 AM (tomorrow)";
+    }
+    const dot = document.getElementById('statusDot');
+    const textSpan = document.getElementById('statusText');
+    if (isOpen) {
+      dot.className = 'pulse-dot';
+      textSpan.innerText = 'Open now – Closing at ' + (currentTime < 10 ? '10:00 AM' : '9:00 PM');
+    } else {
+      dot.className = 'pulse-dot red';
+      textSpan.innerText = `Closed now – opens at ${nextOpenTime}`;
+    }
+  }
+  setInterval(updateLiveStatus, 1000);
+  updateLiveStatus();
+
+  // ========== PWA BUTTON BEHAVIOR ==========
+  let deferredPrompt;
+  const installBtn = document.getElementById('installTrainerAppBtn');
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  if (isStandalone) {
+    installBtn.innerHTML = '<i class="fas fa-user"></i> Trainer Access';
+    installBtn.onclick = () => openProfileModal();
+  } else {
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.style.display = 'inline-block';
+    });
+    installBtn.addEventListener('click', () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choice) => {
+          if (choice.outcome === 'accepted') console.log('Install accepted');
+          deferredPrompt = null;
+        });
+      } else {
+        showSquarePopup('Manual install: tap menu → Add to Home Screen', '', false);
+      }
+    });
+  }
+
+  // ========== SQUARE POPUP (1.5s) ==========
+  let popupTimeout;
+  function showSquarePopup(message, subtext = '', isSuccess = true) {
+    const popup = document.getElementById('squarePopup');
+    const icon = popup.querySelector('.animated-circle i');
+    const textEl = document.getElementById('popupText');
+    const subtextEl = document.getElementById('popupSubtext');
+    if (popupTimeout) clearTimeout(popupTimeout);
+    if (isSuccess) icon.className = 'fas fa-check';
+    else icon.className = 'fas fa-times';
+    textEl.innerText = message;
+    subtextEl.innerText = subtext;
+    popup.classList.add('show');
+    popupTimeout = setTimeout(() => popup.classList.remove('show'), 1500);
+  }
+
+  // ========== SHIFT SUMMARY ==========
+  function showShiftSummary(morningIn, morningOut, eveningIn, eveningOut, totalHours, morningHours, eveningHours) {
+    const popup = document.getElementById('shiftSummaryPopup');
+    const content = document.getElementById('shiftSummaryContent');
+    const requiredHours = 8;
+    const progressPercent = Math.min((totalHours / requiredHours) * 100, 100);
+    const isGoalReached = totalHours >= requiredHours;
+    const popupInner = `
+      <div style="display:flex; flex-direction:column; align-items:center;">
+        <img src="${currentTrainer?.photoUrl || 'ultrafit_logo.png'}" style="width:80px; height:80px; border-radius:50%; border:2px solid #FFD700; margin-bottom:1rem;">
+        <h3 style="color:#FFD700; margin-bottom:0.5rem;">Great Work Today, ${currentTrainer?.firstName || 'Trainer'}!</h3>
+        <p style="font-size:0.85rem; color:#aaa;">${new Date().toLocaleDateString('en-US', { day:'2-digit', month:'short', year:'numeric' })}</p>
+        <h4>Morning Shift</h4>
+        <div class="shift-time-row"><span>Check In:</span><span style="color:#3498db;">${morningIn || '--:--'}</span></div>
+        <div class="shift-time-row"><span>Check Out:</span><span style="color:#e74c3c;">${morningOut || '--:--'}</span></div>
+        <div class="shift-time-row"><span>Working Hours:</span><span style="color:#2ecc2e;">${morningHours > 0 ? morningHours.toFixed(1) + ' hrs' : '--'}</span></div>
+        <h4>Evening Shift</h4>
+        <div class="shift-time-row"><span>Check In:</span><span style="color:#3498db;">${eveningIn || '--:--'}</span></div>
+        <div class="shift-time-row"><span>Check Out:</span><span style="color:#e74c3c;">${eveningOut || '--:--'}</span></div>
+        <div class="shift-time-row"><span>Working Hours:</span><span style="color:#2ecc2e;">${eveningHours > 0 ? eveningHours.toFixed(1) + ' hrs' : '--'}</span></div>
+        <div class="progress-bar-container">
+          <div class="progress-bar ${isGoalReached ? 'gold' : ''}" style="width:${progressPercent}%;"></div>
+        </div>
+        <div class="total-hours" id="totalHoursDisplay" style="color:${isGoalReached ? '#FFD700' : '#2ecc2e'};">Total Job Hours: <span id="totalHoursValue">0</span> hrs</div>
+        <button class="ok-button" id="shiftSummaryOkBtn">OK</button>
+      </div>
+    `;
+    content.innerHTML = popupInner;
+    popup.classList.add('show');
+    let currentCount = 0;
+    const target = totalHours;
+    const duration = 1000;
+    const stepTime = 20;
+    const steps = duration / stepTime;
+    const increment = target / steps;
+    const totalSpan = document.getElementById('totalHoursValue');
+    const interval = setInterval(() => {
+      currentCount += increment;
+      if (currentCount >= target) {
+        currentCount = target;
+        totalSpan.innerText = target.toFixed(1);
+        clearInterval(interval);
+      } else {
+        totalSpan.innerText = currentCount.toFixed(1);
+      }
+    }, stepTime);
+    document.getElementById('shiftSummaryOkBtn').onclick = () => popup.classList.remove('show');
+  }
+
+  function calculateHours(inTime, outTime) {
+    const toMinutes = (timeStr) => {
+      const match = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
+      if (!match) return 0;
+      let hours = parseInt(match[1]);
+      const minutes = parseInt(match[2]);
+      const meridian = match[3].toUpperCase();
+      if (meridian === 'PM' && hours !== 12) hours += 12;
+      if (meridian === 'AM' && hours === 12) hours = 0;
+      return hours * 60 + minutes;
+    };
+    const inMins = toMinutes(inTime);
+    const outMins = toMinutes(outTime);
+    if (inMins === 0 || outMins === 0) return 0;
+    return (outMins - inMins) / 60;
+  }
+
+  // ========== GLOBAL VARIABLES ==========
+  let allMembers = [];
+  let attendanceRecords = [];
+  let memberAttendanceData = {};
+  let staffMorningIn = null, staffMorningOut = null, staffEveningIn = null, staffEveningOut = null;
+  let staffLeavesMonth = 0;
+  let presentToday = 0;
+  let membershipPlans = [];
+
+  // ========== INITIALIZATION ==========
+  async function initTrainerPanel() {
+    await loadMembers();
+    await fetchAttendanceData();
+    await fetchAllMembersAttendanceLogs();
+    await fetchStaffAttendance();
+    await fetchMembershipPlans();
+    await updateDashboardStats();
+    setupEventListeners();
+  }
+
+  async function fetchMembershipPlans() {
+    try {
+      const res = await fetch(`${API_BASE}/memberships`, {
+        headers: { 'Authorization': `Bearer ${trainerToken}` }
+      });
+      if (res.ok) membershipPlans = await res.json();
+    } catch(e) { console.error(e); }
+  }
+
+  async function updateDashboardStats() {
+    const today = new Date().toISOString().split('T')[0];
+    const presentRecord = attendanceRecords.find(r => r.date === today);
+    presentToday = presentRecord ? presentRecord.count : 0;
+    document.getElementById('presentToday').innerText = presentToday;
+    document.getElementById('totalMembers').innerText = allMembers.length;
+
+    let morningHours = 0, eveningHours = 0;
+    if (staffMorningIn && staffMorningOut) morningHours = calculateHours(staffMorningIn, staffMorningOut);
+    if (staffEveningIn && staffEveningOut) eveningHours = calculateHours(staffEveningIn, staffEveningOut);
+    const staffTodayHours = morningHours + eveningHours;
+    document.getElementById('staffTimeToday').innerText = staffTodayHours.toFixed(1);
+
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const yesterday = new Date(now);
+    yesterday.setDate(now.getDate() - 1);
+    const lastDay = yesterday.getDate();
+    let absentDays = 0;
+    const res = await fetch(`${API_BASE}/trainer/attendance/trainer/my`, {
+      headers: { 'Authorization': `Bearer ${trainerToken}` }
+    });
+    if (res.ok) {
+      const records = await res.json();
+      const attendanceSet = new Set(records.map(r => r.date));
+      for (let d = 1; d <= lastDay; d++) {
+        const dateObj = new Date(year, month, d);
+        if (dateObj.getDay() === 0) continue;
+        const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        if (!attendanceSet.has(dateStr)) absentDays++;
+      }
+    }
+    staffLeavesMonth = absentDays;
+    document.getElementById('staffLeavesMonth').innerText = staffLeavesMonth;
+
+    const total = allMembers.length;
+    const paid = allMembers.filter(m => m.feeStatus === 'paid').length;
+    const unpaid = total - paid;
+    document.getElementById('paidCount').innerText = paid;
+    document.getElementById('unpaidCount').innerText = unpaid;
+  }
+
+  async function fetchStaffAttendance() {
+    try {
+      const res = await fetch(`${API_BASE}/trainer/attendance/trainer/my`, {
+        headers: { 'Authorization': `Bearer ${trainerToken}` }
+      });
+      if (res.ok) {
+        const records = await res.json();
+        const today = new Date().toISOString().split('T')[0];
+        const todayRecords = records.filter(r => r.date === today);
+        staffMorningIn = todayRecords.find(r => r.shift === 'morning')?.checkinTime || null;
+        staffMorningOut = todayRecords.find(r => r.shift === 'morning')?.checkoutTime || null;
+        staffEveningIn = todayRecords.find(r => r.shift === 'evening')?.checkinTime || null;
+        staffEveningOut = todayRecords.find(r => r.shift === 'evening')?.checkoutTime || null;
+      }
+    } catch(err) { console.error(err); }
+  }
+
+  async function loadMembers() {
+    try {
+      const res = await fetch(`${API_BASE}/trainer/members`, {
+        headers: { 'Authorization': `Bearer ${trainerToken}` }
+      });
+      if (res.ok) allMembers = await res.json();
+    } catch(err) { console.error(err); }
+  }
+
+  async function fetchAttendanceData() {
+    try {
+      const res = await fetch(`${API_BASE}/trainer/attendance/stats/members`, {
+        headers: { 'Authorization': `Bearer ${trainerToken}` }
+      });
+      if (res.ok) attendanceRecords = await res.json();
+    } catch(err) { console.error(err); }
+  }
+
+  async function fetchAllMembersAttendanceLogs() {
+    try {
+      const res = await fetch(`${API_BASE}/trainer/attendance/all-members`, {
+        headers: { 'Authorization': `Bearer ${trainerToken}` }
+      });
+      if (res.ok) memberAttendanceData = await res.json();
+      else memberAttendanceData = {};
+    } catch(err) { console.error(err); }
+  }
+
+  function isMemberActive(memberId) {
+    const dates = memberAttendanceData[memberId] || [];
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const sevenDaysAgoStr = sevenDaysAgo.toISOString().split('T')[0];
+    return dates.some(d => d >= sevenDaysAgoStr);
+  }
+
+  function setupEventListeners() {
+    document.getElementById('takeAttendanceBtn').onclick = () => openMemberAttendanceModal();
+    document.getElementById('logsBtn').onclick = () => openLogsModal();
+    document.getElementById('staffAttendanceBtn').onclick = () => openStaffAttendanceModal();
+    document.getElementById('staffLogsBtn').onclick = () => openStaffLogsModal();
+    document.getElementById('addMemberBtn').onclick = () => openAddMemberModal();
+    document.getElementById('submitFeesBtn').onclick = () => openSubmitFeesModal();
+    document.getElementById('checkFeesBtn').onclick = () => openFeesModal();
+    document.getElementById('profileBtn').onclick = (e) => { e.preventDefault(); openProfileModal(); };
+  }
+
+  // Helper to reset scroll position when opening a modal
+  function resetModalScroll(modalElement) {
+    if (modalElement) {
+      const card = modalElement.querySelector('.premium-modal-card');
+      if (card) card.scrollTop = 0;
+    }
+  }
+
+  // ========== ADD NEW MEMBER MODAL ==========
+  async function openAddMemberModal() {
+    await loadMembers();
+    const modal = document.getElementById('addMemberModal');
+    const content = document.getElementById('addMemberModalContent');
+    content.innerHTML = `
+      <button class="modal-close-btn" id="addMemberCloseBtn">&times;</button>
+      <div class="modal-title-center">Add New Member</div>
+      <div style="display:flex; flex-direction:column; align-items:center;">
+        <div class="profile-avatar-wrapper">
+          <img src="defaultpfp.png" class="modal-avatar" id="newMemberAvatar">
+        </div>
+        <div class="click-to-upload" id="clickToUpload">Click to upload</div>
+        <input type="file" id="memberPhotoFile" accept="image/*" style="display:none;">
+      </div>
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="memberName" placeholder="Enter full name">
+      </div>
+      <div class="form-group">
+        <label>Age</label>
+        <input type="number" id="memberAge" placeholder="Age">
+      </div>
+      <div class="form-group">
+        <label>Gender</label>
+        <select id="memberGender">
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Phone (optional)</label>
+        <input type="tel" id="memberPhone" placeholder="Phone number">
+      </div>
+      <div class="button-group-center" style="margin-top:1rem; display:flex; justify-content:space-between;">
+        <button class="btn-outline-gold" id="cancelAddMemberBtn">Cancel</button>
+        <button class="btn-solid-gold" id="saveNewMemberBtn">Save</button>
+      </div>
+    `;
+    modal.style.display = 'flex';
+    resetModalScroll(modal);
+    let uploadedPhotoUrl = '';
+    const avatar = document.getElementById('newMemberAvatar');
+    const clickUpload = document.getElementById('clickToUpload');
+    const fileInput = document.getElementById('memberPhotoFile');
+    clickUpload.onclick = () => fileInput.click();
+    fileInput.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const formData = new FormData();
+      formData.append('image', file);
+      try {
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${trainerToken}` },
+          body: formData
+        });
+        const data = await res.json();
+        if (data.url) {
+          uploadedPhotoUrl = data.url;
+          avatar.src = uploadedPhotoUrl;
+          showSquarePopup('Photo uploaded', '', true);
+        } else showSquarePopup('Upload failed', '', false);
+      } catch(err) { showSquarePopup('Upload error', '', false); }
+    };
+    document.getElementById('saveNewMemberBtn').onclick = async () => {
+      const name = document.getElementById('memberName').value.trim();
+      const age = parseInt(document.getElementById('memberAge').value);
+      const gender = document.getElementById('memberGender').value;
+      const phone = document.getElementById('memberPhone').value.trim();
+      if (!name || !age) {
+        showSquarePopup('Please fill required fields', '', false);
+        return;
+      }
+      const newMember = {
+        name, age, gender, phone,
+        photoUrl: uploadedPhotoUrl || 'defaultpfp.png',
+        experience: 'beginner',
+        goal: 'musclegain',
+        status: 'active',
+        feeStatus: 'unpaid'
+      };
+      try {
+        const res = await fetch(`${API_BASE}/trainer/members`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${trainerToken}` },
+          body: JSON.stringify(newMember)
+        });
+        if (res.ok) {
+          showSquarePopup('Member added successfully', '', true);
+          modal.style.display = 'none';
+          await loadMembers();
+          await updateDashboardStats();
+        } else {
+          const err = await res.json();
+          showSquarePopup('Failed', err.error || 'Could not add member', false);
+        }
+      } catch(err) { showSquarePopup('Network error', '', false); }
+    };
+    document.getElementById('cancelAddMemberBtn').onclick = () => modal.style.display = 'none';
+    document.getElementById('addMemberCloseBtn').onclick = () => modal.style.display = 'none';
+    modal.onclick = (e) => { if(e.target === modal) modal.style.display = 'none'; };
+  }
+
+  // ========== MEMBER ATTENDANCE MODAL ==========
+  async function openMemberAttendanceModal() {
+    await loadMembers();
+    const modal = document.getElementById('attendanceModal');
+    const content = document.getElementById('attendanceModalContent');
+    content.innerHTML = `
+      <button class="modal-close-btn" id="attendanceCloseBtn">&times;</button>
+      <div class="modal-title-center">Attendance</div>
+      <div class="filter-bar">
+        <input type="text" id="searchMember" placeholder="🔍 Search member...">
+      </div>
+      <div id="memberList"></div>`;
+    modal.style.display = 'flex';
+    resetModalScroll(modal);
+    renderAttendanceMemberList('');
+    document.getElementById('searchMember').addEventListener('input', (e) => renderAttendanceMemberList(e.target.value));
+    document.getElementById('attendanceCloseBtn').onclick = () => modal.style.display = 'none';
+    modal.onclick = (e) => { if(e.target === modal) modal.style.display = 'none'; };
+  }
+
+  function renderAttendanceMemberList(search) {
+    let filtered = [...allMembers];
+    if (search.trim()) filtered = filtered.filter(m => m.name.toLowerCase().includes(search.toLowerCase()));
+    const container = document.getElementById('memberList');
+    container.innerHTML = filtered.map(m => `
+      <div class="member-row" data-id="${m._id}">
+        <img class="member-avatar-small" src="${m.photoUrl || 'defaultpfp.png'}">
+        <span class="member-name">${escapeHtml(m.name)}</span>
+        <div class="action-buttons">
+          <button class="btn-checkin" data-action="checkin">Check In</button>
+          <button class="btn-checkout" data-action="checkout">Check Out</button>
+        </div>
+      </div>
+    `).join('');
+    container.querySelectorAll('.member-row').forEach(row => {
+      row.querySelector('.btn-checkin').onclick = async () => {
+        await recordAttendance(row.getAttribute('data-id'), 'checkin');
+      };
+      row.querySelector('.btn-checkout').onclick = async () => {
+        await recordAttendance(row.getAttribute('data-id'), 'checkout');
+      };
+    });
+  }
+
+  async function recordAttendance(memberId, action) {
+    try {
+      const res = await fetch(`${API_BASE}/trainer/attendance/member`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${trainerToken}` },
+        body: JSON.stringify({ memberId, action })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const time = data.record.checkinTime || data.record.checkoutTime;
+        showSquarePopup(`${action === 'checkin' ? 'Checked In' : 'Checked Out'}`, `at ${time}`, true);
+        await fetchAttendanceData();
+        await fetchAllMembersAttendanceLogs();
+        await updateDashboardStats();
+      } else {
+        const err = await res.json();
+        showSquarePopup('Failed', err.error || 'Something went wrong', false);
+      }
+    } catch(err) { showSquarePopup('Network error', 'Please try again', false); }
+  }
+
+  // ========== LOGS MODAL (now titled "Attendance") ==========
+  async function openLogsModal() {
+    await loadMembers();
+    const modal = document.getElementById('logsModal');
+    const content = document.getElementById('logsModalContent');
+    content.innerHTML = `
+      <button class="modal-close-btn" id="logsCloseBtn">&times;</button>
+      <div class="modal-title-center">Attendance</div>
+      <div class="filter-bar">
+        <input type="text" id="logSearch" placeholder="🔍 Search member...">
+        <div class="filter-dropdown" id="logsFilterDropdown">
+          <button class="filter-btn-icon" id="logsFilterBtn"><i class="fas fa-filter"></i></button>
+          <div class="filter-dropdown-content" id="logsFilterContent">
+            <button data-filter="all">All</button>
+            <button data-filter="active">Active</button>
+            <button data-filter="inactive">Inactive</button>
+            <button data-filter="paid">Paid</button>
+            <button data-filter="unpaid">Unpaid</button>
+          </div>
+        </div>
+      </div>
+      <div id="logMemberList"></div>`;
+    modal.style.display = 'flex';
+    resetModalScroll(modal);
+    let currentFilter = 'all';
+    renderLogMemberList(currentFilter, '');
+    document.getElementById('logSearch').addEventListener('input', (e) => renderLogMemberList(currentFilter, e.target.value));
+    const dropdown = document.getElementById('logsFilterDropdown');
+    document.getElementById('logsFilterBtn').onclick = () => dropdown.classList.toggle('show');
+    document.querySelectorAll('#logsFilterContent button').forEach(btn => {
+      btn.onclick = () => {
+        currentFilter = btn.getAttribute('data-filter');
+        document.querySelectorAll('#logsFilterContent button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderLogMemberList(currentFilter, document.getElementById('logSearch').value);
+        dropdown.classList.remove('show');
+      };
+    });
+    document.getElementById('logsCloseBtn').onclick = () => modal.style.display = 'none';
+    modal.onclick = (e) => { if(e.target === modal) modal.style.display = 'none'; };
+  }
+
+  function renderLogMemberList(filter, search) {
+    let filtered = [...allMembers];
+    if (filter === 'active') filtered = filtered.filter(m => isMemberActive(m._id));
+    else if (filter === 'inactive') filtered = filtered.filter(m => !isMemberActive(m._id));
+    else if (filter === 'paid') filtered = filtered.filter(m => m.feeStatus === 'paid');
+    else if (filter === 'unpaid') filtered = filtered.filter(m => m.feeStatus === 'unpaid');
+    if (search.trim()) filtered = filtered.filter(m => m.name.toLowerCase().includes(search.toLowerCase()));
+    const container = document.getElementById('logMemberList');
+    container.innerHTML = filtered.map(m => {
+      const active = isMemberActive(m._id);
+      const statusClass = active ? 'status-active' : 'status-inactive';
+      const statusText = active ? 'Active' : 'Inactive';
+      const feeClass = m.feeStatus === 'paid' ? 'fee-tag-paid' : 'fee-tag-unpaid';
+      const feeText = m.feeStatus === 'paid' ? 'Paid' : 'Unpaid';
+      return `
+        <div class="member-row">
+          <img class="member-avatar-small" src="${m.photoUrl || 'defaultpfp.png'}">
+          <span class="member-name">${escapeHtml(m.name)}</span>
+          <div class="action-row">
+            <div class="tags-container">
+              <span class="status-badge ${statusClass}">${statusText}</span>
+              <span class="status-badge ${feeClass}">${feeText}</span>
+            </div>
+            <button class="check-btn" data-id="${m._id}" data-name="${escapeHtml(m.name)}">Check</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+    container.querySelectorAll('.check-btn').forEach(btn => {
+      btn.onclick = () => {
+        const memberId = btn.getAttribute('data-id');
+        const memberName = btn.getAttribute('data-name');
+        showMemberHeatmap(memberId, memberName);
+      };
+    });
+  }
+
+  function showMemberHeatmap(memberId, memberName) {
+    const attendanceDates = new Set(memberAttendanceData[memberId] || []);
+    const modal = document.getElementById('logsModal');
+    const content = document.getElementById('logsModalContent');
+    let currentDate = new Date();
+    const JUNE_2026_START = new Date(2026, 5, 1);
+    const today = new Date();
+    const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    function renderMemberCalendar() {
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      if (year < 2026 || (year === 2026 && month < 5)) { currentDate = new Date(2026,5,1); renderMemberCalendar(); return; }
+      if (year > today.getFullYear() || (year === today.getFullYear() && month > today.getMonth())) { currentDate = new Date(today.getFullYear(), today.getMonth(), 1); renderMemberCalendar(); return; }
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month+1, 0).getDate();
+      let daysHtml = '';
+      for (let i=0; i<firstDay; i++) daysHtml += '<div class="compact-day empty"></div>';
+      for (let d=1; d<=daysInMonth; d++) {
+        const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const dateObj = new Date(year, month, d);
+        const isFuture = dateObj > today;
+        const isSunday = dateObj.getDay() === 0;
+        const hasAttendance = attendanceDates.has(dateStr);
+        let dayClass = 'compact-day';
+        if (isFuture) dayClass += ' future';
+        if (isSunday) dayClass += ' sunday';
+        if (hasAttendance && !isFuture) dayClass += ' present';
+        else if (!hasAttendance && !isFuture && !isSunday && dateObj >= JUNE_2026_START) dayClass += ' absent';
+        daysHtml += `<div class="${dayClass}">${d}${hasAttendance && !isFuture ? '<div class="compact-attendance-dot"></div>' : ''}</div>`;
+      }
+      document.getElementById('memberCalendarDays').innerHTML = daysHtml;
+      document.getElementById('memberCalendarMonthYear').innerText = `${new Date(year, month).toLocaleString('default', { month: 'long' })} ${year}`;
+    }
+    function changeMemberMonth(delta) {
+      const newDate = new Date(currentDate);
+      newDate.setMonth(currentDate.getMonth() + delta);
+      if (newDate.getFullYear() < 2026 || (newDate.getFullYear() === 2026 && newDate.getMonth() < 5)) return;
+      if (newDate > today) return;
+      currentDate = newDate;
+      renderMemberCalendar();
+    }
+    content.innerHTML = `
+      <button class="modal-close-btn" id="heatmapBackBtn">&times;</button>
+      <div class="modal-title-center">${escapeHtml(memberName)}</div>
+      <div class="compact-calendar">
+        <div class="compact-calendar-header">
+          <h4 id="memberCalendarMonthYear"></h4>
+          <div class="compact-month-nav">
+            <button id="memberPrevMonth"><i class="fas fa-chevron-left"></i></button>
+            <button id="memberNextMonth"><i class="fas fa-chevron-right"></i></button>
+          </div>
+        </div>
+        <div class="compact-weekdays">${weekdays.map(day => `<div class="compact-weekday">${day}</div>`).join('')}</div>
+        <div class="compact-days" id="memberCalendarDays"></div>
+      </div>
+      <div class="back-button-centered">
+        <button class="btn-outline-gold" id="backToLogsBtn">Back</button>
+      </div>
+    `;
+    renderMemberCalendar();
+    document.getElementById('memberPrevMonth').onclick = () => changeMemberMonth(-1);
+    document.getElementById('memberNextMonth').onclick = () => changeMemberMonth(1);
+    document.getElementById('heatmapBackBtn').onclick = () => openLogsModal();
+    document.getElementById('backToLogsBtn').onclick = () => openLogsModal();
+  }
+
+  // ========== STAFF ATTENDANCE MODAL ==========
+  async function openStaffAttendanceModal() {
+    await fetchStaffAttendance();
+    const modal = document.getElementById('staffModal');
+    const content = document.getElementById('staffModalContent');
+    const currentHour = new Date().getHours();
+    const shift = currentHour >= 12 ? 'evening' : 'morning';
+    const hasCheckedIn = (shift === 'morning' && staffMorningIn) || (shift === 'evening' && staffEveningIn);
+    const hasCheckedOut = (shift === 'morning' && staffMorningOut) || (shift === 'evening' && staffEveningOut);
+    const firstName = currentTrainer?.firstName || 'Trainer';
+    content.innerHTML = `
+      <button class="modal-close-btn" id="staffModalCloseBtn">&times;</button>
+      <div class="modal-title-center">Staff Attendance</div>
+      <div style="text-align: center; margin-bottom: 1.5rem;">
+        <img src="${currentTrainer?.photoUrl || 'ultrafit_logo.png'}" style="width:80px; height:80px; border-radius:50%; border:2px solid #FFD700;">
+        <h3 style="color:#FFD700;">Hi ${escapeHtml(firstName)}</h3>
+        <p>Best of luck for today's shift!</p>
+      </div>
+      <div style="display: flex; justify-content: center; gap: 2rem; margin: 1rem 0;">
+        <button class="btn-checkin" id="staffCheckInBtn" ${hasCheckedIn ? 'disabled' : ''}>Check In</button>
+        <button class="btn-checkout" id="staffCheckOutBtn" ${hasCheckedOut ? 'disabled' : ''}>Check Out</button>
+      </div>
+    `;
+    modal.style.display = 'flex';
+    resetModalScroll(modal);
+    document.getElementById('staffCheckInBtn').onclick = async () => {
+      await staffRecordAttendance('checkin');
+      modal.style.display = 'none';
+      await fetchStaffAttendance();
+      await updateDashboardStats();
+    };
+    document.getElementById('staffCheckOutBtn').onclick = async () => {
+      await staffRecordAttendance('checkout');
+      modal.style.display = 'none';
+      await fetchStaffAttendance();
+      await updateDashboardStats();
+      const morningHours = staffMorningIn && staffMorningOut ? calculateHours(staffMorningIn, staffMorningOut) : 0;
+      const eveningHours = staffEveningIn && staffEveningOut ? calculateHours(staffEveningIn, staffEveningOut) : 0;
+      const total = morningHours + eveningHours;
+      showShiftSummary(staffMorningIn, staffMorningOut, staffEveningIn, staffEveningOut, total, morningHours, eveningHours);
+    };
+    document.getElementById('staffModalCloseBtn').onclick = () => modal.style.display = 'none';
+    modal.onclick = (e) => { if(e.target === modal) modal.style.display = 'none'; };
+  }
+
+  async function staffRecordAttendance(action) {
+    const currentHour = new Date().getHours();
+    const shift = currentHour >= 12 ? 'evening' : 'morning';
+    try {
+      const res = await fetch(`${API_BASE}/trainer/attendance/trainer`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${trainerToken}` },
+        body: JSON.stringify({ shift, action })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const time = data.record.checkinTime || data.record.checkoutTime;
+        showSquarePopup(`${shift} shift ${action === 'checkin' ? 'Started' : 'Ended'}`, `at ${time}`, true);
+      } else {
+        showSquarePopup('Failed', 'Could not record attendance', false);
+      }
+    } catch(err) { showSquarePopup('Network error', 'Please try again', false); }
+  }
+
+  // ========== STAFF LOGS HEATMAP (now titled "My Attendance") ==========
+  async function openStaffLogsModal() {
+    const res = await fetch(`${API_BASE}/trainer/attendance/trainer/my`, {
+      headers: { 'Authorization': `Bearer ${trainerToken}` }
+    });
+    let staffAttendanceRecords = res.ok ? await res.json() : [];
+    const attendanceSet = new Set(staffAttendanceRecords.map(r => r.date));
+    const modal = document.getElementById('staffModal');
+    const content = document.getElementById('staffModalContent');
+    let currentDate = new Date();
+    const JUNE_2026_START = new Date(2026,5,1);
+    const today = new Date();
+    const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    function renderStaffCalendar() {
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      if (year < 2026 || (year === 2026 && month < 5)) { currentDate = new Date(2026,5,1); renderStaffCalendar(); return; }
+      if (year > today.getFullYear() || (year === today.getFullYear() && month > today.getMonth())) { currentDate = new Date(today.getFullYear(), today.getMonth(), 1); renderStaffCalendar(); return; }
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month+1, 0).getDate();
+      let daysHtml = '';
+      for (let i=0; i<firstDay; i++) daysHtml += '<div class="compact-day empty"></div>';
+      for (let d=1; d<=daysInMonth; d++) {
+        const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const dateObj = new Date(year, month, d);
+        const isFuture = dateObj > today;
+        const isSunday = dateObj.getDay() === 0;
+        const hasAttendance = attendanceSet.has(dateStr);
+        let dayClass = 'compact-day';
+        if (isFuture) dayClass += ' future';
+        if (isSunday) dayClass += ' sunday';
+        if (hasAttendance && !isFuture) dayClass += ' present';
+        else if (!hasAttendance && !isFuture && !isSunday && dateObj >= JUNE_2026_START) dayClass += ' absent';
+        daysHtml += `<div class="${dayClass}">${d}${hasAttendance && !isFuture ? '<div class="compact-attendance-dot"></div>' : ''}</div>`;
+      }
+      document.getElementById('staffCalendarDays').innerHTML = daysHtml;
+      document.getElementById('staffCalendarMonthYear').innerText = `${new Date(year, month).toLocaleString('default', { month: 'long' })} ${year}`;
+    }
+    function changeStaffMonth(delta) {
+      const newDate = new Date(currentDate);
+      newDate.setMonth(currentDate.getMonth() + delta);
+      if (newDate.getFullYear() < 2026 || (newDate.getFullYear() === 2026 && newDate.getMonth() < 5)) return;
+      if (newDate > today) return;
+      currentDate = newDate;
+      renderStaffCalendar();
+    }
+    content.innerHTML = `
+      <button class="modal-close-btn" id="staffLogsCloseBtn">&times;</button>
+      <div class="modal-title-center">My Attendance</div>
+      <div class="compact-calendar">
+        <div class="compact-calendar-header">
+          <h4 id="staffCalendarMonthYear"></h4>
+          <div class="compact-month-nav">
+            <button id="staffPrevMonth"><i class="fas fa-chevron-left"></i></button>
+            <button id="staffNextMonth"><i class="fas fa-chevron-right"></i></button>
+          </div>
+        </div>
+        <div class="compact-weekdays">${weekdays.map(day => `<div class="compact-weekday">${day}</div>`).join('')}</div>
+        <div class="compact-days" id="staffCalendarDays"></div>
+      </div>
+    `;
+    modal.style.display = 'flex';
+    resetModalScroll(modal);
+    renderStaffCalendar();
+    document.getElementById('staffPrevMonth').onclick = () => changeStaffMonth(-1);
+    document.getElementById('staffNextMonth').onclick = () => changeStaffMonth(1);
+    document.getElementById('staffLogsCloseBtn').onclick = () => modal.style.display = 'none';
+    modal.onclick = (e) => { if(e.target === modal) modal.style.display = 'none'; };
+  }
+
+  // ========== SUBMIT FEES MODAL ==========
+  async function openSubmitFeesModal() {
+    await loadMembers();
+    const modal = document.getElementById('submitFeesModal');
+    const content = document.getElementById('submitFeesModalContent');
+    content.innerHTML = `
+      <button class="modal-close-btn" id="submitFeesCloseBtn">&times;</button>
+      <div class="modal-title-center">Submit Fees</div>
+      <div class="filter-bar">
+        <input type="text" id="submitFeeSearch" placeholder="🔍 Search member...">
+        <div class="filter-dropdown" id="submitFeesFilterDropdown">
+          <button class="filter-btn-icon" id="submitFeesFilterBtn"><i class="fas fa-filter"></i></button>
+          <div class="filter-dropdown-content" id="submitFeesFilterContent">
+            <button data-filter="all">All</button>
+            <button data-filter="paid">Paid</button>
+            <button data-filter="unpaid">Unpaid</button>
+          </div>
+        </div>
+      </div>
+      <div id="submitFeeMemberList"></div>
+    `;
+    modal.style.display = 'flex';
+    resetModalScroll(modal);
+    let currentFilter = 'all';
+    renderSubmitFeeMemberList(currentFilter, '');
+    document.getElementById('submitFeeSearch').addEventListener('input', (e) => renderSubmitFeeMemberList(currentFilter, e.target.value));
+    const dropdown = document.getElementById('submitFeesFilterDropdown');
+    document.getElementById('submitFeesFilterBtn').onclick = () => dropdown.classList.toggle('show');
+    document.querySelectorAll('#submitFeesFilterContent button').forEach(btn => {
+      btn.onclick = () => {
+        currentFilter = btn.getAttribute('data-filter');
+        document.querySelectorAll('#submitFeesFilterContent button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderSubmitFeeMemberList(currentFilter, document.getElementById('submitFeeSearch').value);
+        dropdown.classList.remove('show');
+      };
+    });
+    document.getElementById('submitFeesCloseBtn').onclick = () => modal.style.display = 'none';
+    modal.onclick = (e) => { if(e.target === modal) modal.style.display = 'none'; };
+  }
+
+  function renderSubmitFeeMemberList(filter, search) {
+    let filtered = [...allMembers];
+    if (filter === 'paid') filtered = filtered.filter(m => m.feeStatus === 'paid');
+    else if (filter === 'unpaid') filtered = filtered.filter(m => m.feeStatus === 'unpaid');
+    if (search.trim()) filtered = filtered.filter(m => m.name.toLowerCase().includes(search.toLowerCase()));
+    const container = document.getElementById('submitFeeMemberList');
+    container.innerHTML = filtered.map(m => {
+      const feeClass = m.feeStatus === 'paid' ? 'fee-tag-paid' : 'fee-tag-unpaid';
+      const feeText = m.feeStatus === 'paid' ? 'Paid' : 'Unpaid';
+      return `
+        <div class="member-row">
+          <img class="member-avatar-small" src="${m.photoUrl || 'defaultpfp.png'}">
+          <span class="member-name">${escapeHtml(m.name)}</span>
+          <div class="tags-container">
+            <span class="status-badge ${feeClass}">${feeText}</span>
+          </div>
+          <button class="btn-yellow-small" data-id="${m._id}" data-name="${escapeHtml(m.name)}">Pay</button>
+        </div>
+      `;
+    }).join('');
+    container.querySelectorAll('.btn-yellow-small').forEach(btn => {
+      btn.onclick = () => {
+        const memberId = btn.getAttribute('data-id');
+        const memberName = btn.getAttribute('data-name');
+        openDurationModal(memberId, memberName);
+      };
+    });
+  }
+
+  async function openDurationModal(memberId, memberName) {
+    const modal = document.getElementById('durationModal');
+    const content = document.getElementById('durationModalContent');
+    content.innerHTML = `
+      <button class="modal-close-btn" id="durationCloseBtn">&times;</button>
+      <div class="modal-title-center">Select Duration</div>
+      <div style="display: flex; justify-content: center; gap: 2rem; margin: 2rem 0;">
+        <button class="btn-solid-gold" id="duration1Month">1 Month</button>
+        <button class="btn-solid-gold" id="duration3Month">3 Months</button>
+      </div>
+      <div style="text-align:center;"><button class="btn-outline-gold" id="cancelDurationBtn">Cancel</button></div>
+    `;
+    modal.style.display = 'flex';
+    resetModalScroll(modal);
+    document.getElementById('duration1Month').onclick = async () => {
+      modal.style.display = 'none';
+      await openAmountModal(memberId, memberName, 1);
+    };
+    document.getElementById('duration3Month').onclick = async () => {
+      modal.style.display = 'none';
+      await openAmountModal(memberId, memberName, 3);
+    };
+    document.getElementById('durationCloseBtn').onclick = () => modal.style.display = 'none';
+    document.getElementById('cancelDurationBtn').onclick = () => modal.style.display = 'none';
+    modal.onclick = (e) => { if(e.target === modal) modal.style.display = 'none'; };
+  }
+
+  async function openAmountModal(memberId, memberName, months) {
+    let defaultPrice = months === 1 ? 2000 : 4500;
+    if (membershipPlans.length) {
+      const plan = membershipPlans.find(p => (months === 1 && p.duration === 'month') || (months === 3 && p.duration === '3 months'));
+      if (plan) defaultPrice = plan.price;
+    }
+    const modal = document.getElementById('paymentAmountModal');
+    const content = document.getElementById('paymentAmountModalContent');
+    content.innerHTML = `
+      <button class="modal-close-btn" id="amountCloseBtn">&times;</button>
+      <div class="modal-title-center">Fees</div>
+      <div style="text-align: center; margin: 1.5rem 0;">
+        <div id="amountDisplay" class="editable-amount" style="display: inline-block;">₹${defaultPrice}</div>
+        <input type="number" id="amountInput" class="amount-input" style="display:none; text-align:center;" value="${defaultPrice}">
+      </div>
+      <div class="button-group-center" style="margin-top:1rem; display: flex; justify-content: center; gap: 1rem;">
+        <button class="btn-solid-gold" id="confirmPaymentBtn">Confirm Payment</button>
+        <button class="btn-outline-gold" id="cancelAmountBtn">Cancel</button>
+      </div>
+    `;
+    modal.style.display = 'flex';
+    resetModalScroll(modal);
+    let currentAmount = defaultPrice;
+    const displayDiv = document.getElementById('amountDisplay');
+    const inputField = document.getElementById('amountInput');
+    displayDiv.onclick = () => {
+      displayDiv.style.display = 'none';
+      inputField.style.display = 'inline-block';
+      inputField.focus();
+    };
+    inputField.onblur = () => {
+      let val = parseInt(inputField.value);
+      if (isNaN(val) || val <= 0) val = defaultPrice;
+      currentAmount = val;
+      displayDiv.innerText = `₹${currentAmount}`;
+      displayDiv.style.display = 'inline-block';
+      inputField.style.display = 'none';
+    };
+    document.getElementById('confirmPaymentBtn').onclick = async () => {
+      const amount = currentAmount;
+      try {
+        const res = await fetch(`${API_BASE}/trainer/payments`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${trainerToken}` },
+          body: JSON.stringify({ memberId, months, amount })
+        });
+        if (res.ok) {
+          showSquarePopup(`Payment recorded for ${memberName}`, `₹${amount} for ${months} month(s)`, true);
+          modal.style.display = 'none';
+          await loadMembers();
+          await updateDashboardStats();
+        } else {
+          const err = await res.json();
+          showSquarePopup('Payment failed', err.error || 'Try again', false);
+        }
+      } catch(err) {
+        showSquarePopup('Network error', 'Please try again', false);
+      }
+    };
+    document.getElementById('cancelAmountBtn').onclick = () => modal.style.display = 'none';
+    document.getElementById('amountCloseBtn').onclick = () => modal.style.display = 'none';
+    modal.onclick = (e) => { if(e.target === modal) modal.style.display = 'none'; };
+  }
+
+  // ========== CHECK FEES MODAL ==========
+  async function openFeesModal() {
+    await loadMembers();
+    const modal = document.getElementById('feesModal');
+    const content = document.getElementById('feesModalContent');
+    content.innerHTML = `
+      <button class="modal-close-btn" id="feesCloseBtn">&times;</button>
+      <div class="modal-title-center">Check Fees</div>
+      <div class="filter-bar">
+        <input type="text" id="feeSearch" placeholder="🔍 Search by name...">
+        <div class="filter-dropdown" id="feesFilterDropdown">
+          <button class="filter-btn-icon" id="feesFilterBtn"><i class="fas fa-filter"></i></button>
+          <div class="filter-dropdown-content" id="feesFilterContent">
+            <button data-filter="all">All</button>
+            <button data-filter="active">Active</button>
+            <button data-filter="inactive">Inactive</button>
+            <button data-filter="paid">Paid</button>
+            <button data-filter="unpaid">Unpaid</button>
+          </div>
+        </div>
+      </div>
+      <div id="feeMemberList"></div>`;
+    modal.style.display = 'flex';
+    resetModalScroll(modal);
+    let currentFilter = 'all';
+    renderFeeMemberList(currentFilter, '');
+    document.getElementById('feeSearch').addEventListener('input', (e) => renderFeeMemberList(currentFilter, e.target.value));
+    const dropdown = document.getElementById('feesFilterDropdown');
+    document.getElementById('feesFilterBtn').onclick = () => dropdown.classList.toggle('show');
+    document.querySelectorAll('#feesFilterContent button').forEach(btn => {
+      btn.onclick = () => {
+        currentFilter = btn.getAttribute('data-filter');
+        document.querySelectorAll('#feesFilterContent button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderFeeMemberList(currentFilter, document.getElementById('feeSearch').value);
+        dropdown.classList.remove('show');
+      };
+    });
+    document.getElementById('feesCloseBtn').onclick = () => modal.style.display = 'none';
+    modal.onclick = (e) => { if(e.target === modal) modal.style.display = 'none'; };
+  }
+
+  function renderFeeMemberList(filter, search) {
+    let filtered = [...allMembers];
+    if (filter === 'active') filtered = filtered.filter(m => isMemberActive(m._id));
+    else if (filter === 'inactive') filtered = filtered.filter(m => !isMemberActive(m._id));
+    else if (filter === 'paid') filtered = filtered.filter(m => m.feeStatus === 'paid');
+    else if (filter === 'unpaid') filtered = filtered.filter(m => m.feeStatus === 'unpaid');
+    if (search.trim()) filtered = filtered.filter(m => m.name.toLowerCase().includes(search.toLowerCase()));
+    const container = document.getElementById('feeMemberList');
+    container.innerHTML = filtered.map(m => {
+      const active = isMemberActive(m._id);
+      const statusClass = active ? 'status-active' : 'status-inactive';
+      const statusText = active ? 'Active' : 'Inactive';
+      const feeClass = m.feeStatus === 'paid' ? 'fee-tag-paid' : 'fee-tag-unpaid';
+      const feeText = m.feeStatus === 'paid' ? 'Paid' : 'Unpaid';
+      return `
+        <div class="member-row">
+          <img class="member-avatar-small" src="${m.photoUrl || 'defaultpfp.png'}">
+          <span class="member-name">${escapeHtml(m.name)}</span>
+          <div class="action-row">
+            <div class="tags-container">
+              <span class="status-badge ${statusClass}">${statusText}</span>
+              <span class="status-badge ${feeClass}">${feeText}</span>
+            </div>
+            <div class="contact-icons">
+              <i class="fas fa-phone-alt" onclick="window.location.href='tel:${m.phone || ''}'"></i>
+              <i class="fab fa-whatsapp" onclick="window.open('https://wa.me/${m.phone || ''}?text=${encodeURIComponent('Hello, this is a reminder from UltraFit Gym. Please submit your pending fees.')}', '_blank')"></i>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // ========== PROFILE MODAL ==========
+  async function openProfileModal() {
+    const modal = document.getElementById('profileModal');
+    const content = document.getElementById('profileModalContent');
+    const firstNameVal = currentTrainer?.firstName || '';
+    const lastNameVal = currentTrainer?.lastName || '';
+    const ageVal = currentTrainer?.age || '';
+    const genderVal = currentTrainer?.gender || 'male';
+    content.innerHTML = `
+      <button class="modal-close-btn" id="profileCloseBtn">&times;</button>
+      <div class="modal-title-center">Profile</div>
+      <div class="profile-container">
+        <div class="profile-avatar-wrapper">
+          <img src="${currentTrainer?.photoUrl || 'ultrafit_logo.png'}" class="profile-avatar" id="profileAvatar">
+          <div class="profile-edit-icon" id="changeDpBtn"><i class="fas fa-pencil-alt"></i></div>
+        </div>
+        <div class="profile-field">
+          <label>First Name</label>
+          <div class="value" id="firstNameValue">${escapeHtml(firstNameVal)} <button class="edit-btn" id="editFirstNameBtn"><i class="fas fa-edit"></i></button></div>
+          <div id="firstNameEditContainer" style="display:none;"><input type="text" id="firstNameInput" value="${escapeHtml(firstNameVal)}"></div>
+        </div>
+        <div class="profile-field">
+          <label>Last Name</label>
+          <div class="value" id="lastNameValue">${escapeHtml(lastNameVal)} <button class="edit-btn" id="editLastNameBtn"><i class="fas fa-edit"></i></button></div>
+          <div id="lastNameEditContainer" style="display:none;"><input type="text" id="lastNameInput" value="${escapeHtml(lastNameVal)}"></div>
+        </div>
+        <div class="profile-field">
+          <label>Age</label>
+          <div class="value" id="ageValue">${ageVal} <button class="edit-btn" id="editAgeBtn"><i class="fas fa-edit"></i></button></div>
+          <div id="ageEditContainer" style="display:none;"><input type="number" id="ageInput" value="${ageVal}"></div>
+        </div>
+        <div class="profile-field">
+          <label>Gender</label>
+          <div class="value" id="genderValue">${genderVal === 'male' ? 'Male' : (genderVal === 'female' ? 'Female' : 'Other')} <button class="edit-btn" id="editGenderBtn"><i class="fas fa-edit"></i></button></div>
+          <div id="genderEditContainer" style="display:none;"><select id="genderInput"><option value="male" ${genderVal==='male'?'selected':''}>Male</option><option value="female" ${genderVal==='female'?'selected':''}>Female</option><option value="other" ${genderVal==='other'?'selected':''}>Other</option></select></div>
+        </div>
+        <div class="profile-field" style="text-align:center;"><button class="small-outline-btn" id="changeUsernamePasswordBtn">Change Username & Password</button></div>
+        <div style="display:flex; gap:1rem; margin-top:1.5rem; justify-content:center;">
+          <button class="btn-outline-gold" id="cancelProfileBtn">Cancel</button>
+          <button class="btn-solid-gold" id="saveProfileBtn">Save</button>
+        </div>
+      </div>
+    `;
+    modal.style.display = 'flex';
+    resetModalScroll(modal);
+    let editMode = { firstName:false, lastName:false, age:false, gender:false };
+    let originalData = { firstName:firstNameVal, lastName:lastNameVal, age:ageVal, gender:genderVal, photoUrl:currentTrainer?.photoUrl||'ultrafit_logo.png' };
+    const updateDisplay = () => {
+      document.getElementById('firstNameValue').style.display = editMode.firstName ? 'none' : 'flex';
+      document.getElementById('firstNameEditContainer').style.display = editMode.firstName ? 'block' : 'none';
+      document.getElementById('lastNameValue').style.display = editMode.lastName ? 'none' : 'flex';
+      document.getElementById('lastNameEditContainer').style.display = editMode.lastName ? 'block' : 'none';
+      document.getElementById('ageValue').style.display = editMode.age ? 'none' : 'flex';
+      document.getElementById('ageEditContainer').style.display = editMode.age ? 'block' : 'none';
+      document.getElementById('genderValue').style.display = editMode.gender ? 'none' : 'flex';
+      document.getElementById('genderEditContainer').style.display = editMode.gender ? 'block' : 'none';
+    };
+    document.getElementById('editFirstNameBtn').onclick = () => { editMode.firstName = true; updateDisplay(); };
+    document.getElementById('editLastNameBtn').onclick = () => { editMode.lastName = true; updateDisplay(); };
+    document.getElementById('editAgeBtn').onclick = () => { editMode.age = true; updateDisplay(); };
+    document.getElementById('editGenderBtn').onclick = () => { editMode.gender = true; updateDisplay(); };
+    document.getElementById('cancelProfileBtn').onclick = () => modal.style.display = 'none';
+    document.getElementById('saveProfileBtn').onclick = async () => {
+      const newFirstName = editMode.firstName ? document.getElementById('firstNameInput').value : originalData.firstName;
+      const newLastName = editMode.lastName ? document.getElementById('lastNameInput').value : originalData.lastName;
+      const newAge = editMode.age ? parseInt(document.getElementById('ageInput').value) : originalData.age;
+      const newGender = editMode.gender ? document.getElementById('genderInput').value : originalData.gender;
+      const updateData = {};
+      if (newFirstName !== originalData.firstName) updateData.firstName = newFirstName;
+      if (newLastName !== originalData.lastName) updateData.lastName = newLastName;
+      if (newAge !== originalData.age) updateData.age = newAge;
+      if (newGender !== originalData.gender) updateData.gender = newGender;
+      if (Object.keys(updateData).length > 0) {
+        const res = await fetch(`${API_BASE}/auth/trainer/profile`, {
+          method: 'PUT',
+          headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${trainerToken}` },
+          body: JSON.stringify(updateData)
+        });
+        if (res.ok) {
+          Object.assign(currentTrainer, updateData);
+          showSquarePopup('Profile updated', '', true);
+          modal.style.display = 'none';
+          openProfileModal();
+        } else showSquarePopup('Failed to update profile', '', false);
+      } else modal.style.display = 'none';
+    };
+    document.getElementById('changeDpBtn').onclick = () => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const formData = new FormData();
+        formData.append('image', file);
+        try {
+          const uploadRes = await fetch('/api/upload', { method:'POST', headers:{'Authorization':`Bearer ${trainerToken}`}, body:formData });
+          const uploadData = await uploadRes.json();
+          if (uploadData.url) {
+            const updateRes = await fetch(`${API_BASE}/auth/trainer/profile`, {
+              method:'PUT', headers:{'Content-Type':'application/json','Authorization':`Bearer ${trainerToken}`},
+              body: JSON.stringify({ photoUrl: uploadData.url })
+            });
+            if (updateRes.ok) {
+              currentTrainer.photoUrl = uploadData.url;
+              document.getElementById('profileAvatar').src = uploadData.url;
+              showSquarePopup('Profile picture updated', '', true);
+            }
+          }
+        } catch(err) { showSquarePopup('Upload failed', '', false); }
+      };
+      input.click();
+    };
+    document.getElementById('changeUsernamePasswordBtn').onclick = () => {
+      modal.style.display = 'none';
+      openChangeUsernamePasswordModal();
+    };
+    document.getElementById('profileCloseBtn').onclick = () => modal.style.display = 'none';
+    modal.onclick = (e) => { if(e.target === modal) modal.style.display = 'none'; };
+    updateDisplay();
+  }
+
+  async function openChangeUsernamePasswordModal() {
+    const modal = document.getElementById('profileModal');
+    const content = document.getElementById('profileModalContent');
+    content.innerHTML = `
+      <button class="modal-close-btn" id="passwordCloseBtn">&times;</button>
+      <div class="modal-title-center">Change Username & Password</div>
+      <div class="profile-field"><label>New Username</label><input type="text" id="newUsername" placeholder="Enter new username" value="${currentTrainer?.username || ''}"><div id="usernameAvailability" style="font-size:0.7rem; margin-top:0.3rem;"></div></div>
+      <div class="profile-field"><label>Current Password</label><input type="password" id="currentPwd" placeholder="Enter current password"></div>
+      <div class="profile-field"><label>New Password</label><input type="password" id="newPwd" placeholder="Enter new password (leave blank to keep same)"></div>
+      <div class="profile-field"><label>Confirm New Password</label><input type="password" id="confirmNewPwd" placeholder="Confirm new password"></div>
+      <div style="display:flex; gap:1rem; margin-top:1rem;"><button class="btn-outline-gold" id="backToProfileBtn" style="flex:1;">Back</button><button class="btn-solid-gold" id="submitChangesBtn" style="flex:1;">Save Changes</button></div>
+    `;
+    modal.style.display = 'flex';
+    resetModalScroll(modal);
+    let usernameTimeout;
+    document.getElementById('newUsername').addEventListener('input', async (e) => {
+      clearTimeout(usernameTimeout);
+      const username = e.target.value;
+      if (username.length < 3) { document.getElementById('usernameAvailability').innerHTML = '<span style="color:#e74c3c;">Minimum 3 characters</span>'; return; }
+      if (username === (currentTrainer?.username || '')) { document.getElementById('usernameAvailability').innerHTML = '<span style="color:#aaa;">Same as current</span>'; return; }
+      usernameTimeout = setTimeout(async () => {
+        const res = await fetch(`${API_BASE}/auth/check-username?username=${encodeURIComponent(username)}`, { headers:{'Authorization':`Bearer ${trainerToken}`} });
+        const data = await res.json();
+        document.getElementById('usernameAvailability').innerHTML = data.available ? '<span style="color:#2ecc2e;">✓ Available</span>' : '<span style="color:#e74c3c;">✗ Already taken</span>';
+      }, 500);
+    });
+    document.getElementById('submitChangesBtn').onclick = async () => {
+      const newUsername = document.getElementById('newUsername').value;
+      const currentPassword = document.getElementById('currentPwd').value;
+      const newPassword = document.getElementById('newPwd').value;
+      const confirmPassword = document.getElementById('confirmNewPwd').value;
+      if (!currentPassword) { showSquarePopup('Current password is required', '', false); return; }
+      if (newPassword && newPassword !== confirmPassword) { showSquarePopup('New passwords do not match', '', false); return; }
+      if (newUsername.length < 3) { showSquarePopup('Username must be at least 3 characters', '', false); return; }
+      const updateData = { currentPassword };
+      if (newUsername !== (currentTrainer?.username || '')) updateData.newUsername = newUsername;
+      if (newPassword) updateData.newPassword = newPassword;
+      const res = await fetch(`${API_BASE}/auth/update-username-password`, { method:'PUT', headers:{'Content-Type':'application/json','Authorization':`Bearer ${trainerToken}`}, body:JSON.stringify(updateData) });
+      if (res.ok) {
+        showSquarePopup('Username and password updated', 'Please login again', true);
+        setTimeout(() => { localStorage.removeItem('trainerToken'); location.reload(); }, 2000);
+      } else { const err = await res.json(); showSquarePopup(err.error || 'Update failed', '', false); }
+    };
+    document.getElementById('backToProfileBtn').onclick = () => openProfileModal();
+    document.getElementById('passwordCloseBtn').onclick = () => modal.style.display = 'none';
+    modal.onclick = (e) => { if(e.target === modal) modal.style.display = 'none'; };
+  }
+
+  function escapeHtml(str) { return String(str).replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+
+  // Navbar scroll & hamburger
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 50) navbar.classList.add('scrolled');
+    else navbar.classList.remove('scrolled');
+  });
+  const hamburger = document.getElementById('hamburger');
+  const navLinks = document.getElementById('navLinks');
+  if (hamburger) hamburger.addEventListener('click', () => navLinks.classList.toggle('active'));
+
+  if (isAuthenticated && !currentTrainer) fetchTrainerData();
+</script>
+</body>
+</html>

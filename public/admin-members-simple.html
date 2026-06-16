@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Members (Working with Auth)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #121212;
+      font-family: 'Montserrat', sans-serif;
+      color: #eaeaea;
+      padding: 2rem;
+    }
+    .container { max-width: 1400px; margin: 0 auto; }
+    h1, h2 { color: #FFD700; margin-bottom: 1rem; }
+    .membership-cards, .members-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+    .membership-card, .member-card {
+      background: rgba(28,28,32,0.88);
+      backdrop-filter: blur(8px);
+      border-radius: 28px;
+      padding: 1.5rem;
+      width: 280px;
+      text-align: center;
+      border: 1px solid rgba(255,215,0,0.2);
+      transition: 0.3s;
+    }
+    .membership-card:hover, .member-card:hover { transform: translateY(-4px); border-color: #FFD700; }
+    .member-avatar {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #FFD700;
+      margin-bottom: 1rem;
+    }
+    button {
+      background: #FFD700;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      transition: 0.2s;
+    }
+    button:hover { transform: scale(1.02); background: #e6c300; }
+    .filter-bar {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin: 2rem 0;
+      background: rgba(20,20,25,0.6);
+      padding: 1rem;
+      border-radius: 60px;
+    }
+    .search-input {
+      flex: 2;
+      background: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 40px;
+      padding: 0.6rem 1rem;
+      color: white;
+    }
+    .filter-btn {
+      background: transparent;
+      border: 1px solid #FFD700;
+      color: #FFD700;
+      padding: 0.4rem 1rem;
+      border-radius: 40px;
+      cursor: pointer;
+    }
+    .filter-btn.active { background: #FFD700; color: #121212; }
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #000;
+      color: #FFD700;
+      padding: 8px 20px;
+      border-radius: 40px;
+      z-index: 1000;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Admin Members (with Authentication)</h1>
+
+  <h2>Membership Plans</h2>
+  <div id="membershipList" class="membership-cards"></div>
+
+  <h2>Members</h2>
+  <div class="filter-bar">
+    <input type="text" id="searchInput" class="search-input" placeholder="Search members...">
+    <div class="filter-buttons">
+      <button data-filter="all" class="filter-btn active">All</button>
+      <button data-filter="beginner" class="filter-btn">Beginner</button>
+      <button data-filter="intermediate" class="filter-btn">Intermediate</button>
+      <button data-filter="expert" class="filter-btn">Expert</button>
+      <button data-filter="fatloss" class="filter-btn">Fat Loss</button>
+      <button data-filter="musclegain" class="filter-btn">Muscle Gain</button>
+    </div>
+  </div>
+  <div id="membersList" class="members-grid"></div>
+  <div style="text-align: center;">
+    <button id="loadMoreBtn">Load More</button>
+  </div>
+</div>
+<div id="toast" class="toast"></div>
+
+<script>
+  // ========== AUTHENTICATION ==========
+  const token = localStorage.getItem('adminToken');
+  const API_BASE = '/api';
+
+  function showToast(msg, isError = false) {
+    const t = document.getElementById('toast');
+    t.innerText = msg;
+    t.style.background = isError ? '#e74c3c' : '#000';
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 3000);
+  }
+
+  async function fetchJSON(url, options = {}) {
+    const headers = {
+      'Content-Type': 'application/json',
+      ...options.headers
+    };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    try {
+      const res = await fetch(url, { ...options, headers });
+      const text = await res.text();
+      let data;
+      try { data = JSON.parse(text); } catch(e) { data = text; }
+      if (!res.ok) {
+        console.error(`Error ${res.status}:`, data);
+        showToast(`Error ${res.status}: ${data.error || data}`, true);
+        return null;
+      }
+      return data;
+    } catch (err) {
+      console.error(err);
+      showToast(err.message, true);
+      return null;
+    }
+  }
+
+  // Data
+  let memberships = [];
+  let allMembers = [];
+  let currentDisplayLimit = 10;
+  let currentFilter = 'all';
+  let currentSearch = '';
+
+  async function loadData() {
+    const [mems, membersRes] = await Promise.all([
+      fetchJSON(`${API_BASE}/memberships`),
+      fetchJSON(`${API_BASE}/members`)
+    ]);
+    if (mems) memberships = mems;
+    if (membersRes) allMembers = membersRes;
+    renderMemberships();
+    renderMembersGrid();
+  }
+
+  function renderMemberships() {
+    const container = document.getElementById('membershipList');
+    if (!container) return;
+    if (!memberships.length) {
+      container.innerHTML = '<p>No membership plans.</p>';
+      return;
+    }
+    container.innerHTML = memberships.map(m => `
+      <div class="membership-card">
+        <h3>${escapeHtml(m.planName)}</h3>
+        <p class="price">₹${m.price}<span> / ${m.duration}</span></p>
+        <p>${escapeHtml(m.description)}</p>
+        <button onclick="editMembership('${m._id}')">✏️ Update</button>
+      </div>
+    `).join('');
+  }
+
+  function getFilteredMembers() {
+    let filtered = [...allMembers];
+    if (currentFilter !== 'all') {
+      if (currentFilter === 'beginner') filtered = filtered.filter(m => m.experience === 'beginner');
+      else if (currentFilter === 'intermediate') filtered = filtered.filter(m => m.experience === 'intermediate');
+      else if (currentFilter === 'expert') filtered = filtered.filter(m => m.experience === 'expert');
+      else if (currentFilter === 'fatloss') filtered = filtered.filter(m => m.goal === 'fatloss');
+      else if (currentFilter === 'musclegain') filtered = filtered.filter(m => m.goal === 'musclegain');
+    }
+    if (currentSearch.trim()) {
+      filtered = filtered.filter(m => m.name.toLowerCase().includes(currentSearch.toLowerCase()));
+    }
+    return filtered;
+  }
+
+  function renderMembersGrid() {
+    const filtered = getFilteredMembers();
+    const displayMembers = filtered.slice(0, currentDisplayLimit);
+    const container = document.getElementById('membersList');
+    if (!container) return;
+    container.innerHTML = displayMembers.map(m => `
+      <div class="member-card">
+        <img class="member-avatar" src="${m.photoUrl}" alt="${m.name}">
+        <h3>${escapeHtml(m.name)}</h3>
+        <p>${m.age} years · Member since ${m.since}</p>
+        <p>${m.goal === 'fatloss' ? '🔥 Fat Loss' : '💪 Muscle Gain'} · ${m.experience} · ${m.status === 'active' ? 'Active' : 'Inactive'}</p>
+        <button onclick="editMember('${m._id}')">✏️ Update</button>
+      </div>
+    `).join('');
+    const loadBtn = document.getElementById('loadMoreBtn');
+    if (loadBtn) loadBtn.style.display = filtered.length > currentDisplayLimit ? 'inline-block' : 'none';
+  }
+
+  function loadMore() {
+    currentDisplayLimit += 10;
+    renderMembersGrid();
+  }
+
+  // Edit functions (simple prompts, but they work)
+  window.editMembership = async (id) => {
+    const plan = memberships.find(p => p._id === id);
+    if (!plan) return;
+    const newName = prompt('Plan Name', plan.planName);
+    if (newName === null) return;
+    const newPrice = prompt('Price', plan.price);
+    if (newPrice === null) return;
+    const newDuration = prompt('Duration (e.g., month, 3 months)', plan.duration);
+    if (newDuration === null) return;
+    const newDesc = prompt('Description', plan.description);
+    if (newDesc === null) return;
+    const res = await fetchJSON(`${API_BASE}/memberships/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        planName: newName,
+        price: parseInt(newPrice),
+        duration: newDuration,
+        description: newDesc
+      })
+    });
+    if (res) {
+      showToast('Membership updated');
+      loadData();
+    }
+  };
+
+  window.editMember = async (id) => {
+    const member = allMembers.find(m => m._id === id);
+    if (!member) return;
+    const newName = prompt('Name', member.name);
+    if (newName === null) return;
+    const newAge = prompt('Age', member.age);
+    if (newAge === null) return;
+    const newSince = prompt('Member Since (year)', member.since);
+    if (newSince === null) return;
+    const newGoal = prompt('Goal (fatloss/musclegain)', member.goal);
+    if (newGoal === null) return;
+    const newExp = prompt('Experience (beginner/intermediate/expert)', member.experience);
+    if (newExp === null) return;
+    const newStatus = prompt('Status (active/inactive)', member.status);
+    if (newStatus === null) return;
+    const newFeedback = prompt('Feedback', member.feedback || '');
+    if (newFeedback === null) return;
+    const res = await fetchJSON(`${API_BASE}/members/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        name: newName,
+        age: parseInt(newAge),
+        since: newSince,
+        goal: newGoal,
+        experience: newExp,
+        status: newStatus,
+        feedback: newFeedback
+      })
+    });
+    if (res) {
+      showToast('Member updated');
+      loadData();
+    }
+  };
+
+  // Filters
+  function initFilters() {
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.getAttribute('data-filter');
+        currentDisplayLimit = 10;
+        renderMembersGrid();
+      });
+    });
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        currentSearch = e.target.value;
+        currentDisplayLimit = 10;
+        renderMembersGrid();
+      });
+    }
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  document.getElementById('loadMoreBtn').addEventListener('click', loadMore);
+  initFilters();
+  loadData();
+</script>
+</body>
+</html>

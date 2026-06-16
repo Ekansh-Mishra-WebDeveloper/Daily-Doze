@@ -1,0 +1,69 @@
+# robots.txt for ultrafitgymunnao.com
+# Allow public pages: index, diet, workout, shop, members, user
+# Disallow all admin, backup, uploads, and hidden system folders
+
+User-agent: *
+Allow: /index.html
+Allow: /diet.html
+Allow: /workout.html
+Allow: /shop.html
+Allow: /members.html
+Allow: /user.html
+
+# Block all admin-related pages and assets
+Disallow: /admin
+Disallow: /admin.html
+Disallow: /admin-*
+Disallow: /admin-panel.html
+Disallow: /admin-members.html
+Disallow: /admin-diet.html
+Disallow: /admin-workout.html
+Disallow: /admin-shop.html
+Disallow: /admin-privacy.html
+Disallow: /admin-refund.html
+Disallow: /admin-terms.html
+Disallow: /admin.css
+Disallow: /admin.js
+Disallow: /crud.js
+Disallow: /modals.js
+Disallow: /carousels.js
+
+# Block trainer pages (if not meant for public)
+Disallow: /trainer.html
+Disallow: /trainer.css
+Disallow: /trainer.js
+Disallow: /trainer-*
+
+# Block backup folder
+Disallow: /Backup/
+
+# Block uploads (user images, etc.)
+Disallow: /uploads/
+
+# Block VS Code system folder (if present)
+Disallow: /.vs/
+
+# Block any hidden or private directories
+Disallow: /private/
+Disallow: /temp/
+
+# Block service workers and manifests from crawling (optional, safe to block)
+Disallow: /service-worker.js
+Disallow: /trainer-service-worker.js
+Disallow: /admin-service-worker.js
+Disallow: /manifest.json
+Disallow: /admin-manifest.json
+Disallow: /member-manifest.json
+Disallow: /trainer-manifest.json
+
+# Block PDF generation pages (if internal)
+Disallow: /pdf-diet.html
+Disallow: /pdf-workout.html
+
+# Block image and video files from being indexed (optional, helps with SEO)
+Disallow: /*.jpg$
+Disallow: /*.png$
+Disallow: /*.mp4$
+
+# Sitemap location (create and upload a sitemap.xml for better SEO)
+Sitemap: https://ultrafitgymunnao.com/sitemap.xml

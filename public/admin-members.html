@@ -1,0 +1,1792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#121212" />
+  <title>UltraFit Admin | Manage Members</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <style>
+    /* ========== EXACT SAME STYLES AS members.html (plus admin extras & list view) ========== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background-color: #121212;
+      font-family: 'Montserrat', 'Archivo', sans-serif;
+      color: #eaeaea;
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+    :root {
+      --gold: #FFD700;
+      --gold-glow: 0 0 12px rgba(255,215,0,0.4);
+      --dark-bg: #121212;
+      --card-bg: rgba(28,28,32,0.88);
+      --glass-edge: 1px solid rgba(255,215,0,0.2);
+    }
+    .container {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+    /* Navbar (same as admin.html) */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      background: transparent;
+      transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      padding: 1.2rem 0;
+    }
+    .navbar.scrolled {
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      padding: 0.7rem 0;
+    }
+    .nav-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .nav-logo-img {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid rgba(255, 215, 0, 0.4);
+    }
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+    }
+    .logo-ultra { color: #ffffff; }
+    .logo-fit { color: #FFD700; }
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+      align-items: center;
+    }
+    .nav-link {
+      color: #f0f0f0;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+      padding: 0.5rem 0;
+      position: relative;
+    }
+    .nav-link:not(.join-now-nav):hover { color: #FFD700; }
+    .nav-link:not(.join-now-nav)::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: #FFD700;
+      transform: scaleX(0);
+      transition: transform 0.2s ease;
+    }
+    .nav-link:not(.join-now-nav):hover::after { transform: scaleX(1); }
+    .join-now-nav {
+      background: #FFD700;
+      color: #121212 !important;
+      padding: 0.6rem 1.6rem !important;
+      border-radius: 40px;
+      font-weight: 700;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+    .join-now-nav:hover {
+      background: #e6c300;
+      transform: translateY(-2px);
+    }
+    .hamburger {
+      display: none;
+      font-size: 1.8rem;
+      cursor: pointer;
+      color: #FFD700;
+      min-width: 44px;
+      text-align: center;
+    }
+    @media (max-width: 900px) {
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        background: rgba(0, 0, 0, 0.95);
+        backdrop-filter: blur(12px);
+        padding: 1.5rem;
+        gap: 1.2rem;
+        text-align: center;
+      }
+      .nav-links.active { display: flex; }
+      .hamburger { display: block; }
+      .container { padding: 0 1.5rem; }
+      .join-now-nav { padding: 0.5rem 1.2rem !important; font-size: 0.9rem; }
+    }
+    /* Hero Section */
+    .members-hero {
+      position: relative;
+      min-height: 65vh;
+      background: linear-gradient(115deg, #000000d0 0%, #0a0a0a 100%), url('https://images.pexels.com/photos/841130/pexels-photo-841130.jpeg?auto=compress&cs=tinysrgb&w=1600');
+      background-size: cover;
+      background-position: center 30%;
+      background-attachment: fixed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      border-bottom: 2px solid rgba(255,215,0,0.3);
+    }
+    .members-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 20% 40%, rgba(0,0,0,0.5) 0%, #000000cc 100%);
+      opacity: 0.0;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      animation: heroZoom 1.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    }
+    @keyframes heroZoom {
+      0% { opacity: 0; transform: scale(0.96) translateY(20px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .hero-content h1 {
+      font-size: 4.2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #FFFFFF 0%, #FFD700 80%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .hero-sub {
+      font-size: 1.2rem;
+      color: #e0e0e0;
+      max-width: 600px;
+      margin: 1rem auto 0;
+    }
+    /* Stats section */
+    .stats-section {
+      padding: 3rem 0;
+      background: #0a0a0a;
+    }
+    .stats-grid {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 2rem;
+      text-align: center;
+    }
+    .stat-card h2 {
+      font-size: 3rem;
+      color: #FFD700;
+      font-weight: 800;
+    }
+    .stat-card p {
+      font-size: 1.1rem;
+      letter-spacing: 1px;
+    }
+    .section-title {
+      font-size: 2.5rem;
+      margin: 2rem 0 1rem;
+      text-align: center;
+      background: linear-gradient(120deg, #fff, #FFD700);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .section-header-flex {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .membership-cards {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+    .membership-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(8px);
+      border-radius: 32px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 320px;
+      text-align: center;
+      border: 1px solid rgba(255,215,0,0.25);
+      transition: transform 0.3s;
+    }
+    .membership-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--gold);
+    }
+    .membership-card h3 { font-size: 1.8rem; color: var(--gold); }
+    .price { font-size: 2rem; font-weight: 800; margin: 1rem 0; }
+    .btn-join {
+      background: var(--gold);
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn-join:hover { background: #e6c300; transform: scale(1.02); }
+    .featured-scroll {
+      display: flex;
+      overflow-x: auto;
+      gap: 1.5rem;
+      padding: 1rem 0.5rem 2rem;
+      scrollbar-width: thin;
+      scrollbar-color: var(--gold) #2a2a2a;
+    }
+    .featured-card {
+      flex: 0 0 280px;
+      background: linear-gradient(145deg, #1f1f24, #17171c);
+      border-radius: 28px;
+      padding: 1.2rem;
+      text-align: center;
+      border: 1px solid rgba(255,215,0,0.3);
+      transition: all 0.3s;
+    }
+    .featured-card:hover { transform: translateY(-5px); border-color: var(--gold); }
+    .featured-card img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--gold);
+      margin-bottom: 1rem;
+    }
+    .member-tag {
+      display: inline-block;
+      background: rgba(255,215,0,0.15);
+      padding: 0.2rem 0.8rem;
+      border-radius: 30px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--gold);
+      margin: 0.3rem;
+    }
+    .fee-tag-paid { background: #2ecc2e20; color: #2ecc2e; border: 1px solid #2ecc2e; }
+    .fee-tag-unpaid { background: #e74c3c20; color: #e74c3c; border: 1px solid #e74c3c; }
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin: 2rem 0;
+      background: rgba(20,20,25,0.6);
+      backdrop-filter: blur(8px);
+      padding: 1rem 1.5rem;
+      border-radius: 60px;
+      border: 1px solid rgba(255,215,0,0.2);
+    }
+    .search-input {
+      flex: 2;
+      background: #1e1e1e;
+      border: 1px solid #333;
+      padding: 0.8rem 1.2rem;
+      border-radius: 60px;
+      color: white;
+      font-family: inherit;
+    }
+    .search-input:focus { border-color: var(--gold); outline: none; }
+    .filter-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+    .filter-btn {
+      background: transparent;
+      border: 1px solid var(--gold);
+      padding: 0.5rem 1.2rem;
+      border-radius: 40px;
+      color: var(--gold);
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .filter-btn.active, .filter-btn:hover {
+      background: var(--gold);
+      color: #121212;
+    }
+    /* Members Grid & List Views */
+    .members-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+    .member-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(6px);
+      border-radius: 28px;
+      padding: 1.5rem;
+      border: 1px solid rgba(255,215,0,0.2);
+      transition: all 0.3s;
+      text-align: center;
+    }
+    .member-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--gold);
+      box-shadow: 0 20px 30px -12px black;
+    }
+    .member-avatar {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--gold);
+      margin-bottom: 1rem;
+    }
+    .member-name { font-size: 1.4rem; font-weight: 700; color: #fff; }
+    .member-details { font-size: 0.85rem; color: #aaa; margin: 0.5rem 0; }
+    .tag-group { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin: 0.8rem 0; }
+    .status-badge {
+      display: inline-block;
+      padding: 0.2rem 0.8rem;
+      border-radius: 30px;
+      font-size: 0.7rem;
+      font-weight: bold;
+    }
+    .status-active { background: #2ecc2e20; color: #2ecc2e; border: 1px solid #2ecc2e; }
+    .status-inactive { background: #e74c3c20; color: #e74c3c; border: 1px solid #e74c3c; }
+    /* List view (from members.html) */
+    .members-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      margin: 2rem 0;
+    }
+    .member-list-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: rgba(28,28,32,0.7);
+      backdrop-filter: blur(4px);
+      padding: 0.8rem 1.2rem;
+      border-radius: 60px;
+      border: 1px solid rgba(255,215,0,0.15);
+      transition: all 0.2s;
+    }
+    .member-list-item:hover {
+      border-color: var(--gold);
+      background: rgba(28,28,32,0.9);
+    }
+    .list-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid var(--gold);
+    }
+    .list-info {
+      flex: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .list-name {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #fff;
+    }
+    .list-status {
+      font-size: 0.7rem;
+    }
+    @media (max-width: 600px) {
+      .list-info { flex-direction: column; align-items: flex-start; }
+      .member-list-item { border-radius: 28px; }
+    }
+    .view-toggle {
+      display: flex;
+      gap: 0.8rem;
+      background: rgba(20,20,25,0.6);
+      backdrop-filter: blur(8px);
+      padding: 0.4rem 0.8rem;
+      border-radius: 60px;
+      border: 1px solid rgba(255,215,0,0.2);
+    }
+    .toggle-icon {
+      background: transparent;
+      border: none;
+      color: #aaa;
+      font-size: 1.4rem;
+      cursor: pointer;
+      padding: 0.4rem;
+      border-radius: 50%;
+      transition: 0.2s;
+      width: 40px;
+      text-align: center;
+    }
+    .toggle-icon.active {
+      color: #FFD700;
+      background: rgba(255,215,0,0.15);
+    }
+    .toggle-icon:hover { color: #FFD700; }
+    .load-more-wrapper {
+      text-align: center;
+      margin: 2rem 0 3rem;
+    }
+    .btn-load-more {
+      background: transparent;
+      border: 1px solid var(--gold);
+      padding: 0.8rem 2rem;
+      border-radius: 60px;
+      color: var(--gold);
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn-load-more:hover {
+      background: var(--gold);
+      color: #121212;
+    }
+    /* Footer (exactly like admin.html) */
+    footer {
+      background: #000;
+      padding: 3rem 0;
+      border-top: 1px solid rgba(255,215,0,0.3);
+      text-align: center;
+    }
+    .footer-grid {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+    .footer-links ul {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      list-style: none;
+      margin: 1rem 0;
+      flex-wrap: wrap;
+    }
+    .footer-links a {
+      color: #ccc;
+      text-decoration: none;
+      transition: 0.2s;
+    }
+    .footer-links a:hover { color: #FFD700; }
+    .credit {
+      margin-top: 1rem;
+    }
+    .credit a {
+      color: #FFD700;
+      text-decoration: none;
+    }
+    .credit a:hover { text-decoration: underline; }
+    /* Floating CTA */
+    .floating-cta {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      z-index: 999;
+    }
+    .floating-trial-btn {
+      background: #FFD700;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 60px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      transition: 0.2s;
+    }
+    .floating-trial-btn:hover {
+      transform: scale(1.05);
+      background: #e6c300;
+    }
+    /* Admin specific buttons */
+    .admin-add-icon {
+      background: rgba(255,215,0,0.1);
+      border: 1px solid rgba(255,215,0,0.4);
+      border-radius: 40px;
+      padding: 0.5rem 1.2rem;
+      color: #FFD700;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .admin-add-icon:hover {
+      background: #FFD700;
+      color: #121212;
+      transform: scale(1.02);
+    }
+    .card-update-btn {
+      display: block;
+      margin: 1rem auto 0;
+      background: rgba(0,0,0,0.7);
+      border: 1px solid #FFD700;
+      border-radius: 40px;
+      padding: 0.4rem 1rem;
+      color: #FFD700;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: 0.2s;
+      width: fit-content;
+    }
+    .card-update-btn:hover {
+      background: #FFD700;
+      color: #121212;
+    }
+    .standard-update-btn {
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(8px);
+      border: 1px solid #FFD700;
+      border-radius: 40px;
+      padding: 0.5rem 1.2rem;
+      color: #FFD700;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .standard-update-btn:hover {
+      background: #FFD700;
+      color: #121212;
+      transform: scale(1.04);
+      box-shadow: 0 0 12px rgba(255,215,0,0.4);
+    }
+    /* Premium Modal Styles */
+    .premium-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.92);
+      backdrop-filter: blur(16px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 5000;
+      animation: fadeIn 0.2s ease;
+    }
+   .premium-modal-card {
+  background: #121212;
+  border: 1px solid #FFD700;
+  border-radius: 32px;
+  width: 90%;
+  max-width: 550px;
+  max-height: 85vh;           /* ← limit height to 85% of viewport */
+  overflow-y: auto;           /* ← enable vertical scrolling */
+  padding: 2rem;
+  box-shadow: 0 25px 45px rgba(0,0,0,0.5);
+  animation: scaleIn 0.3s cubic-bezier(0.2,0.9,0.4,1.1);
+}
+    .image-preview-large {
+      width: 100%;
+      max-height: 200px;
+      object-fit: contain;
+      border-radius: 20px;
+      border: 1px solid #FFD700;
+      margin-bottom: 1rem;
+    }
+    .modal-image-container {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .modal-image {
+      max-width: 200px;
+      max-height: 200px;
+      border-radius: 16px;
+      border: 1px solid #FFD700;
+      object-fit: cover;
+    }
+    .image-upload-area {
+      border: 2px dashed #FFD700;
+      border-radius: 20px;
+      padding: 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-top: 0.5rem;
+      background: rgba(0,0,0,0.3);
+    }
+    .image-upload-area:hover {
+      background: rgba(255,215,0,0.05);
+    }
+    .field-group {
+      margin-bottom: 1.2rem;
+    }
+    .field-group label {
+      display: block;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: #aaa;
+      margin-bottom: 0.3rem;
+    }
+    .field-group input, .field-group textarea, .field-group select {
+      width: 100%;
+      background: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 20px;
+      padding: 0.7rem 1rem;
+      color: white;
+      font-family: inherit;
+    }
+    .modal-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .modal-btn-delete {
+      background: rgba(200,0,0,0.2);
+      border: 1px solid #e74c3c;
+      color: #e74c3c;
+      padding: 0.6rem 1.2rem;
+      border-radius: 40px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .modal-btn-delete:hover {
+      background: #e74c3c;
+      color: white;
+    }
+    .modal-btn-cancel {
+      background: rgba(100,100,100,0.2);
+      border: 1px solid #888;
+      color: #ccc;
+      padding: 0.6rem 1.2rem;
+      border-radius: 40px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .modal-btn-cancel:hover {
+      background: #888;
+      color: white;
+    }
+    .modal-btn-save {
+      background: #FFD700;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 40px;
+      font-weight: 600;
+      color: #121212;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .modal-btn-save:hover {
+      background: #e6c300;
+      transform: scale(1.02);
+    }
+    .stats-edit-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .stats-edit-row label {
+      width: 140px;
+    }
+    .confirm-modal, .success-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.92);
+      backdrop-filter: blur(16px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 5100;
+    }
+    .confirm-card, .success-card {
+      background: #121212;
+      border: 1px solid #FFD700;
+      border-radius: 32px;
+      padding: 2rem;
+      text-align: center;
+      max-width: 400px;
+    }
+    .confirm-yes {
+      background: #FFD700;
+      color: #121212;
+      border: none;
+      padding: 0.6rem 1.5rem;
+      border-radius: 40px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .confirm-yes:hover { background: #e6c300; transform: scale(1.02); }
+    .confirm-no {
+      background: #333;
+      color: #ccc;
+      border: 1px solid #555;
+      padding: 0.6rem 1.5rem;
+      border-radius: 40px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .confirm-no:hover { background: #444; color: white; }
+    .success-card button {
+      background: #FFD700;
+      border: none;
+      padding: 0.6rem 1.5rem;
+      border-radius: 40px;
+      margin-top: 1rem;
+      cursor: pointer;
+    }
+    .admin-toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(0,0,0,0.92);
+      backdrop-filter: blur(12px);
+      color: #FFD700;
+      padding: 12px 28px;
+      border-radius: 60px;
+      font-weight: 600;
+      z-index: 6000;
+      transition: transform 0.3s ease;
+      border-left: 4px solid #FFD700;
+      white-space: nowrap;
+    }
+    .admin-toast.show { transform: translateX(-50%) translateY(0); }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    .fade-up {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.7s ease;
+    }
+    .fade-up.appear {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    @media (max-width: 768px) {
+      .hero-content h1 { font-size: 2.5rem; }
+      .section-title { font-size: 2rem; }
+      .filter-bar { flex-direction: column; align-items: stretch; }
+      .members-grid { grid-template-columns: 1fr; }
+    }
+    /* Login modal */
+    .login-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.95);
+      backdrop-filter: blur(16px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+    }
+    .login-card {
+      background: #121212;
+      border: 1px solid #FFD700;
+      border-radius: 32px;
+      padding: 2rem;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+    }
+    .login-card input {
+      width: 100%;
+      margin: 1rem 0;
+      padding: 0.8rem;
+      background: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 40px;
+      color: white;
+    }
+    .login-card button {
+      background: #FFD700;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 40px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .error-msg {
+      color: #e74c3c;
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN MODAL (shown if no token) -->
+<div id="loginModal" class="login-modal" style="display: flex;">
+  <div class="login-card">
+    <h2 style="color:#FFD700;">Admin Login</h2>
+    <input type="email" id="loginEmail" placeholder="Email" autocomplete="email">
+    <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password">
+    <button id="loginSubmitBtn">Login</button>
+    <div id="loginError" class="error-msg"></div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT (hidden until login) -->
+<div id="mainContent" style="display: none;">
+
+<!-- NAVBAR (Dashboard renamed to Join Now) -->
+<header class="navbar" id="navbar">
+  <div class="container nav-container">
+    <div class="logo-wrapper">
+      <img src="UltraFit logo.png" alt="UltraFit Logo" class="nav-logo-img" width="38" height="38" />
+      <div class="logo"><span class="logo-ultra">ULTRA</span><span class="logo-fit">FIT</span></div>
+    </div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="admin.html" class="nav-link join-now-nav">Join Now</a></li>
+      <li><a href="admin.html#contact-section" class="nav-link">Contact Us</a></li>
+      <li><a href="admin-diet.html" class="nav-link">Diet Plan</a></li>
+      <li><a href="admin-workout.html" class="nav-link">Workout Plan</a></li>
+      <li><a href="admin-members.html" class="nav-link">Gym Members</a></li>
+      <li><a href="admin-shop.html" class="nav-link">Shop</a></li>
+    </ul>
+    <div class="hamburger" id="hamburger"><i class="fas fa-bars"></i></div>
+  </div>
+</header>
+
+<main>
+  <!-- HERO SECTION -->
+  <section class="members-hero" id="heroSection" style="position: relative;">
+    <div class="hero-content" style="position: relative; z-index: 2;">
+      <h1 id="heroTitle">ULTRAFIT MEMBERS</h1>
+      <p id="heroSubheading" class="hero-sub">An elite community built on discipline, consistency, and transformation.</p>
+      <button class="standard-update-btn" id="editHeroBtn" style="margin-top: 1.5rem;"><i class="fas fa-pencil-alt"></i> Edit Section</button>
+    </div>
+  </section>
+
+  <!-- STATS SECTION -->
+  <section class="stats-section">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-card"><h2 id="totalMembers">2,340+</h2><p>Total Members</p></div>
+        <div class="stat-card"><h2 id="activeMembers">1,892</h2><p>Active Members</p></div>
+        <div class="stat-card"><h2 id="membersTransformations">1,250+</h2><p>Transformations</p></div>
+      </div>
+      <div style="text-align: center; margin-top: 1rem;">
+        <button class="standard-update-btn" id="editStatsBtn"><i class="fas fa-pencil-alt"></i> Update</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- MEMBERSHIP SECTION -->
+  <div class="container">
+    <div class="section-header-flex">
+      <h2 class="section-title">Gym Membership</h2>
+      <button class="admin-add-icon" id="addMembershipBtn"><i class="fas fa-plus"></i> Add</button>
+    </div>
+    <div class="membership-cards" id="membershipGrid"></div>
+  </div>
+
+  <!-- FEATURED MEMBERS CAROUSEL -->
+  <div class="container">
+    <div class="section-header-flex">
+      <h2 class="section-title">⭐ Featured Members</h2>
+      <button class="admin-add-icon" id="addFeaturedBtn"><i class="fas fa-plus"></i> Add</button>
+    </div>
+    <div class="featured-scroll" id="featuredScroll"></div>
+  </div>
+
+  <!-- FILTER BAR -->
+  <div class="container">
+    <div class="filter-bar">
+      <input type="text" id="searchInput" class="search-input" placeholder="🔎 Search members by name...">
+      <div class="filter-buttons" id="filterButtons">
+        <button data-filter="all" class="filter-btn active">All Members</button>
+        <button data-filter="beginner" class="filter-btn">Beginner</button>
+        <button data-filter="intermediate" class="filter-btn">Intermediate</button>
+        <button data-filter="expert" class="filter-btn">Expert</button>
+        <button data-filter="fatloss" class="filter-btn">Fat Loss</button>
+        <button data-filter="musclegain" class="filter-btn">Muscle Gain</button>
+        <button data-filter="featured" class="filter-btn">Featured</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MEMBERS SECTION WITH VIEW TOGGLE -->
+  <div class="container">
+    <div class="section-header-flex">
+      <h2 class="section-title">Meet Our Community</h2>
+      <div class="view-toggle">
+        <button id="gridViewBtn" class="toggle-icon active"><i class="fas fa-th"></i></button>
+        <button id="listViewBtn" class="toggle-icon"><i class="fas fa-list-ul"></i></button>
+      </div>
+      <button class="admin-add-icon" id="addMemberBtn"><i class="fas fa-plus"></i> Add</button>
+    </div>
+    <div id="membersContainer"></div>
+    <div class="load-more-wrapper">
+      <button id="loadMoreBtn" class="btn-load-more">View More Members</button>
+    </div>
+  </div>
+</main>
+
+<!-- FOOTER (exactly like admin.html) -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-links">
+      <h4>UltraFit Gym</h4>
+      <ul>
+        <li><a href="admin-privacy.html">Privacy Policy</a></li>
+        <li><a href="admin-refund.html">Refund Policy</a></li>
+        <li><a href="admin-terms.html">Terms & Conditions</a></li>
+      </ul>
+      <p class="credit">Designed by <a href="https://ekansh-mishra-webdeveloper.github.io/Brand-Bazar/" target="_blank">Brand Bazaar</a></p>
+    </div>
+  </div>
+</footer>
+
+<div class="floating-cta">
+  <i class="fas fa-pencil-alt"></i>
+  <button class="floating-trial-btn" id="floatingTrialBtn">Book 3-Day Free Trial</button>
+</div>
+
+<!-- Modal containers -->
+<div id="modalContainer" class="premium-modal" style="display: none;"></div>
+<div id="confirmModal" class="confirm-modal" style="display: none;"><div class="confirm-card"><p id="confirmMessage">Are you sure?</p><button class="confirm-yes" id="confirmYesBtn">Yes</button><button class="confirm-no" id="confirmNoBtn">No</button></div></div>
+<div id="successModal" class="success-modal" style="display: none;"><div class="success-card"><p id="successMessage">Success</p><button id="successOkBtn">OK</button></div></div>
+<div id="adminToast" class="admin-toast"></div>
+
+</div> <!-- end mainContent -->
+
+<script>
+  // ========== AUTHENTICATION ==========
+  const API_BASE = '/api';
+  let adminToken = localStorage.getItem('adminToken');
+  let isAuthenticated = !!adminToken;
+
+  function getAuthHeaders() {
+    return adminToken ? { 'Authorization': `Bearer ${adminToken}` } : {};
+  }
+
+  async function fetchJSON(url, options = {}) {
+    const headers = {
+      'Content-Type': 'application/json',
+      ...getAuthHeaders(),
+      ...options.headers
+    };
+    try {
+      const res = await fetch(url, { ...options, headers });
+      if (res.status === 401) {
+        localStorage.removeItem('adminToken');
+        adminToken = null;
+        isAuthenticated = false;
+        showLoginModal();
+        return null;
+      }
+      if (!res.ok) {
+        const text = await res.text();
+        let errorMsg = `HTTP ${res.status}`;
+        try { const data = JSON.parse(text); errorMsg = data.error || data.message || errorMsg; } catch(e) {}
+        console.error(`Error ${res.status}:`, errorMsg);
+        showToast(errorMsg, true);
+        return null;
+      }
+      return await res.json();
+    } catch (err) {
+      console.error(err);
+      showToast(err.message, true);
+      return null;
+    }
+  }
+
+  function showLoginModal() {
+    if (document.querySelector('.login-modal') && document.querySelector('.login-modal').style.display !== 'none') return;
+    const loginModal = document.getElementById('loginModal');
+    if (loginModal) loginModal.style.display = 'flex';
+    // Also hide main content
+    const mainContent = document.getElementById('mainContent');
+    if (mainContent) mainContent.style.display = 'none';
+  }
+
+  document.getElementById('loginSubmitBtn').addEventListener('click', async () => {
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    try {
+      const res = await fetch(`${API_BASE}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (res.ok && data.token) {
+        adminToken = data.token;
+        localStorage.setItem('adminToken', adminToken);
+        isAuthenticated = true;
+        document.getElementById('loginModal').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+        initAdminPanel();
+      } else {
+        document.getElementById('loginError').innerText = data.error || 'Invalid credentials';
+      }
+    } catch (err) {
+      document.getElementById('loginError').innerText = 'Login failed';
+    }
+  });
+
+  if (!isAuthenticated) {
+    showLoginModal();
+  } else {
+    document.getElementById('loginModal').style.display = 'none';
+    document.getElementById('mainContent').style.display = 'block';
+  }
+
+  const DEFAULT_AVATAR = "https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3407.jpg?semt=ais_hybrid&w=740&q=80";
+
+  function showToast(msg, isError = false) {
+    const toast = document.getElementById('adminToast');
+    if (!toast) return;
+    toast.innerText = msg;
+    toast.style.borderLeftColor = isError ? '#e74c3c' : '#FFD700';
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+  }
+
+  function confirmAction(message) {
+    return new Promise((resolve) => {
+      const modal = document.getElementById('confirmModal');
+      const msgSpan = document.getElementById('confirmMessage');
+      msgSpan.innerText = message;
+      modal.style.display = 'flex';
+      const yesBtn = document.getElementById('confirmYesBtn');
+      const noBtn = document.getElementById('confirmNoBtn');
+      const cleanup = () => {
+        yesBtn.removeEventListener('click', yesHandler);
+        noBtn.removeEventListener('click', noHandler);
+        modal.style.display = 'none';
+      };
+      const yesHandler = () => { cleanup(); resolve(true); };
+      const noHandler = () => { cleanup(); resolve(false); };
+      yesBtn.addEventListener('click', yesHandler);
+      noBtn.addEventListener('click', noHandler);
+    });
+  }
+
+  function showSuccessModal(message) {
+    return new Promise((resolve) => {
+      const modal = document.getElementById('successModal');
+      const msgSpan = document.getElementById('successMessage');
+      msgSpan.innerText = message;
+      modal.style.display = 'flex';
+      const okBtn = document.getElementById('successOkBtn');
+      const handleOk = () => {
+        modal.style.display = 'none';
+        okBtn.removeEventListener('click', handleOk);
+        resolve();
+      };
+      okBtn.addEventListener('click', handleOk);
+    });
+  }
+
+  // Data stores
+  let siteSettings = {};
+  let statsData = {};
+  let memberships = [];
+  let allMembers = [];
+  let featuredMembers = [];
+  let currentDisplayLimit = 10;
+  let currentFilter = 'all';
+  let currentSearch = '';
+  let currentView = 'card'; // 'card' or 'list'
+
+  async function loadAllData() {
+    if (!isAuthenticated) return;
+    const [settings, stats, membershipsRes, membersRes] = await Promise.all([
+      fetchJSON(`${API_BASE}/admin/sitesetting`),
+      fetchJSON(`${API_BASE}/admin/stats`),
+      fetchJSON(`${API_BASE}/admin/memberships`),
+      fetchJSON(`${API_BASE}/admin/members`)
+    ]);
+    if (settings) siteSettings = settings;
+    if (stats) statsData = stats;
+    if (membershipsRes) memberships = membershipsRes;
+    if (membersRes) {
+      allMembers = membersRes;
+      featuredMembers = allMembers.filter(m => m.featured === true);
+    }
+    renderHero();
+    renderStats();
+    renderMemberships();
+    renderFeatured();
+    renderMembers(); // will respect currentView
+  }
+
+  function renderHero() {
+    const heroTitle = document.getElementById('heroTitle');
+    const heroSub = document.getElementById('heroSubheading');
+    if (heroTitle && siteSettings.membersHeroHeading) heroTitle.innerText = siteSettings.membersHeroHeading;
+    if (heroSub && siteSettings.membersHeroSubheading) heroSub.innerText = siteSettings.membersHeroSubheading;
+    const floatBtn = document.getElementById('floatingTrialBtn');
+    if (floatBtn && siteSettings.membersFloatingButtonText) floatBtn.innerText = siteSettings.membersFloatingButtonText;
+    if (siteSettings.membersHeroBg) {
+      const heroSection = document.querySelector('.members-hero');
+      heroSection.style.backgroundImage = `linear-gradient(115deg, #000000d0 0%, #0a0a0a 100%), url('${siteSettings.membersHeroBg}')`;
+    }
+  }
+
+  function renderStats() {
+    const statNumbers = document.querySelectorAll('.stats-section .stat-card h2');
+    if (statNumbers.length >= 3 && statsData) {
+      statNumbers[0].innerText = statsData.totalMembers ? statsData.totalMembers.toLocaleString() + '+' : '2,340+';
+      statNumbers[1].innerText = statsData.activeMembers ? statsData.activeMembers.toLocaleString() : '1,892';
+      statNumbers[2].innerText = statsData.membersTransformations ? statsData.membersTransformations.toLocaleString() + '+' : '1,250+';
+    }
+  }
+
+  function renderMemberships() {
+    const container = document.getElementById('membershipGrid');
+    if (!container) return;
+    if (!memberships.length) {
+      container.innerHTML = '<p style="color:white;">No membership plans available.</p>';
+      return;
+    }
+    container.innerHTML = memberships.map(m => `
+      <div class="membership-card" data-id="${m._id}">
+        <h3>${escapeHtml(m.planName)}</h3>
+        <div class="price">₹${m.price}<span style="font-size:1rem;">/${m.duration}</span></div>
+        <p>${escapeHtml(m.description)}</p>
+        <button class="btn-join">Join Now</button>
+        <button class="card-update-btn" data-type="membership" data-id="${m._id}">✏️ Update</button>
+      </div>
+    `).join('');
+    attachUpdateButtons();
+  }
+
+  function renderFeatured() {
+    const container = document.getElementById('featuredScroll');
+    if (!container) return;
+    if (!featuredMembers.length) {
+      container.innerHTML = '<p>No featured members yet.</p>';
+      return;
+    }
+    container.innerHTML = featuredMembers.map(m => `
+      <div class="featured-card" data-id="${m._id}">
+        <img src="${m.photoUrl}" alt="${m.name}">
+        <h4>${escapeHtml(m.name)}</h4>
+        <div><span class="member-tag">${m.featuredTag || 'Featured'}</span></div>
+        <div><span class="member-tag">${m.goal === 'fatloss' ? 'Fat Loss' : 'Muscle Gain'}</span></div>
+        <button class="card-update-btn" data-type="featured" data-id="${m._id}">✏️ Update</button>
+      </div>
+    `).join('');
+    attachUpdateButtons();
+  }
+
+  function getFilteredMembers() {
+    let filtered = [...allMembers];
+    if (currentFilter === 'featured') filtered = filtered.filter(m => m.featured === true);
+    else if (currentFilter === 'beginner') filtered = filtered.filter(m => m.experience === 'beginner');
+    else if (currentFilter === 'intermediate') filtered = filtered.filter(m => m.experience === 'intermediate');
+    else if (currentFilter === 'expert') filtered = filtered.filter(m => m.experience === 'expert');
+    else if (currentFilter === 'fatloss') filtered = filtered.filter(m => m.goal === 'fatloss');
+    else if (currentFilter === 'musclegain') filtered = filtered.filter(m => m.goal === 'musclegain');
+    if (currentSearch.trim() !== '') {
+      filtered = filtered.filter(m => m.name.toLowerCase().includes(currentSearch.toLowerCase()));
+    }
+    return filtered;
+  }
+
+  function renderCardView(members) {
+    const container = document.getElementById('membersContainer');
+    container.innerHTML = '';
+    const grid = document.createElement('div');
+    grid.className = 'members-grid';
+    members.forEach(m => {
+      const expLabel = m.experience === 'beginner' ? 'Beginner' : (m.experience === 'intermediate' ? 'Intermediate' : 'Expert');
+      const goalLabel = m.goal === 'fatloss' ? '🔥 Fat Loss' : '💪 Muscle Gain';
+      const statusClass = m.status === 'active' ? 'status-active' : 'status-inactive';
+      const statusText = m.status === 'active' ? 'Active' : 'Inactive';
+      const feeClass = (m.feeStatus === 'unpaid' || m.feeStatus === 'Unpaid') ? 'fee-tag-unpaid' : 'fee-tag-paid';
+      const feeText = (m.feeStatus === 'unpaid' || m.feeStatus === 'Unpaid') ? 'Fees Unpaid' : 'Fees Paid';
+      const card = document.createElement('div');
+      card.className = 'member-card fade-up';
+      card.setAttribute('data-id', m._id);
+      card.innerHTML = `
+        <img class="member-avatar" src="${m.photoUrl}" alt="${m.name}">
+        <div class="member-name">${escapeHtml(m.name)}</div>
+        <div class="member-details">${m.age} years · Member since ${m.since}</div>
+        <div class="tag-group">
+          <span class="member-tag">${goalLabel}</span>
+          <span class="member-tag">${expLabel}</span>
+          <span class="status-badge ${statusClass}">${statusText}</span>
+          <span class="member-tag ${feeClass}">${feeText}</span>
+        </div>
+        <button class="card-update-btn" data-type="member" data-id="${m._id}">✏️ Update</button>
+      `;
+      grid.appendChild(card);
+    });
+    container.appendChild(grid);
+    const newCards = document.querySelectorAll('.member-card.fade-up');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('appear'); });
+    }, { threshold: 0.1 });
+    newCards.forEach(card => observer.observe(card));
+  }
+
+  function renderListView(members) {
+    const container = document.getElementById('membersContainer');
+    container.innerHTML = '';
+    const list = document.createElement('div');
+    list.className = 'members-list';
+    members.forEach(m => {
+      const statusClass = m.status === 'active' ? 'status-active' : 'status-inactive';
+      const statusText = m.status === 'active' ? 'Active' : 'Inactive';
+      const feeClass = (m.feeStatus === 'unpaid' || m.feeStatus === 'Unpaid') ? 'fee-tag-unpaid' : 'fee-tag-paid';
+      const feeText = (m.feeStatus === 'unpaid' || m.feeStatus === 'Unpaid') ? 'Unpaid' : 'Paid';
+      const item = document.createElement('div');
+      item.className = 'member-list-item fade-up';
+      item.setAttribute('data-id', m._id);
+      item.innerHTML = `
+        <img class="list-avatar" src="${m.photoUrl}" alt="${m.name}">
+        <div class="list-info">
+          <span class="list-name">${escapeHtml(m.name)}</span>
+          <span class="status-badge ${statusClass} list-status">${statusText}</span>
+          <span class="member-tag ${feeClass}">Fees ${feeText}</span>
+          <button class="card-update-btn" data-type="member" data-id="${m._id}" style="margin:0;">✏️ Update</button>
+        </div>
+      `;
+      list.appendChild(item);
+    });
+    container.appendChild(list);
+    const newItems = document.querySelectorAll('.member-list-item.fade-up');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('appear'); });
+    }, { threshold: 0.1 });
+    newItems.forEach(item => observer.observe(item));
+  }
+
+  function renderMembers() {
+    const filtered = getFilteredMembers();
+    const displayMembers = filtered.slice(0, currentDisplayLimit);
+    if (currentView === 'card') {
+      renderCardView(displayMembers);
+    } else {
+      renderListView(displayMembers);
+    }
+    const loadBtn = document.getElementById('loadMoreBtn');
+    if (loadBtn) {
+      if (filtered.length <= currentDisplayLimit) loadBtn.style.display = 'none';
+      else loadBtn.style.display = 'inline-block';
+    }
+    attachUpdateButtons();
+  }
+
+  function loadMore() {
+    currentDisplayLimit += 10;
+    renderMembers();
+  }
+
+  function initFilters() {
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.getAttribute('data-filter');
+        currentDisplayLimit = 10;
+        renderMembers();
+      });
+    });
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        currentSearch = e.target.value;
+        currentDisplayLimit = 10;
+        renderMembers();
+      });
+    }
+  }
+
+  function initViewToggle() {
+    const gridBtn = document.getElementById('gridViewBtn');
+    const listBtn = document.getElementById('listViewBtn');
+    gridBtn.addEventListener('click', () => {
+      currentView = 'card';
+      gridBtn.classList.add('active');
+      listBtn.classList.remove('active');
+      renderMembers();
+    });
+    listBtn.addEventListener('click', () => {
+      currentView = 'list';
+      listBtn.classList.add('active');
+      gridBtn.classList.remove('active');
+      renderMembers();
+    });
+  }
+
+  // ========== PREMIUM MODAL UPDATE HANDLERS ==========
+  function attachUpdateButtons() {
+    document.querySelectorAll('.card-update-btn').forEach(btn => {
+      btn.removeEventListener('click', handleUpdateClick);
+      btn.addEventListener('click', handleUpdateClick);
+    });
+  }
+
+  async function handleUpdateClick(e) {
+    const btn = e.currentTarget;
+    const type = btn.getAttribute('data-type');
+    const id = btn.getAttribute('data-id');
+    const modalContainer = document.getElementById('modalContainer');
+
+    if (type === 'membership') {
+      const plan = memberships.find(p => p._id === id);
+      if (!plan) return;
+      modalContainer.innerHTML = `
+        <div class="premium-modal-card">
+          <h3><i class="fas fa-id-card"></i> Edit Membership</h3>
+          <div class="field-group"><label>Plan Name</label><input type="text" id="modalPlanName" value="${escapeHtml(plan.planName)}"></div>
+          <div class="field-group"><label>Price</label><input type="number" id="modalPlanPrice" value="${plan.price}"></div>
+          <div class="field-group"><label>Duration</label><input type="text" id="modalPlanDuration" value="${escapeHtml(plan.duration)}"></div>
+          <div class="field-group"><label>Description</label><textarea id="modalPlanDesc">${escapeHtml(plan.description)}</textarea></div>
+          <div class="modal-buttons">
+            <button class="modal-btn-delete" id="modalDeleteBtn">Delete</button>
+            <button class="modal-btn-cancel" id="modalCancelBtn">Cancel</button>
+            <button class="modal-btn-save" id="modalSaveBtn">Save</button>
+          </div>
+        </div>
+      `;
+      modalContainer.style.display = 'flex';
+      const deleteBtn = document.getElementById('modalDeleteBtn');
+      const cancelBtn = document.getElementById('modalCancelBtn');
+      const saveBtn = document.getElementById('modalSaveBtn');
+      deleteBtn.onclick = async () => {
+        if (await confirmAction('Delete this membership plan?')) {
+          const res = await fetchJSON(`${API_BASE}/admin/memberships/${id}`, { method: 'DELETE' });
+          if (res) {
+            modalContainer.style.display = 'none';
+            await showSuccessModal('Membership Deleted');
+            loadAllData();
+          } else showToast('Delete failed', true);
+        }
+      };
+      cancelBtn.onclick = async () => {
+        if (await confirmAction('Discard changes?')) modalContainer.style.display = 'none';
+      };
+      saveBtn.onclick = async () => {
+        if (!await confirmAction('Save changes?')) return;
+        const updated = {
+          planName: document.getElementById('modalPlanName').value,
+          price: parseInt(document.getElementById('modalPlanPrice').value),
+          duration: document.getElementById('modalPlanDuration').value,
+          description: document.getElementById('modalPlanDesc').value
+        };
+        const res = await fetchJSON(`${API_BASE}/admin/memberships/${id}`, { method: 'PUT', body: JSON.stringify(updated) });
+        if (res) {
+          modalContainer.style.display = 'none';
+          await showSuccessModal('Membership Updated');
+          loadAllData();
+        } else showToast('Update failed', true);
+      };
+    } else if (type === 'featured') {
+      const member = allMembers.find(m => m._id === id);
+      if (!member) return;
+      modalContainer.innerHTML = `
+        <div class="premium-modal-card">
+          <h3><i class="fas fa-star"></i> Edit Featured Member</h3>
+          <img class="image-preview-large" src="${member.photoUrl}" id="modalFeaturedPreview">
+          <div class="field-group"><label>Name</label><input type="text" id="modalFeaturedName" value="${escapeHtml(member.name)}"></div>
+          <div class="field-group"><label>Tag 1</label><input type="text" id="modalFeaturedTag1" value="${escapeHtml(member.featuredTag || 'Featured')}"></div>
+          <div class="field-group"><label>Tag 2</label><select id="modalFeaturedGoal"><option value="fatloss" ${member.goal === 'fatloss' ? 'selected' : ''}>Fat Loss</option><option value="musclegain" ${member.goal === 'musclegain' ? 'selected' : ''}>Muscle Gain</option></select></div>
+          <div class="image-upload-area" id="modalFeaturedUpload"><i class="fas fa-cloud-upload-alt"></i> Upload new image</div>
+          <div class="modal-buttons">
+            <button class="modal-btn-delete" id="modalDeleteBtn">Delete</button>
+            <button class="modal-btn-cancel" id="modalCancelBtn">Cancel</button>
+            <button class="modal-btn-save" id="modalSaveBtn">Save</button>
+          </div>
+        </div>
+      `;
+      modalContainer.style.display = 'flex';
+      const uploadArea = document.getElementById('modalFeaturedUpload');
+      uploadArea.onclick = () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = async (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          const formData = new FormData();
+          formData.append('image', file);
+          try {
+            const res = await fetch('/api/upload', {
+              method: 'POST',
+              headers: getAuthHeaders(),
+              body: formData
+            });
+            if (res.status === 401) throw new Error('Unauthorized');
+            const data = await res.json();
+            if (data.url) {
+              document.getElementById('modalFeaturedPreview').src = data.url;
+              showToast('Image uploaded');
+            } else showToast('Upload failed', true);
+          } catch (err) {
+            showToast('Upload error', true);
+          }
+        };
+        input.click();
+      };
+      const deleteBtn = document.getElementById('modalDeleteBtn');
+      const cancelBtn = document.getElementById('modalCancelBtn');
+      const saveBtn = document.getElementById('modalSaveBtn');
+      deleteBtn.onclick = async () => {
+        if (await confirmAction('Delete this featured member?')) {
+          const res = await fetchJSON(`${API_BASE}/admin/members/${id}`, { method: 'DELETE' });
+          if (res) {
+            modalContainer.style.display = 'none';
+            await showSuccessModal('Featured Member Deleted');
+            loadAllData();
+          } else showToast('Delete failed', true);
+        }
+      };
+      cancelBtn.onclick = async () => {
+        if (await confirmAction('Discard changes?')) modalContainer.style.display = 'none';
+      };
+      saveBtn.onclick = async () => {
+        if (!await confirmAction('Save changes?')) return;
+        const updated = {
+          name: document.getElementById('modalFeaturedName').value,
+          featuredTag: document.getElementById('modalFeaturedTag1').value,
+          goal: document.getElementById('modalFeaturedGoal').value,
+          photoUrl: document.getElementById('modalFeaturedPreview').src
+        };
+        const res = await fetchJSON(`${API_BASE}/admin/members/${id}`, { method: 'PUT', body: JSON.stringify(updated) });
+        if (res) {
+          modalContainer.style.display = 'none';
+          await showSuccessModal('Featured Member Updated');
+          loadAllData();
+        } else showToast('Update failed', true);
+      };
+    } else if (type === 'member') {
+      const member = allMembers.find(m => m._id === id);
+      if (!member) return;
+      modalContainer.innerHTML = `
+        <div class="premium-modal-card">
+          <h3><i class="fas fa-user"></i> Edit Member</h3>
+          <img class="image-preview-large" src="${member.photoUrl}" id="modalMemberPreview">
+          <div class="field-group"><label>Name</label><input type="text" id="modalMemberName" value="${escapeHtml(member.name)}"></div>
+          <div class="field-group"><label>Age</label><input type="number" id="modalMemberAge" value="${member.age}"></div>
+          <div class="field-group"><label>Member Since</label><input type="text" id="modalMemberSince" value="${escapeHtml(member.since)}"></div>
+          <div class="field-group"><label>Goal</label><select id="modalMemberGoal"><option value="fatloss" ${member.goal === 'fatloss' ? 'selected' : ''}>Fat Loss</option><option value="musclegain" ${member.goal === 'musclegain' ? 'selected' : ''}>Muscle Gain</option></select></div>
+          <div class="field-group"><label>Experience</label><select id="modalMemberExperience"><option value="beginner" ${member.experience === 'beginner' ? 'selected' : ''}>Beginner</option><option value="intermediate" ${member.experience === 'intermediate' ? 'selected' : ''}>Intermediate</option><option value="expert" ${member.experience === 'expert' ? 'selected' : ''}>Expert</option></select></div>
+          <div class="field-group"><label>Status</label><select id="modalMemberStatus"><option value="active" ${member.status === 'active' ? 'selected' : ''}>Active</option><option value="inactive" ${member.status === 'inactive' ? 'selected' : ''}>Inactive</option></select></div>
+          <div class="field-group"><label>Fees Status</label><select id="modalMemberFeeStatus"><option value="paid" ${member.feeStatus === 'paid' || !member.feeStatus ? 'selected' : ''}>Paid</option><option value="unpaid" ${member.feeStatus === 'unpaid' ? 'selected' : ''}>Unpaid</option></select></div>
+          <div class="field-group"><label>Feedback</label><textarea id="modalMemberFeedback">${escapeHtml(member.feedback || '')}</textarea></div>
+          <div class="image-upload-area" id="modalMemberUpload"><i class="fas fa-cloud-upload-alt"></i> Upload new image</div>
+          <div class="modal-buttons">
+            <button class="modal-btn-delete" id="modalDeleteBtn">Delete</button>
+            <button class="modal-btn-cancel" id="modalCancelBtn">Cancel</button>
+            <button class="modal-btn-save" id="modalSaveBtn">Save</button>
+          </div>
+        </div>
+      `;
+      modalContainer.style.display = 'flex';
+      const uploadArea = document.getElementById('modalMemberUpload');
+      uploadArea.onclick = () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = async (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          const formData = new FormData();
+          formData.append('image', file);
+          try {
+            const res = await fetch('/api/upload', {
+              method: 'POST',
+              headers: getAuthHeaders(),
+              body: formData
+            });
+            if (res.status === 401) throw new Error('Unauthorized');
+            const data = await res.json();
+            if (data.url) {
+              document.getElementById('modalMemberPreview').src = data.url;
+              showToast('Image uploaded');
+            } else showToast('Upload failed', true);
+          } catch (err) {
+            showToast('Upload error', true);
+          }
+        };
+        input.click();
+      };
+      const deleteBtn = document.getElementById('modalDeleteBtn');
+      const cancelBtn = document.getElementById('modalCancelBtn');
+      const saveBtn = document.getElementById('modalSaveBtn');
+      deleteBtn.onclick = async () => {
+        if (await confirmAction('Delete this member?')) {
+          const res = await fetchJSON(`${API_BASE}/admin/members/${id}`, { method: 'DELETE' });
+          if (res) {
+            modalContainer.style.display = 'none';
+            await showSuccessModal('Member Deleted');
+            loadAllData();
+          } else showToast('Delete failed', true);
+        }
+      };
+      cancelBtn.onclick = async () => {
+        if (await confirmAction('Discard changes?')) modalContainer.style.display = 'none';
+      };
+      saveBtn.onclick = async () => {
+        if (!await confirmAction('Save changes?')) return;
+        const updated = {
+          name: document.getElementById('modalMemberName').value,
+          age: parseInt(document.getElementById('modalMemberAge').value),
+          since: document.getElementById('modalMemberSince').value,
+          goal: document.getElementById('modalMemberGoal').value,
+          experience: document.getElementById('modalMemberExperience').value,
+          status: document.getElementById('modalMemberStatus').value,
+          feeStatus: document.getElementById('modalMemberFeeStatus').value,
+          feedback: document.getElementById('modalMemberFeedback').value,
+          photoUrl: document.getElementById('modalMemberPreview').src
+        };
+        const res = await fetchJSON(`${API_BASE}/admin/members/${id}`, { method: 'PUT', body: JSON.stringify(updated) });
+        if (res) {
+          modalContainer.style.display = 'none';
+          await showSuccessModal('Member Updated');
+          loadAllData();
+        } else showToast('Update failed', true);
+      };
+    }
+  }
+
+  // ========== ADD HANDLERS ==========
+  async function addNewItem(type) {
+    const confirmed = await confirmAction(`Add new ${type}?`);
+    if (!confirmed) return;
+    let defaultData = {};
+    let url = '';
+    let successMsg = '';
+    if (type === 'membership') {
+      url = `${API_BASE}/admin/memberships`;
+      defaultData = { planName: 'New Plan ' + Date.now(), price: 100, duration: 'month', description: 'New membership plan' };
+      successMsg = 'Membership Plan Added';
+    } else if (type === 'member') {
+      url = `${API_BASE}/admin/members`;
+      defaultData = {
+        name: 'New Member', age: 18, since: '2025', photoUrl: DEFAULT_AVATAR,
+        experience: 'beginner', goal: 'musclegain', featured: false, featuredTag: '',
+        status: 'active', feeStatus: 'paid', feedback: '', position: 'Member'
+      };
+      successMsg = 'Member Added';
+    } else if (type === 'featured') {
+      url = `${API_BASE}/admin/members`;
+      defaultData = {
+        name: 'New Featured', age: 30, since: '2024', photoUrl: DEFAULT_AVATAR,
+        experience: 'intermediate', goal: 'musclegain', featured: true, featuredTag: 'Featured',
+        status: 'active', feeStatus: 'paid', feedback: '', position: 'Member'
+      };
+      successMsg = 'Featured Member Added';
+    }
+    const res = await fetchJSON(url, { method: 'POST', body: JSON.stringify(defaultData) });
+    if (res) {
+      await showSuccessModal(successMsg);
+      loadAllData();
+    } else showToast('Add failed', true);
+  }
+
+  // ========== EDIT SECTION MODAL ==========
+  async function editHero() {
+    const modalContainer = document.getElementById('modalContainer');
+    const currentImageUrl = siteSettings.membersHeroBg || '';
+    const currentTitle = siteSettings.membersHeroHeading || 'ULTRAFIT MEMBERS';
+    const currentSub = siteSettings.membersHeroSubheading || 'An elite community built on discipline, consistency, and transformation.';
+
+    modalContainer.innerHTML = `
+      <div class="premium-modal-card">
+        <h3><i class="fas fa-image"></i> Edit Section</h3>
+        <div class="modal-image-container">
+          <img id="currentHeroImagePreview" class="modal-image" 
+               src="${currentImageUrl}" 
+               onerror="this.src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22200%22%20height%3D%22100%22%3E%3Crect%20width%3D%22200%22%20height%3D%22100%22%20fill%3D%22%23333%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20text-anchor%3D%22middle%22%20fill%3D%22%23FFD700%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+        </div>
+        <div class="field-group">
+          <label>Upload New Hero Image</label>
+          <div class="image-upload-area" id="heroBgUploadArea">
+            <i class="fas fa-cloud-upload-alt"></i> Click to upload
+          </div>
+        </div>
+        <div class="field-group">
+          <label>Title (Heading)</label>
+          <input type="text" id="heroTitleInput" value="${escapeHtml(currentTitle)}">
+        </div>
+        <div class="field-group">
+          <label>Subheading</label>
+          <input type="text" id="heroSubInput" value="${escapeHtml(currentSub)}">
+        </div>
+        <div class="modal-buttons">
+          <button class="modal-btn-cancel" id="modalCancelBtn">Cancel</button>
+          <button class="modal-btn-save" id="modalSaveBtn">Save Changes</button>
+        </div>
+      </div>
+    `;
+    modalContainer.style.display = 'flex';
+
+    let newImageUrl = currentImageUrl;
+    const previewImg = document.getElementById('currentHeroImagePreview');
+    const uploadArea = document.getElementById('heroBgUploadArea');
+    uploadArea.onclick = () => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const formData = new FormData();
+        formData.append('image', file);
+        uploadArea.style.opacity = '0.6';
+        uploadArea.style.cursor = 'wait';
+        try {
+          const res = await fetch('/api/upload', {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: formData
+          });
+          if (res.status === 401) throw new Error('Unauthorized');
+          const data = await res.json();
+          if (data.url) {
+            newImageUrl = data.url;
+            previewImg.src = newImageUrl;
+            showToast('Image uploaded. Click Save to apply.');
+          } else showToast('Upload failed', true);
+        } catch (err) {
+          showToast('Upload error: ' + err.message, true);
+        } finally {
+          uploadArea.style.opacity = '1';
+          uploadArea.style.cursor = 'pointer';
+        }
+      };
+      input.click();
+    };
+
+    document.getElementById('modalCancelBtn').onclick = async () => {
+      if (await confirmAction('Discard changes?')) modalContainer.style.display = 'none';
+    };
+    document.getElementById('modalSaveBtn').onclick = async () => {
+      if (!await confirmAction('Save changes?')) return;
+      const updatedSettings = {
+        membersHeroHeading: document.getElementById('heroTitleInput').value,
+        membersHeroSubheading: document.getElementById('heroSubInput').value,
+        membersHeroBg: newImageUrl
+      };
+      const res = await fetchJSON(`${API_BASE}/admin/sitesetting`, { method: 'PUT', body: JSON.stringify(updatedSettings) });
+      if (res) {
+        siteSettings = { ...siteSettings, ...updatedSettings };
+        renderHero();
+        modalContainer.style.display = 'none';
+        await showSuccessModal('Hero section updated');
+      } else showToast('Update failed', true);
+    };
+  }
+
+  // ========== STATS EDIT MODAL ==========
+  async function editStats() {
+    const modalContainer = document.getElementById('modalContainer');
+    modalContainer.innerHTML = `
+      <div class="premium-modal-card">
+        <h3><i class="fas fa-chart-line"></i> Edit Details</h3>
+        <div class="stats-edit-row"><label>Total Members</label><input type="text" id="statTotal" value="${statsData.totalMembers || '2,340+'}"></div>
+        <div class="stats-edit-row"><label>Active Members</label><input type="text" id="statActive" value="${statsData.activeMembers || '1,892'}"></div>
+        <div class="stats-edit-row"><label>Transformations</label><input type="text" id="statTrans" value="${statsData.membersTransformations || '1,250+'}"></div>
+        <div class="modal-buttons">
+          <button class="modal-btn-cancel" id="modalCancelBtn">Cancel</button>
+          <button class="modal-btn-save" id="modalSaveBtn">Save</button>
+        </div>
+      </div>
+    `;
+    modalContainer.style.display = 'flex';
+    document.getElementById('modalCancelBtn').onclick = async () => {
+      if (await confirmAction('Discard changes?')) modalContainer.style.display = 'none';
+    };
+    document.getElementById('modalSaveBtn').onclick = async () => {
+      if (!await confirmAction('Save changes?')) return;
+      const newTotal = document.getElementById('statTotal').value;
+      const newActive = document.getElementById('statActive').value;
+      const newTrans = document.getElementById('statTrans').value;
+      const updated = {
+        totalMembers: parseInt(newTotal.replace(/[^0-9]/g, '')),
+        activeMembers: parseInt(newActive.replace(/[^0-9]/g, '')),
+        membersTransformations: parseInt(newTrans.replace(/[^0-9]/g, ''))
+      };
+      const res = await fetchJSON(`${API_BASE}/admin/stats`, { method: 'PUT', body: JSON.stringify(updated) });
+      if (res) {
+        modalContainer.style.display = 'none';
+        await showSuccessModal('Stats Updated');
+        loadAllData();
+      } else showToast('Update failed', true);
+    };
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, (m) => {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  // ========== ATTACH EVENT LISTENERS ==========
+  document.getElementById('editHeroBtn')?.addEventListener('click', editHero);
+  document.getElementById('editStatsBtn')?.addEventListener('click', editStats);
+  document.getElementById('addMembershipBtn')?.addEventListener('click', () => addNewItem('membership'));
+  document.getElementById('addMemberBtn')?.addEventListener('click', () => addNewItem('member'));
+  document.getElementById('addFeaturedBtn')?.addEventListener('click', () => addNewItem('featured'));
+  document.getElementById('loadMoreBtn')?.addEventListener('click', loadMore);
+  document.getElementById('floatingTrialBtn')?.addEventListener('click', () => alert('✨ 3-Day Free Trial activated! Our team will contact you shortly.'));
+
+  // Navbar scroll & hamburger
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 50) navbar.classList.add('scrolled');
+    else navbar.classList.remove('scrolled');
+  });
+  const hamburger = document.getElementById('hamburger');
+  const navLinks = document.getElementById('navLinks');
+  if (hamburger) hamburger.addEventListener('click', () => navLinks.classList.toggle('active'));
+
+  // ========== INITIALIZATION ==========
+  async function initAdminPanel() {
+    if (!isAuthenticated) return;
+    await loadAllData();
+    initFilters();
+    initViewToggle();
+  }
+
+  if (isAuthenticated) {
+    initAdminPanel();
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,1805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes" />
+  <meta name="theme-color" content="#0A0A0A" />
+  <title>Daily Doze | Member Dashboard</title>
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="dailydoze_logo.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Daily Doze Member">
+
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <style>
+    /* ========== GLOBAL & RESET ========== */
+    * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+    body { background-color: #0A0A0A; font-family: 'Montserrat', 'Archivo', sans-serif; color: #FFFFFF; overflow-x: hidden; }
+    input, textarea { user-select: text; }
+    .container { max-width: 1300px; margin: 0 auto; padding: 0 2rem; }
+
+    /* ========== NAVBAR ========== */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      background: transparent;
+      transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      padding: 1.2rem 0;
+    }
+    .navbar.scrolled { background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px); box-shadow: 0 8px 20px rgba(0,0,0,0.4); padding: 0.7rem 0; }
+    .nav-container { display: flex; justify-content: space-between; align-items: center; }
+    .logo-wrapper { display: flex; align-items: center; gap: 0.8rem; }
+    .nav-logo-img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,107,0,0.4); }
+    .logo { font-size: 1.8rem; font-weight: 800; letter-spacing: 2px; }
+    .logo-ultra { color: #ffffff; }
+    .logo-fit { color: #FF6B00; }
+    .nav-links { display: flex; gap: 2rem; list-style: none; align-items: center; }
+    .nav-link { color: #f0f0f0; text-decoration: none; font-weight: 500; font-size: 0.95rem; transition: 0.2s; padding: 0.5rem 0; position: relative; }
+    .nav-link:not(.profile-nav):hover { color: #FF6B00; }
+    .nav-link:not(.profile-nav)::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: #FF6B00; transform: scaleX(0); transition: transform 0.2s ease; }
+    .nav-link:not(.profile-nav):hover::after { transform: scaleX(1); }
+    .profile-nav { background: #FF6B00; color: #FFFFFF !important; padding: 0.6rem 1.6rem !important; border-radius: 40px; font-weight: 700; transition: all 0.3s ease; white-space: nowrap; cursor: pointer; }
+    .profile-nav:hover { background: #FF8124; transform: translateY(-2px); }
+    .hamburger { display: none; font-size: 1.8rem; cursor: pointer; color: #FF6B00; min-width: 44px; text-align: center; }
+    @media (max-width: 900px) {
+      .nav-links { display: none; flex-direction: column; position: absolute; top: 70px; left: 0; width: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(12px); padding: 1.5rem; gap: 1.2rem; text-align: center; }
+      .nav-links.active { display: flex; }
+      .hamburger { display: block; }
+      .container { padding: 0 1.5rem; }
+      .profile-nav { padding: 0.5rem 1.2rem !important; }
+    }
+
+    /* ========== HERO SECTION ========== */
+    .hero {
+      position: relative;
+      height: 100vh;
+      min-height: 700px;
+      overflow: hidden;
+    }
+    .hero-video-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('https://images.pexels.com/photos/841130/pexels-photo-841130.jpeg?auto=compress&cs=tinysrgb&w=1600') center/cover no-repeat; }
+    .hero-video-wrapper video { width: 100%; height: 100%; object-fit: cover; }
+    .hero-overlay { position: absolute; inset: 0; background: linear-gradient(135deg, #000000aa, #0A0A0Acc); }
+    .hero-content { position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 0 1rem; }
+    .hero-logo-img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,107,0,0.6); margin-bottom: 1.5rem; animation: fadeInScale 0.6s ease-out; }
+    @keyframes fadeInScale { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
+    .hero-brand { background: linear-gradient(120deg, #fff, #FF6B00); -webkit-background-clip: text; background-clip: text; color: transparent; font-size: 5rem; font-weight: 800; letter-spacing: 4px; }
+    .hero-title { font-size: 2.2rem; font-weight: 500; letter-spacing: 2px; color: #ddd; margin-bottom: 1.8rem; }
+    .btn-primary {
+      background: #FF6B00;
+      border: none;
+      padding: 1rem 2.5rem;
+      font-weight: 800;
+      font-size: 1.1rem;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: #FFFFFF;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+    }
+    .btn-primary i { vertical-align: middle !important; line-height: 1 !important; display: inline-block !important; }
+    .btn-primary:hover { background: #FF8124; transform: scale(1.02); box-shadow: 0 0 15px rgba(255,107,0,0.4); }
+    .live-status { position: absolute; bottom: 2rem; left: 2rem; background: #000000b3; backdrop-filter: blur(8px); padding: 0.5rem 1.2rem; border-radius: 60px; display: flex; align-items: center; gap: 0.6rem; font-weight: 500; font-size: 0.9rem; border-left: 2px solid #FF6B00; z-index: 3; }
+    .pulse-dot { width: 10px; height: 10px; background-color: #32D74B; border-radius: 50%; animation: pulse 1.4s infinite; }
+    .pulse-dot.red { background-color: #e74c3c; animation: pulseRed 1.4s infinite; }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 #32D74B; opacity: 1; } 70% { box-shadow: 0 0 0 8px #32D74B66; opacity: 0.8; } 100% { box-shadow: 0 0 0 0 rgba(50,215,75,0); } }
+    @keyframes pulseRed { 0% { box-shadow: 0 0 0 0 #e74c3c; opacity: 1; } 70% { box-shadow: 0 0 0 8px #e74c3c66; opacity: 0.8; } 100% { box-shadow: 0 0 0 0 rgba(231,76,60,0); } }
+
+    /* ========== SECTIONS & CARDS ========== */
+    .section { padding: 2rem 0; border-bottom: 1px solid rgba(255,107,0,0.2); }
+    .section-title { font-size: 2.5rem; text-align: center; background: linear-gradient(120deg, #fff, #FF6B00); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 1.5rem; font-weight: 700; }
+    
+    /* Stat Cards */
+    .stats-row { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin: 1.5rem 0; }
+    .stat-card { 
+      background: rgba(21,21,21,0.7); 
+      backdrop-filter: blur(12px); 
+      border-radius: 28px; 
+      padding: 1.5rem 1rem; 
+      text-align: center; 
+      flex: 1; 
+      min-width: 140px; 
+      border: 1px solid rgba(255,107,0,0.2); 
+      transition: all 0.3s; 
+      cursor: pointer;
+      position: relative;
+      overflow: visible;
+    }
+    .stat-card:hover { transform: translateY(-5px); border-color: #FF6B00; }
+    .stat-number { font-size: 2.5rem; font-weight: 800; }
+    .stat-number.green { color: #32D74B; }
+    .stat-number.blue { color: #3498db; }
+    .stat-number.red { color: #e74c3c; }
+    .stat-number.gold { color: #FF6B00; text-shadow: 0 0 8px rgba(255,107,0,0.5); }
+    .stat-card > div:last-child { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.5px; color: #B8B8B8; }
+    #membershipStatus, #membershipValid { font-size: 1.5rem !important; cursor: pointer; }
+    .unit-small { font-size: 0.9rem; font-weight: 400; margin-left: 2px; }
+    
+    /* PR badge positioning - top left corner for any stat card */
+    .pr-badge-top {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      z-index: 5;
+      background: linear-gradient(135deg, #FF6B00, #ff8124);
+      border-radius: 20px;
+      padding: 0.2rem 0.6rem;
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: #FFFFFF;
+      box-shadow: 0 0 4px rgba(255,107,0,0.5);
+      white-space: nowrap;
+    }
+    .pr-star {
+      display: inline-block;
+      background: linear-gradient(135deg, #FF6B00, #ff8124);
+      border-radius: 20px;
+      padding: 0.15rem 0.5rem;
+      font-size: 0.6rem;
+      font-weight: 800;
+      color: #FFFFFF;
+      box-shadow: 0 0 4px rgba(255,107,0,0.5);
+    }
+
+    /* Streak */
+    .streak-slim { text-align: center; margin: 0.5rem 0 1rem; padding: 0.6rem; background: rgba(0,0,0,0.3); border-radius: 60px; backdrop-filter: blur(4px); border: 1px solid rgba(255,107,0,0.2); }
+    .streak-slim .streak-weeks { font-size: 2rem; font-weight: 800; display: inline-block; margin-right: 8px; background: linear-gradient(135deg, #FF6B00, #fff8e7); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .streak-slim .streak-label { font-size: 0.9rem; letter-spacing: 1px; color: #FF6B00; display: inline-block; }
+
+    .btn-solid-gold { background: #FF6B00; border: none; color: #FFFFFF; padding: 0.7rem 1.8rem; border-radius: 60px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; }
+    .btn-solid-gold:hover { background: #FF8124; }
+    .btn-outline-gold { background: transparent; border: 1.5px solid #FF6B00; color: #FF6B00; padding: 0.7rem 1.8rem; border-radius: 60px; font-weight: 600; cursor: pointer; }
+    .btn-outline-gold:hover { background: rgba(255,107,0,0.1); }
+    .button-group-center { display: flex; justify-content: center; gap: 1.5rem; margin: 1.5rem 0; flex-wrap: wrap; }
+    @media (max-width: 768px) {
+      .modal-action-buttons {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      .modal-action-buttons .btn-outline-gold {
+        margin: 0;
+      }
+    }
+
+    /* ========== MODALS ========== */
+    .premium-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.94);
+      backdrop-filter: blur(20px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 5000;
+      animation: fadeIn 0.2s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .premium-modal-card {
+      background: #151515;
+      border: 1px solid #FF6B00;
+      border-radius: 40px;
+      width: 90%;
+      max-width: 800px;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 2rem;
+      box-shadow: 0 30px 50px rgba(0,0,0,0.5);
+      animation: scaleUp 0.3s cubic-bezier(0.2,0.9,0.4,1.1);
+    }
+    @keyframes scaleUp { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    .modal-close-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1.5rem;
+      background: transparent;
+      border: none;
+      color: #FF6B00;
+      font-size: 1.8rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .modal-close-btn:hover { transform: scale(1.1); color: #FF8124; }
+    .modal-title-center { text-align: center; font-size: 1.8rem; margin-bottom: 1.5rem; color: #FF6B00; font-weight: 700; }
+
+    /* Forms */
+    .field-group { margin-bottom: 1rem; position: relative; }
+    .field-group label { display: block; font-size: 0.75rem; color: #B8B8B8; margin-bottom: 0.3rem; }
+    .field-group input, .field-group select { width: 100%; background: #1e1e1e; border: 1px solid #252525; border-radius: 20px; padding: 0.7rem 1rem; color: white; font-family: inherit; }
+    .field-group input:focus { border-color: #FF6B00; outline: none; }
+    .password-wrapper { position: relative; }
+    .password-wrapper input { padding-right: 2.5rem; }
+    .toggle-password { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); cursor: pointer; color: #FF6B00; background: transparent; border: none; }
+    .click-to-upload { text-align: center; margin: 0.8rem auto; font-size: 0.9rem; font-weight: 600; color: #FF6B00; cursor: pointer; background: transparent; border: 1.5px solid #FF6B00; border-radius: 40px; padding: 0.5rem 1rem; display: inline-block; transition: all 0.2s ease; width: fit-content; }
+    .click-to-upload:hover { background: #FF6B00; color: #FFFFFF; }
+    .remember-checkbox { display: flex; align-items: center; gap: 0.5rem; margin: 1rem 0; }
+    .remember-checkbox input { width: auto; }
+
+    /* Profile modal */
+    .profile-container { display: flex; flex-direction: column; align-items: center; }
+    .profile-field { width: 100%; margin: 0.8rem 0; text-align: left; }
+    .profile-field .value { font-size: 1rem; font-weight: 500; padding: 0.5rem; background: #1e1e1e; border-radius: 40px; display: flex; justify-content: space-between; align-items: center; }
+    .profile-field .edit-btn { background: transparent; border: none; color: #FF6B00; cursor: pointer; }
+    .profile-avatar-wrapper { position: relative; display: inline-block; margin-bottom: 1rem; }
+    .profile-avatar { width: 100px; height: 100px; border-radius: 50%; border: 2px solid #FF6B00; object-fit: cover; }
+    .profile-edit-icon { position: absolute; bottom: 5px; right: 5px; background: #FF6B00; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #FFFFFF; }
+
+    /* Attendance, weight, lifts */
+    .square-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.9);
+      background: #151515;
+      border: 1px solid #FF6B00;
+      border-radius: 24px;
+      padding: 2rem;
+      min-width: 280px;
+      text-align: center;
+      z-index: 8000;
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.2,0.9,0.4,1.1);
+      pointer-events: none;
+    }
+    .square-popup.show { transform: translate(-50%, -50%) scale(1); opacity: 1; pointer-events: auto; }
+    .btn-checkin, .btn-checkout { padding: 0.5rem 1.2rem; border-radius: 40px; font-weight: 600; cursor: pointer; background: transparent; border: 1.5px solid; }
+    .btn-checkin { border-color: #32D74B; color: #32D74B; }
+    .btn-checkout { border-color: #e74c3c; color: #e74c3c; }
+    .shift-time-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,107,0,0.2); }
+    .ok-button { margin-top: 1.5rem; background: #FF6B00; border: none; padding: 0.6rem 1.5rem; border-radius: 40px; font-weight: 700; cursor: pointer; color:#FFFFFF; }
+    .compact-calendar { background: rgba(20,20,25,0.8); border-radius: 24px; padding: 1rem; margin: 1rem 0; }
+    .compact-weekdays { display: grid; grid-template-columns: repeat(7,1fr); gap:4px; text-align:center; }
+    .compact-days { display: grid; grid-template-columns: repeat(7,1fr); gap:4px; }
+    .compact-day { aspect-ratio:1; background:#1e1e1e; border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:0.7rem; }
+    .compact-day.present { background:#32D74B20; border:1px solid #32D74B; color:#32D74B; }
+    .compact-day.absent { background:#e74c3c20; border:1px solid #e74c3c; color:#e74c3c; }
+    .compact-day.sunday { opacity:0.4; }
+    .entry-list { max-height: 300px; overflow-y: auto; margin: 1rem 0; }
+    .entry-item { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+      padding: 0.9rem 1rem; 
+      margin: 0.5rem 0;
+      background: rgba(30,30,30,0.6);
+      border-radius: 60px;
+      border: 1px solid rgba(255,107,0,0.15);
+      transition: all 0.2s ease;
+    }
+    .entry-item:hover { background: rgba(255,107,0,0.08); border-color: rgba(255,107,0,0.4); transform: translateX(4px); }
+    .entry-date { font-weight: 600; color: #FF6B00; font-size: 0.9rem; letter-spacing: 0.5px; }
+    .entry-value { font-weight: 800; color: #fff; background: rgba(0,0,0,0.4); padding: 0.2rem 0.8rem; border-radius: 40px; font-size: 0.9rem; }
+    .new-entry-box { background: #1e1e1e; border-radius: 20px; padding: 1rem; margin-bottom: 1rem; display: none; }
+    .new-entry-box input { width: 100%; padding: 0.6rem; border-radius: 40px; background: #2a2a2a; border: 1px solid #FF6B00; color: white; }
+    .gold-text { color: #FF6B00; font-weight: 700; }
+    .muscle-pr-row { display: flex; justify-content: space-between; align-items: center; padding: 1rem; margin: 0.5rem 0; background: #1e1e1e; border-radius: 60px; cursor: pointer; transition: all 0.2s; border: 1px solid rgba(255,107,0,0.2); }
+    .muscle-pr-row:hover { background: rgba(255,107,0,0.1); transform: translateX(5px); border-color: #FF6B00; }
+    .muscle-name { font-weight: 700; text-transform: uppercase; font-size: 1rem; }
+    .muscle-pr { font-weight: 800; color: #FF6B00; font-size: 1.2rem; }
+
+    /* Payment list */
+    .payment-list { max-height: 300px; overflow-y: auto; margin: 1rem 0; }
+    .payment-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.8rem 1rem;
+      margin: 0.5rem 0;
+      background: rgba(30,30,30,0.6);
+      border-radius: 60px;
+      border: 1px solid rgba(255,107,0,0.15);
+    }
+    .payment-date { font-weight: 600; color: #FF6B00; }
+    .payment-amount { font-weight: 800; color: #32D74B; }
+    .payment-method { font-size: 0.75rem; color: #B8B8B8; }
+
+    footer { background: #0A0A0A; padding: 2rem 0; text-align: center; border-top: 1px solid rgba(255,107,0,0.3); }
+    .credit a { color: #FF6B00; text-decoration: none; }
+
+    /* ========== GRAPH POPUP MODAL (with landscape fix for mobile) ========== */
+    .graph-popup-modal .premium-modal-card {
+      max-width: 95vw;
+      width: 95%;
+      height: 85vh;
+      display: flex;
+      flex-direction: column;
+      padding: 1rem;
+    }
+    .graph-popup-modal .canvas-wrapper {
+      flex: 1;
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+    .graph-popup-modal canvas {
+      min-width: 800px;
+      max-height: 55vh;
+      background: rgba(0,0,0,0.3);
+      border-radius: 20px;
+    }
+    /* Mobile landscape: force graph to fill the screen (same as admin-panel) */
+    @media (max-width: 900px) {
+      .graph-popup-modal .premium-modal-card {
+        width: 98vw;
+        max-width: 98vw;
+        padding: 0.8rem;
+        height: 92vh;
+      }
+      .graph-popup-modal .canvas-wrapper {
+        overflow-x: hidden;
+        height: calc(100% - 140px);
+      }
+      .graph-popup-modal canvas {
+        min-width: auto;
+        width: 100%;
+        height: 100%;
+        max-height: none;
+        object-fit: contain;
+      }
+      .graph-controls-bottom {
+        flex-direction: row;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+    }
+    .graph-controls-bottom {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+    .graph-controls-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+    }
+    .graph-controls-bottom select, .graph-controls-bottom button {
+      background: rgba(255,107,0,0.1);
+      border: 1px solid #FF6B00;
+      color: #FF6B00;
+      padding: 0.3rem 1rem;
+      border-radius: 40px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: 0.2s;
+    }
+    .graph-controls-bottom select:hover, .graph-controls-bottom button:hover {
+      background: #FF6B00;
+      color: #FFFFFF;
+    }
+    .graph-controls-bottom select { background: #1e1e1e; }
+
+    /* ========== CHAT BOT OVERLAY ========== */
+    .popup-window {
+      position: fixed !important;
+      bottom: 90px;
+      right: 30px;
+      width: 360px;
+      height: 500px;
+      background: #1a1a1a;
+      border-radius: 28px;
+      border: 1px solid rgba(255,107,0,0.4);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 20px 35px rgba(0,0,0,0.5);
+      transition: all 0.3s ease;
+      backdrop-filter: blur(12px);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(20px);
+      pointer-events: none;
+      z-index: 2100;
+    }
+    .popup-window.open { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
+    .popup-header { background: #FF6B00; padding: 1rem; display: flex; justify-content: space-between; align-items: center; color: #FFFFFF; font-weight: 800; }
+    .popup-header h3 { font-size: 1.2rem; margin: 0; display: flex; align-items: center; gap: 8px; }
+    .popup-close { background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #FFFFFF; transition: transform 0.2s; }
+    .popup-close:hover { transform: scale(1.1); }
+    .chat-messages { flex: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: rgba(0,0,0,0.3); }
+    .message { max-width: 85%; padding: 10px 14px; border-radius: 20px; font-size: 0.85rem; line-height: 1.4; }
+    .user-message { background: #FF6B00; color: #FFFFFF; align-self: flex-end; border-bottom-right-radius: 6px; }
+    .bot-message { background: #2a2a2a; color: #eee; align-self: flex-start; border-bottom-left-radius: 6px; border: 1px solid rgba(255,107,0,0.2); }
+    .chat-input-area { display: flex; padding: 12px; background: #0a0a0a; border-top: 1px solid rgba(255,107,0,0.2); gap: 8px; }
+    .chat-input { flex: 1; background: #1e1e1e; border: 1px solid #252525; border-radius: 40px; padding: 10px 16px; color: white; font-family: inherit; outline: none; }
+    .chat-input:focus { border-color: #FF6B00; }
+    .chat-send { background: #FF6B00; border: none; border-radius: 40px; padding: 0 18px; font-weight: 700; cursor: pointer; color: #FFFFFF; transition: all 0.2s; }
+    .chat-send:hover { background: #FF8124; transform: scale(1.02); }
+    .typing-indicator { display: flex; gap: 4px; padding: 8px 12px; background: #2a2a2a; border-radius: 20px; width: fit-content; }
+    .typing-indicator span { width: 8px; height: 8px; background: #aaa; border-radius: 50%; animation: blink 1.4s infinite; }
+    @keyframes blink { 0%,100% { opacity: 0.2; } 50% { opacity: 1; } }
+    .floating-buttons {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      align-items: flex-end;
+    }
+    .floating-btn {
+      background: linear-gradient(135deg, #1e1e1e, #0a0a0a);
+      border: 1px solid rgba(255,107,0,0.4);
+      border-radius: 60px;
+      padding: 0.7rem;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4), 0 0 15px rgba(255,107,0,0.2);
+      transition: all 0.3s cubic-bezier(0.2,0.9,0.4,1.1);
+      backdrop-filter: blur(8px);
+      width: fit-content;
+      display: flex;
+      align-items: center;
+      gap: 0px;
+    }
+    .floating-btn:hover { gap: 12px; padding: 0.7rem 1.5rem 0.7rem 1rem; }
+    .btn-icon {
+      background: #FF6B00;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      color: #FFFFFF;
+      box-shadow: 0 0 12px rgba(255,107,0,0.6);
+      transition: transform 0.2s;
+    }
+    .floating-btn:hover .btn-icon { transform: scale(1.05); }
+    .btn-text {
+      font-weight: 700;
+      font-size: 0rem;
+      letter-spacing: 1px;
+      background: linear-gradient(120deg, #fff, #FF6B00);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      white-space: nowrap;
+      transition: font-size 0.2s ease;
+    }
+    .floating-btn:hover .btn-text { font-size: 1rem; }
+    @media (max-width: 768px) {
+      .popup-window {
+        bottom: 90px;
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+        width: calc(100% - 30px);
+        max-width: 360px;
+        height: 480px;
+        max-height: 70vh;
+        border-radius: 24px;
+      }
+      .popup-window.open { transform: translateX(-50%) translateY(0); }
+      .floating-buttons { right: 10px; bottom: 20px; }
+      .floating-btn { padding: 0.5rem; }
+      .btn-icon { width: 36px; height: 36px; font-size: 1.3rem; }
+      .floating-btn:hover { padding: 0.5rem 1rem 0.5rem 0.8rem; }
+      .floating-btn:hover .btn-text { font-size: 0.85rem; }
+      .modal-action-buttons {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        gap: 1rem;
+      }
+    }
+
+    /* ========== MOBILE RESPONSIVE ========== */
+    @media (max-width: 768px) {
+      .container { padding: 0 1rem; }
+      .hero-brand { font-size: 2.8rem; }
+      .hero-title { font-size: 1.2rem; }
+      .premium-modal-card { padding: 1.5rem; }
+      .entry-item { padding: 0.7rem 0.8rem; }
+      .entry-date { font-size: 0.8rem; }
+      .entry-value { font-size: 0.8rem; }
+      .member-row {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        align-items: center;
+        gap: 0.5rem 0.8rem;
+        border-radius: 20px;
+        padding: 0.8rem;
+      }
+      .member-row .member-avatar-small {
+        grid-row: 1;
+        grid-column: 1;
+        width: 44px;
+        height: 44px;
+      }
+      .member-row .member-name {
+        grid-row: 1;
+        grid-column: 2;
+        margin-left: 0;
+        text-align: left;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .member-row .action-buttons {
+        grid-row: 2;
+        grid-column: 1 / span 2;
+        justify-content: center;
+        width: 100%;
+      }
+      .member-row .action-row {
+        grid-row: 2;
+        grid-column: 1 / span 2;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        margin-left: 0;
+      }
+      .status-badge { font-size: 0.65rem; padding: 0.2rem 0.6rem; }
+      .check-btn, .btn-yellow-small { padding: 0.3rem 0.8rem; font-size: 0.75rem; }
+    }
+
+    /* ========== HOME SCREEN GRAPH STYLES ========== */
+    .progress-graph-container {
+      background: rgba(21,21,21,0.5);
+      border-radius: 28px;
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+    .graph-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .graph-header h3 {
+      color: #FF6B00;
+      font-size: 1.2rem;
+    }
+    .graph-controls-row {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .dropdown-select {
+      background: #1e1e1e;
+      border: 1px solid #FF6B00;
+      border-radius: 40px;
+      padding: 0.4rem 1rem;
+      color: white;
+      font-family: inherit;
+      cursor: pointer;
+    }
+    .small-btn {
+      background: transparent;
+      border: 1px solid #FF6B00;
+      border-radius: 40px;
+      padding: 0.4rem 1rem;
+      color: #FF6B00;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: 0.2s;
+    }
+    .small-btn:hover {
+      background: #FF6B00;
+      color: #FFFFFF;
+    }
+  </style>
+</head>
+<body>
+
+<div id="mainContent">
+  <header class="navbar" id="navbar">
+    <div class="container nav-container">
+      <div class="logo-wrapper"><img src="dailydoze_logo.png" class="nav-logo-img"><div class="logo"><span class="logo-ultra">DAILY</span><span class="logo-fit">DOZE</span></div></div>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#" class="nav-link profile-nav" id="profileBtn">Sign Up</a></li>
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="diet.html" class="nav-link">Diet Plan</a></li>
+        <li><a href="workout.html" class="nav-link">Workout Plan</a></li>
+        <li><a href="members.html" class="nav-link">Gym Members</a></li>
+        <li><a href="shop.html" class="nav-link">Shop</a></li>
+      </ul>
+      <div class="hamburger" id="hamburger"><i class="fas fa-bars"></i></div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-video-wrapper"><video autoplay loop muted playsinline><source src="https://videos.pexels.com/video-files/4349242/4349242-uhd_2560_1440_25fps.mp4" type="video/mp4" /></video><div class="hero-overlay"></div></div>
+    <div class="hero-content container">
+      <img src="dailydoze_logo.png" class="hero-logo-img">
+      <div class="hero-brand">DAILY DOZE</div>
+      <h1 class="hero-title">The Standard of Strength</h1>
+      <button class="btn-primary btn-vip" id="installAppBtn">
+        <i class="fas fa-mobile-alt"></i> Download Daily Doze App
+      </button>
+      <div class="live-status"><span class="pulse-dot" id="statusDot"></span><span id="statusText">Loading...</span></div>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="section">
+      <h2 class="section-title">Fitness Journey</h2>
+      <div class="streak-slim"><span class="streak-weeks" id="streakWeeksDisplay">0</span><span class="streak-label">Day Streak</span></div>
+      <div class="stats-row">
+        <div class="stat-card" id="workoutDaysStat"><div class="stat-number blue" id="workoutDaysMonth">0</div><div>Workout Days</div></div>
+        <div class="stat-card" id="leavesStatCard"><div class="stat-number red" id="leavesCount">0</div><div>Leaves</div></div>
+      </div>
+      <div class="button-group-center">
+        <button class="btn-solid-gold" id="attendanceModalBtn">Attendance</button>
+        <button class="btn-outline-gold" id="checkAttendanceBtn">Check</button>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card" id="avgWorkoutHrsStat"><div class="stat-number blue" id="avgWorkoutHrs">0</div><div>Avg. Workout Hrs (30d)</div></div>
+      </div>
+    </div>
+    <div class="section">
+      <h2 class="section-title">Membership</h2>
+      <div class="stats-row">
+        <div class="stat-card" id="membershipStatusCard"><div class="stat-number" id="membershipStatus">—</div><div>Status</div></div>
+        <div class="stat-card" id="membershipValidCard"><div class="stat-number" id="membershipValid">—</div><div id="membershipValidLabel">Valid till</div></div>
+      </div>
+    </div>
+    <div class="section">
+      <h2 class="section-title">Track Your Progress</h2>
+      <div class="stats-row">
+        <div class="stat-card" id="weightStatCard" style="position: relative;">
+          <div class="stat-number blue" id="currentWeight">0</div>
+          <div>Weight</div>
+          <div id="prWeightBadge" class="pr-badge-top"></div>
+        </div>
+        <div class="stat-card" id="weightChangeStat"><div class="stat-number" id="weightDiff">0</div><div id="weightChangeLabel">Change vs last</div></div>
+      </div>
+
+      <!-- ========== HOME SCREEN GRAPH ========== -->
+      <div class="progress-graph-container">
+        <div class="graph-header">
+          <h3>Progress (Last 7 Days)</h3>
+        </div>
+        <canvas id="homeProgressChart" width="400" height="200" style="max-height: 200px; width: 100%;"></canvas>
+        <div class="graph-controls-row">
+          <select id="exerciseDropdown" class="dropdown-select">
+            <option value="weight">Weight</option>
+            <option value="chest">Chest</option>
+            <option value="back">Back</option>
+            <option value="shoulders">Shoulders</option>
+            <option value="biceps">Biceps</option>
+            <option value="triceps">Triceps</option>
+            <option value="legs">Legs</option>
+            <option value="deadlift">Deadlift</option>
+          </select>
+          <button class="small-btn" id="graphBtn">Graph</button>
+        </div>
+      </div>
+
+      <h3 style="text-align:center; margin:1rem 0;" class="gold-text">Weight Lifts</h3>
+      <div class="stats-row" id="maxLiftsGrid"></div>
+      <div class="button-group-center"><button class="btn-outline-gold" id="updateLiftsBtn">Weight Lifts</button></div>
+    </div>
+  </div>
+
+  <footer><div class="container"><p class="credit">Designed by <a href="https://ekansh-mishra-webdeveloper.github.io/Brand-Bazar/" target="_blank">Brand Bazaar</a></p></div></footer>
+
+  <!-- MODALS -->
+  <div id="attendanceActionModal" class="premium-modal"><div class="premium-modal-card" id="attendanceActionContent"></div></div>
+  <div id="attendanceHeatmapModal" class="premium-modal"><div class="premium-modal-card" id="heatmapContent"></div></div>
+  <div id="profileModal" class="premium-modal"><div class="premium-modal-card" id="profileModalContent"></div></div>
+  <div id="weightModal" class="premium-modal"><div class="premium-modal-card" id="weightModalContent"></div></div>
+  <div id="liftsModal" class="premium-modal"><div class="premium-modal-card" id="liftsModalContent"></div></div>
+  <div id="exerciseHistoryModal" class="premium-modal"><div class="premium-modal-card" id="exerciseHistoryModalContent"></div></div>
+  <div id="membershipModal" class="premium-modal"><div class="premium-modal-card" id="membershipModalContent"></div></div>
+  <div id="squarePopup" class="square-popup"><div class="animated-circle"><i class="fas fa-check"></i></div><p id="popupText"></p></div>
+  <div id="workoutSummaryPopup" class="square-popup"><div id="summaryContent"></div></div>
+  <div id="authChoiceModal" class="premium-modal"><div class="premium-modal-card" id="authChoiceContent"></div></div>
+  <div id="signupModal" class="premium-modal"><div class="premium-modal-card" id="signupContent"></div></div>
+  <div id="loginModal" class="premium-modal"><div class="premium-modal-card" id="loginContent"></div></div>
+  <div id="changePwdModal" class="premium-modal"><div class="premium-modal-card" id="changePwdContent"></div></div>
+  <div id="graphPopupModal" class="premium-modal graph-popup-modal"><div class="premium-modal-card" id="graphPopupContent"></div></div>
+
+  <!-- CHAT BOT FLOATING BUTTON & WINDOW -->
+  <div class="floating-buttons">
+    <div class="floating-btn" id="chatBubble">
+      <div class="btn-icon"><i class="fas fa-comment-dots"></i></div>
+      <span class="btn-text">Daily Doze Coach</span>
+    </div>
+  </div>
+  <div id="chatWindow" class="popup-window">
+    <div class="popup-header">
+      <h3><i class="fas fa-brain"></i> Daily Doze Coach</h3>
+      <button class="popup-close" id="chatCloseBtn">✕</button>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="message bot-message">💪 Hey! I'm your Daily Doze AI Coach. Ask me anything about workouts, nutrition, or gym plans.</div>
+    </div>
+    <div class="chat-input-area">
+      <input type="text" class="chat-input" id="chatInput" placeholder="Ask your fitness question...">
+      <button class="chat-send" id="chatSendBtn">Send</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API_BASE = '/api';
+  let memberToken = null;
+  let currentMember = null;
+  let attendanceLogs = [];
+  let weightHistory = [];
+  let exercisePRs = { chest:0, back:0, shoulders:0, biceps:0, triceps:0, legs:0, deadlift:0 };
+  let memberGoal = 'musclegain';
+  let exerciseHistories = { chest: [], back: [], shoulders: [], biceps: [], triceps: [], legs: [], deadlift: [] };
+  let notificationShown = { expiry: false, absence: false, paymentSuccess: false };
+  let paymentsList = [];
+
+  // ========== GRAPH POPUP VARIABLES ==========
+  let currentGraphType = null;
+  let currentExercise = null;
+  let popupChart = null;
+  let popupLabels = [], popupData = [], prevData = [];
+  let popupDataRange = '1month';
+  let popupChartType = 'line';
+  let isGraphPopupOpen = false;
+
+  // ========== TOKEN MANAGEMENT ==========
+  function getStoredToken() { return localStorage.getItem('memberToken') || sessionStorage.getItem('memberToken') || null; }
+  function setStoredToken(token, remember = true) {
+    if (remember) { localStorage.setItem('memberToken', token); sessionStorage.removeItem('memberToken'); }
+    else { sessionStorage.setItem('memberToken', token); localStorage.removeItem('memberToken'); }
+  }
+  function clearStoredToken() { localStorage.removeItem('memberToken'); sessionStorage.removeItem('memberToken'); }
+  memberToken = getStoredToken();
+
+  function showPopup(msg, isSuccess = true) {
+    const popup = document.getElementById('squarePopup');
+    popup.querySelector('p').innerHTML = msg;
+    popup.classList.add('show');
+    setTimeout(() => popup.classList.remove('show'), 4000);
+  }
+
+  async function fetchJSON(url, options = {}) {
+    const headers = { 'Content-Type': 'application/json', ...(memberToken ? { 'Authorization': `Bearer ${memberToken}` } : {}), ...options.headers };
+    try {
+      const res = await fetch(url, { ...options, headers });
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(errorText.substring(0, 200));
+      }
+      const contentType = res.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        return await res.json();
+      } else {
+        console.warn(`API ${url} returned non-JSON`);
+        return null;
+      }
+    } catch (err) {
+      console.error(`fetchJSON error for ${url}:`, err.message);
+      return null;
+    }
+  }
+
+  async function loadDashboard() {
+    if (!memberToken) { resetToGuest(); return; }
+    try {
+      const profile = await fetchJSON(`${API_BASE}/member/profile`);
+      if (profile) { 
+        const prevMembershipActive = localStorage.getItem('prevMembershipActive') === 'true';
+        if (!prevMembershipActive && profile.membershipActive && !notificationShown.paymentSuccess) {
+          const validUntil = profile.membershipValidUntil ? new Date(profile.membershipValidUntil).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'soon';
+          showPopup(`✅ Payment received! Your membership is now active until ${validUntil}.`, true);
+          notificationShown.paymentSuccess = true;
+        }
+        localStorage.setItem('prevMembershipActive', profile.membershipActive);
+        currentMember = profile; 
+        memberGoal = profile.goal || 'musclegain'; 
+      } else {
+        currentMember = { name:'Demo User', firstName:'Demo', lastName:'User', photoUrl:'dailydoze_logo.png', goal:'musclegain', membershipActive:true, membershipValidUntil:new Date(Date.now() + 30*86400000).toISOString(), email:'demo@example.com', phone:'+1234567890', gender:'male', age:25 };
+        memberGoal = 'musclegain';
+      }
+      attendanceLogs = await fetchJSON(`${API_BASE}/member/attendance/logs`) || [];
+      weightHistory = await fetchJSON(`${API_BASE}/member/weight-history`) || [];
+      const prs = await fetchJSON(`${API_BASE}/member/exercise-prs`);
+      if (prs) exercisePRs = prs;
+      const paymentsRes = await fetchJSON(`${API_BASE}/member/payments`);
+      if (paymentsRes && Array.isArray(paymentsRes)) paymentsList = paymentsRes;
+      else paymentsList = [];
+      
+      for (let ex of Object.keys(exerciseHistories)) {
+        let stored = localStorage.getItem(`ex_hist_${ex}_${currentMember?._id}`);
+        exerciseHistories[ex] = stored ? JSON.parse(stored) : [];
+      }
+      updateUI(); 
+      updateProfileButton();
+      computeAverageWorkoutHours();
+      checkMembershipExpiry();
+      checkAbsenceNudge();
+      renderHomeProgressGraph('weight');
+    } catch(e) { console.error(e); resetToGuest(); }
+  }
+
+  let homeChart = null;
+  function renderHomeProgressGraph(exerciseKey) {
+    const canvas = document.getElementById('homeProgressChart');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (homeChart) homeChart.destroy();
+
+    const today = new Date();
+    const labels = [];
+    const dataPoints = [];
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(today.getDate() - i);
+      if (date.getDay() === 0) continue;
+      const dateStr = date.toISOString().split('T')[0];
+      const formatted = `${date.getDate()} ${date.toLocaleString('default', { month: 'short' })}`;
+      labels.push(formatted);
+      let value = null;
+      if (exerciseKey === 'weight') {
+        const entry = weightHistory.find(w => {
+          const entryDate = w.date.split('T')[0];
+          return entryDate === dateStr;
+        });
+        value = entry ? entry.weight : null;
+      } else {
+        const history = exerciseHistories[exerciseKey] || [];
+        const entry = history.find(e => {
+          const entryDate = e.date.split('T')[0];
+          return entryDate === dateStr;
+        });
+        value = entry ? entry.weight : null;
+      }
+      dataPoints.push(value);
+    }
+
+    let stepSize = (exerciseKey === 'weight') ? 10 : 5;
+    const validData = dataPoints.filter(v => v !== null);
+    let yMax = stepSize;
+    if (validData.length > 0) {
+      const maxVal = Math.max(...validData);
+      yMax = Math.ceil(maxVal / stepSize) * stepSize;
+      if (yMax === 0) yMax = stepSize;
+    }
+
+    homeChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: dataPoints,
+          borderColor: '#FF6B00',
+          backgroundColor: 'rgba(255,107,0,0.1)',
+          tension: 0.3,
+          fill: true,
+          pointRadius: 4,
+          pointBackgroundColor: '#FF6B00',
+          pointBorderColor: '#0A0A0A',
+          pointBorderWidth: 1,
+          spanGaps: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: yMax,
+            ticks: { stepSize: stepSize, color: '#B8B8B8' },
+            title: { display: true, text: 'kg', color: '#B8B8B8' },
+            grid: { color: 'rgba(255,107,0,0.2)' }
+          },
+          x: {
+            ticks: { color: '#B8B8B8', maxRotation: 45 },
+            grid: { display: false }
+          }
+        },
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => `${ctx.raw} kg` } } }
+      }
+    });
+  }
+
+  function computeAverageWorkoutHours() {
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now);
+    thirtyDaysAgo.setDate(now.getDate() - 30);
+    let totalHours = 0;
+    let daysWithWorkout = 0;
+    for (let i = 0; i < 30; i++) {
+      const date = new Date(thirtyDaysAgo);
+      date.setDate(thirtyDaysAgo.getDate() + i);
+      const dateStr = date.toISOString().split('T')[0];
+      const log = attendanceLogs.find(l => l.date === dateStr);
+      if (log && log.checkinTime && log.checkoutTime) {
+        const [h1, m1] = log.checkinTime.split(':');
+        const [h2, m2] = log.checkoutTime.split(':');
+        const hours = ((parseInt(h2)*60 + parseInt(m2)) - (parseInt(h1)*60 + parseInt(m1))) / 60;
+        totalHours += hours;
+        daysWithWorkout++;
+      }
+    }
+    const avg = daysWithWorkout > 0 ? (totalHours / daysWithWorkout).toFixed(1) : 0;
+    document.getElementById('avgWorkoutHrs').innerText = avg;
+  }
+
+  function getWorkoutHoursDataForGraph() {
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now);
+    thirtyDaysAgo.setDate(now.getDate() - 30);
+    const dates = [];
+    const hoursData = [];
+    for (let i = 0; i <= 30; i++) {
+      const date = new Date(thirtyDaysAgo);
+      date.setDate(thirtyDaysAgo.getDate() + i);
+      const dateStr = date.toISOString().split('T')[0];
+      dates.push(dateStr);
+      const log = attendanceLogs.find(l => l.date === dateStr);
+      if (log && log.checkinTime && log.checkoutTime) {
+        const [h1, m1] = log.checkinTime.split(':');
+        const [h2, m2] = log.checkoutTime.split(':');
+        const hours = ((parseInt(h2)*60 + parseInt(m2)) - (parseInt(h1)*60 + parseInt(m1))) / 60;
+        hoursData.push(hours);
+      } else {
+        hoursData.push(0);
+      }
+    }
+    return { dates, hoursData };
+  }
+
+  async function openWorkoutHoursGraph() {
+    if (!memberToken) { showAuthChoice(); return; }
+    const { dates, hoursData } = getWorkoutHoursDataForGraph();
+    currentGraphType = 'workoutHours';
+    const modal = document.getElementById('graphPopupModal');
+    const content = document.getElementById('graphPopupContent');
+    content.innerHTML = `
+      <button class="modal-close-btn" id="graphPopupCloseBtn">&times;</button>
+      <div class="modal-title-center">Workout Hours (Last 30 Days)</div>
+      <div class="graph-controls-bottom">
+        <div class="graph-controls-row">
+          <select id="popupGraphType">
+            <option value="line" selected>Line</option>
+            <option value="bar">Bar</option>
+          </select>
+        </div>
+      </div>
+      <div class="canvas-wrapper"><canvas id="popupCanvas"></canvas></div>
+    `;
+    modal.style.display = 'flex';
+    isGraphPopupOpen = true;
+    const canvas = document.getElementById('popupCanvas');
+    if (popupChart) popupChart.destroy();
+    const ctx = canvas.getContext('2d');
+    const labels = dates.map(d => {
+      const dateObj = new Date(d);
+      return `${dateObj.getDate()} ${dateObj.toLocaleString('default', { month: 'short' })}`;
+    });
+    const renderWorkoutGraph = (type) => {
+      if (popupChart) popupChart.destroy();
+      if (type === 'line') {
+        popupChart = new Chart(ctx, {
+          type: 'line',
+          data: { labels: labels, datasets: [{ data: hoursData, borderColor: '#FF6B00', backgroundColor: 'rgba(255,107,0,0.1)', fill: true, tension: 0.3, pointRadius: 3, pointBackgroundColor: '#FF6B00' }] },
+          options: { responsive: true, maintainAspectRatio: true, scales: { y: { beginAtZero: true, title: { display: true, text: 'Hours' } }, x: { ticks: { maxRotation: 45, autoSkip: true } } }, plugins: { tooltip: { callbacks: { label: (ctx) => `${ctx.raw} hrs` } } } }
+        });
+      } else {
+        popupChart = new Chart(ctx, {
+          type: 'bar',
+          data: { labels: labels, datasets: [{ data: hoursData, backgroundColor: '#3498db', borderRadius: 8 }] },
+          options: { responsive: true, maintainAspectRatio: true, scales: { y: { beginAtZero: true, title: { display: true, text: 'Hours' } }, x: { ticks: { maxRotation: 45, autoSkip: true } } }, plugins: { tooltip: { callbacks: { label: (ctx) => `${ctx.raw} hrs` } } } }
+        });
+      }
+    };
+    renderWorkoutGraph('line');
+    document.getElementById('popupGraphType').addEventListener('change', (e) => renderWorkoutGraph(e.target.value));
+    function closePopup() {
+      modal.style.display = 'none';
+      isGraphPopupOpen = false;
+    }
+    document.getElementById('graphPopupCloseBtn').onclick = closePopup;
+    modal.onclick = (e) => { if (e.target === modal) closePopup(); };
+  }
+
+  function checkMembershipExpiry() {
+    if (!memberToken || !currentMember || notificationShown.expiry) return;
+    const validUntil = currentMember.membershipValidUntil ? new Date(currentMember.membershipValidUntil) : null;
+    if (validUntil && currentMember.membershipActive) {
+      const today = new Date();
+      const diffDays = Math.ceil((validUntil - today) / (1000 * 60 * 60 * 24));
+      if (diffDays <= 3 && diffDays > 0) {
+        showPopup(`⚠️ Your membership expires in ${diffDays} day${diffDays !== 1 ? 's' : ''}. Renew now to continue your streak!`, false);
+        notificationShown.expiry = true;
+      }
+    }
+  }
+
+  function checkAbsenceNudge() {
+    if (!memberToken || !currentMember || notificationShown.absence) return;
+    const today = new Date();
+    let absentDays = 0;
+    for (let i = 1; i <= 3; i++) {
+      const checkDate = new Date(today);
+      checkDate.setDate(today.getDate() - i);
+      if (checkDate.getDay() === 0) continue;
+      const dateStr = checkDate.toISOString().split('T')[0];
+      const hasAttendance = attendanceLogs.some(l => l.date === dateStr && l.checkinTime);
+      if (!hasAttendance) absentDays++;
+      else break;
+    }
+    if (absentDays >= 3) {
+      const memberName = currentMember.firstName || currentMember.name || 'Member';
+      showPopup(`💪 Hey ${memberName}! We've missed your energy at Daily Doze. Come on, don't give up now!`, false);
+      notificationShown.absence = true;
+    }
+  }
+
+  function resetToGuest() {
+    currentMember = { name:'Guest', photoUrl:'dailydoze_logo.png', goal:'musclegain', membershipActive:false, membershipValidUntil:null, firstName:'', lastName:'', email:'', phone:'', gender:'male', age:0 };
+    attendanceLogs = []; weightHistory = []; exercisePRs = { chest:0, back:0, shoulders:0, biceps:0, triceps:0, legs:0, deadlift:0 }; memberGoal = 'musclegain';
+    paymentsList = [];
+    updateUI(); updateProfileButton(); computeAverageWorkoutHours();
+  }
+
+  function getWorkoutDaysThisMonth() {
+    const now = new Date(); const year = now.getFullYear(), month = now.getMonth();
+    const daysInMonth = new Date(year, month+1, 0).getDate();
+    let count = 0;
+    for (let d=1; d<=daysInMonth; d++) {
+      const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      if (attendanceLogs.some(l => l.date === dateStr && l.checkinTime)) count++;
+    }
+    return count;
+  }
+
+  function getLeavesCount() {
+    const now = new Date(); const year = now.getFullYear(), month = now.getMonth();
+    const todayStr = now.toISOString().split('T')[0];
+    let absent = 0;
+    const daysInMonth = new Date(year, month+1, 0).getDate();
+    for (let d=1; d<=daysInMonth; d++) {
+      const dateObj = new Date(year, month, d);
+      if (dateObj.getDay() === 0) continue;
+      const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      if (dateStr === todayStr) continue;
+      if (!attendanceLogs.some(l => l.date === dateStr && l.checkinTime)) absent++;
+    }
+    return absent;
+  }
+
+  function computeStreakWeeks() {
+    let streak = 0; let currentDate = new Date(); const MIN_DATE = new Date(2026,5,1);
+    while (true) {
+      const weekStart = new Date(currentDate);
+      weekStart.setDate(currentDate.getDate() - currentDate.getDay() + 1);
+      if (weekStart.getDay() !== 1) weekStart.setDate(weekStart.getDate()+1);
+      let attendedDays = 0;
+      for (let d=0; d<=5; d++) {
+        const day = new Date(weekStart); day.setDate(weekStart.getDate()+d);
+        if (day > new Date()) break;
+        const dateStr = day.toISOString().split('T')[0];
+        if (attendanceLogs.some(l => l.date === dateStr && l.checkinTime)) attendedDays++;
+      }
+      if (attendedDays >= 6) streak++; else break;
+      currentDate.setDate(weekStart.getDate() - 1);
+      if (currentDate < MIN_DATE) break;
+    }
+    return Math.min(streak, 52);
+  }
+
+  function getWeightStats() {
+    if (!weightHistory.length) return { current:0, previous:0, diff:0, isPR:false };
+    const sorted = [...weightHistory].sort((a,b)=>new Date(b.date)-new Date(a.date));
+    const current = sorted[0].weight;
+    const previous = sorted.length>1 ? sorted[1].weight : current;
+    const diff = current - previous;
+    let isPR = false;
+    if (memberGoal === 'weightloss') isPR = current === Math.min(...weightHistory.map(w=>w.weight));
+    else isPR = current === Math.max(...weightHistory.map(w=>w.weight));
+    return { current, previous, diff, isPR };
+  }
+
+  function getBestWeight() {
+    if (!weightHistory.length) return 0;
+    const weights = weightHistory.map(w => w.weight);
+    if (memberGoal === 'weightloss') return Math.min(...weights);
+    else return Math.max(...weights);
+  }
+
+  function updateUI() {
+    document.getElementById('streakWeeksDisplay').innerHTML = computeStreakWeeks();
+    document.getElementById('workoutDaysMonth').innerText = getWorkoutDaysThisMonth();
+    document.getElementById('leavesCount').innerText = getLeavesCount();
+    const isActive = currentMember?.membershipActive || false;
+    const validUntil = currentMember?.membershipValidUntil ? new Date(currentMember.membershipValidUntil) : null;
+    document.getElementById('membershipStatus').innerHTML = isActive ? '<span style="color:#32D74B;">Active</span>' : '<span style="color:#e74c3c;">Inactive</span>';
+    document.getElementById('membershipValid').innerText = validUntil ? validUntil.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}) : 'N/A';
+    document.getElementById('membershipValidLabel').innerText = isActive ? 'Valid till' : 'Expired on';
+    
+    const wStats = getWeightStats();
+    const currentWeightElem = document.getElementById('currentWeight');
+    const weightNumberElem = document.getElementById('weightDiff');
+    const weightChangeLabel = document.getElementById('weightChangeLabel');
+    
+    currentWeightElem.innerHTML = wStats.current ? `${wStats.current} <span class="unit-small">kg</span>` : '—';
+    
+    if (wStats.diff !== 0) {
+      const diffAbs = Math.abs(wStats.diff).toFixed(1);
+      const isPositive = wStats.diff > 0;
+      let changeText = '';
+      let color = '';
+      if (memberGoal === 'weightloss') {
+        if (isPositive) { changeText = `+${diffAbs} kg gained`; color = '#e74c3c'; }
+        else { changeText = `${diffAbs} kg lost`; color = '#32D74B'; }
+      } else {
+        if (isPositive) { changeText = `+${diffAbs} kg gained`; color = '#32D74B'; }
+        else { changeText = `${diffAbs} kg lost`; color = '#e74c3c'; }
+      }
+      weightNumberElem.innerHTML = `<span style="color:${color}">${changeText}</span>`;
+      weightNumberElem.style.color = color;
+    } else {
+      weightNumberElem.innerHTML = '0 kg';
+      weightNumberElem.style.color = '#B8B8B8';
+      weightChangeLabel.innerText = 'Weight change';
+    }
+    
+    const prBadgeContainer = document.getElementById('prWeightBadge');
+    if (wStats.isPR) {
+      currentWeightElem.classList.add('gold');
+      prBadgeContainer.innerHTML = '🏆 PR';
+    } else {
+      currentWeightElem.classList.remove('gold');
+      prBadgeContainer.innerHTML = '';
+    }
+    
+    const liftsGrid = document.getElementById('maxLiftsGrid');
+    liftsGrid.innerHTML = Object.entries(exercisePRs).map(([name,val]) => {
+      const hasPR = val > 0;
+      return `<div class="stat-card lift-card" data-exercise="${name}"><div class="stat-number ${hasPR ? 'gold' : ''}">${val || 0} <span class="unit-small">kg</span></div><div>${name.toUpperCase()}</div>${hasPR ? '<span class="pr-badge-top">🏆 PR</span>' : ''}</div>`;
+    }).join('');
+    document.querySelectorAll('.lift-card').forEach(card => card.addEventListener('click', () => openExerciseHistoryModal(card.getAttribute('data-exercise'))));
+    computeAverageWorkoutHours();
+  }
+
+  function updateProfileButton() { 
+    const btn = document.getElementById('profileBtn');
+    if (memberToken && currentMember && currentMember.name !== 'Guest') {
+      btn.innerText = 'Profile';
+    } else {
+      btn.innerText = 'Sign Up';
+    }
+  }
+
+  async function openExerciseHistoryModal(exercise) {
+    if (!memberToken) { showAuthChoice(); return; }
+    const modal = document.getElementById('exerciseHistoryModal');
+    const history = exerciseHistories[exercise] || [];
+    const sorted = [...history].sort((a,b)=>new Date(b.date)-new Date(a.date));
+    const render = () => {
+      modal.innerHTML = `<div class="premium-modal-card"><button class="modal-close-btn" id="exerciseHistoryClose">&times;</button><div class="modal-title-center">${exercise.toUpperCase()}</div><div class="modal-action-buttons" style="display:flex; justify-content:center; gap:1rem; margin-bottom:1rem;"><button class="btn-outline-gold" id="newExerciseEntryBtn">+ New Entry</button><button class="btn-outline-gold" id="viewExerciseGraphBtn">📈 View Graph</button></div><div id="newExerciseEntryBox" class="new-entry-box"><input type="number" id="newExerciseWeight" step="0.5" placeholder="Weight in kg"><div style="display:flex; gap:1rem; margin-top:0.5rem;"><button class="btn-solid-gold" id="saveExerciseEntryBtn">Save</button><button class="btn-outline-gold" id="cancelExerciseEntryBtn">Cancel</button></div></div><div class="entry-list">${sorted.map(e => {
+        const date = new Date(e.date);
+        const formattedDate = `${date.getDate().toString().padStart(2,'0')} ${date.toLocaleString('default', { month: 'short' })}`;
+        return `<div class="entry-item"><span class="entry-date">${formattedDate}</span><span class="entry-value">${e.weight} kg</span></div>`;
+      }).join('')}</div></div>`;
+      modal.style.display = 'flex';
+      document.getElementById('exerciseHistoryClose').onclick = () => modal.style.display = 'none';
+      document.getElementById('newExerciseEntryBtn').onclick = () => document.getElementById('newExerciseEntryBox').style.display = 'block';
+      document.getElementById('cancelExerciseEntryBtn').onclick = () => document.getElementById('newExerciseEntryBox').style.display = 'none';
+      document.getElementById('saveExerciseEntryBtn').onclick = async () => {
+        const weight = parseFloat(document.getElementById('newExerciseWeight').value);
+        if (isNaN(weight) || weight <= 0) { showPopup('Please enter a valid weight', false); return; }
+        const newEntry = { date: new Date().toISOString().split('T')[0], weight: weight };
+        const updatedHistory = [...history, newEntry];
+        updatedHistory.sort((a,b)=>new Date(a.date)-new Date(b.date));
+        exerciseHistories[exercise] = updatedHistory;
+        localStorage.setItem(`ex_hist_${exercise}_${currentMember?._id}`, JSON.stringify(updatedHistory));
+        const maxWeight = Math.max(...updatedHistory.map(e => e.weight));
+        if (maxWeight > (exercisePRs[exercise] || 0)) {
+          exercisePRs[exercise] = maxWeight;
+          await fetchJSON(`${API_BASE}/member/exercise-prs`, { method: 'PUT', body: JSON.stringify({ [exercise]: maxWeight }) });
+          updateUI();
+        }
+        showPopup(`${exercise.toUpperCase()} entry added!`);
+        openExerciseHistoryModal(exercise);
+      };
+      document.getElementById('viewExerciseGraphBtn').onclick = () => { modal.style.display = 'none'; openGraphPopup('exercise', exercise); };
+    };
+    render();
+  }
+
+  async function openWeightModal() {
+    if(!memberToken){ showAuthChoice(); return; }
+    const modal = document.getElementById('weightModal');
+    const sorted = [...weightHistory].sort((a,b)=>new Date(b.date)-new Date(a.date));
+    const render = () => {
+      modal.innerHTML = `<div class="premium-modal-card"><button class="modal-close-btn" id="weightModalClose">&times;</button><div class="modal-title-center">Weight</div><div class="modal-action-buttons" style="display:flex; justify-content:center; gap:1rem; margin-bottom:1rem;"><button class="btn-outline-gold" id="newWeightBtn">+ New Entry</button><button class="btn-outline-gold" id="viewWeightGraphBtn">📈 View Graph</button></div><div id="newWeightBox" class="new-entry-box"><input type="number" id="newWeightValue" step="0.1" placeholder="Weight in kg"><div style="display:flex; gap:1rem; margin-top:0.5rem;"><button class="btn-solid-gold" id="saveNewWeightBtn">Save</button><button class="btn-outline-gold" id="cancelNewWeightBtn">Cancel</button></div></div><div class="entry-list">${sorted.map(w => {
+        const date = new Date(w.date);
+        const formattedDate = `${date.getDate().toString().padStart(2,'0')} ${date.toLocaleString('default', { month: 'short' })}`;
+        return `<div class="entry-item"><span class="entry-date">${formattedDate}</span><span class="entry-value">${w.weight} kg</span></div>`;
+      }).join('')}</div></div>`;
+      modal.style.display = 'flex';
+      document.getElementById('weightModalClose').onclick = () => modal.style.display = 'none';
+      document.getElementById('newWeightBtn').onclick = () => document.getElementById('newWeightBox').style.display = 'block';
+      document.getElementById('cancelNewWeightBtn').onclick = () => document.getElementById('newWeightBox').style.display = 'none';
+      document.getElementById('saveNewWeightBtn').onclick = async () => {
+        const w = parseFloat(document.getElementById('newWeightValue').value);
+        if (isNaN(w)) return;
+        const res = await fetchJSON(`${API_BASE}/member/weight`, { method: 'POST', body: JSON.stringify({ weight: w }) });
+        if (res) { 
+          await loadDashboard();
+          // Force refresh graph after adding weight
+          const currentExercise = document.getElementById('exerciseDropdown').value;
+          renderHomeProgressGraph(currentExercise);
+          openWeightModal(); 
+          showPopup('Weight added'); 
+        }
+        else showPopup('Failed', false);
+      };
+      document.getElementById('viewWeightGraphBtn').onclick = () => { modal.style.display = 'none'; openGraphPopup('weight'); };
+    };
+    render();
+  }
+
+  async function openMembershipModal() {
+    if (!memberToken) { showAuthChoice(); return; }
+    const modal = document.getElementById('membershipModal');
+    const isActive = currentMember?.membershipActive || false;
+    const validUntil = currentMember?.membershipValidUntil ? new Date(currentMember.membershipValidUntil).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A';
+    const sortedPayments = [...paymentsList].sort((a,b)=>new Date(b.date) - new Date(a.date));
+    const paymentsHtml = sortedPayments.length ? sortedPayments.map(p => `
+      <div class="payment-item">
+        <span class="payment-date">${new Date(p.date).toLocaleDateString()}</span>
+        <span class="payment-amount">${p.amount} ${p.currency || '₹'}</span>
+        <span class="payment-method">${p.method || 'Card'}</span>
+      </div>
+    `).join('') : '<div style="text-align:center; color:#B8B8B8;">No payment records found.</div>';
+    
+    modal.innerHTML = `<div class="premium-modal-card"><button class="modal-close-btn" id="membershipModalClose">&times;</button><div class="modal-title-center">Membership</div><div style="text-align:center; margin-bottom:1rem;"><div class="stat-number" style="font-size:2rem;">${isActive ? '<span style="color:#32D74B;">Active</span>' : '<span style="color:#e74c3c;">Inactive</span>'}</div><div>${isActive ? `Valid till ${validUntil}` : `Expired on ${validUntil}`}</div></div><div class="modal-title-center" style="font-size:1.2rem; margin-top:1rem;">Payment History</div><div class="payment-list">${paymentsHtml}</div></div>`;
+    modal.style.display = 'flex';
+    document.getElementById('membershipModalClose').onclick = () => modal.style.display = 'none';
+    modal.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
+  }
+
+  async function openGraphPopup(type, exercise = null) {
+    if (!memberToken) { showAuthChoice(); return; }
+    currentGraphType = type;
+    currentExercise = exercise;
+    const modal = document.getElementById('graphPopupModal');
+    const content = document.getElementById('graphPopupContent');
+    content.innerHTML = `<div class="modal-title-center">Loading...</div>`;
+    modal.style.display = 'flex';
+    isGraphPopupOpen = true;
+    await populateGraphData();
+    renderGraphPopup();
+    let categorySelectHtml = '';
+    if (type === 'exercise') {
+      categorySelectHtml = `<div class="graph-controls-row"><select id="popupCategorySelect"><option value="chest">Chest</option><option value="back">Back</option><option value="shoulders">Shoulders</option><option value="biceps">Biceps</option><option value="triceps">Triceps</option><option value="legs">Legs</option><option value="deadlift">Deadlift</option></select></div>`;
+      setTimeout(() => {
+        const sel = document.getElementById('popupCategorySelect');
+        if (sel) sel.value = exercise;
+        sel?.addEventListener('change', async (e) => {
+          currentExercise = e.target.value;
+          await populateGraphData();
+          renderGraphPopup();
+        });
+      }, 10);
+    }
+    content.innerHTML = `
+      <button class="modal-close-btn" id="graphPopupCloseBtn">&times;</button>
+      <div class="modal-title-center">${type === 'exercise' ? `${exercise.toUpperCase()} Progress` : (type === 'weight' ? 'Weight Progress' : 'Workout Hours')}</div>
+      <div class="graph-controls-bottom">
+        <div class="graph-controls-row">
+          ${type !== 'workoutHours' ? `<select id="popupTimeRange">
+            <option value="7days">7 Days</option>
+            <option value="1month" selected>1 Month</option>
+            <option value="3months">3 Months</option>
+            <option value="6months">6 Months</option>
+          </select>` : ''}
+          <select id="popupGraphType">
+            <option value="line" selected>Line</option>
+            <option value="bar">Bar</option>
+            ${type !== 'workoutHours' ? '<option value="combo">Combo</option>' : ''}
+          </select>
+        </div>
+        ${categorySelectHtml}
+      </div>
+      <div class="canvas-wrapper"><canvas id="popupCanvas"></canvas></div>
+    `;
+    renderGraphPopup();
+    if (type !== 'workoutHours') {
+      document.getElementById('popupTimeRange').addEventListener('change', async (e) => {
+        popupDataRange = e.target.value;
+        await populateGraphData();
+        renderGraphPopup();
+      });
+    }
+    document.getElementById('popupGraphType').addEventListener('change', (e) => {
+      popupChartType = e.target.value;
+      renderGraphPopup();
+    });
+    function closePopup() {
+      modal.style.display = 'none';
+      isGraphPopupOpen = false;
+    }
+    document.getElementById('graphPopupCloseBtn').onclick = closePopup;
+    modal.onclick = (e) => { if (e.target === modal) closePopup(); };
+  }
+
+  async function populateGraphData() {
+    if (currentGraphType === 'exercise') {
+      const history = exerciseHistories[currentExercise] || [];
+      const sorted = [...history].sort((a,b)=>new Date(a.date)-new Date(b.date));
+      const now = new Date();
+      let startDate = new Date(now);
+      if (popupDataRange === '7days') startDate.setDate(now.getDate() - 6);
+      else if (popupDataRange === '1month') startDate.setMonth(now.getMonth() - 1);
+      else if (popupDataRange === '3months') startDate.setMonth(now.getMonth() - 3);
+      else if (popupDataRange === '6months') startDate.setMonth(now.getMonth() - 6);
+      const filtered = sorted.filter(e => new Date(e.date) >= startDate);
+      popupLabels = filtered.map(e => new Date(e.date).toLocaleDateString());
+      popupData = filtered.map(e => e.weight);
+      let prevStart = new Date(startDate);
+      let prevEnd = new Date(now);
+      if (popupDataRange === '7days') { prevStart.setDate(prevStart.getDate() - 7); prevEnd.setDate(prevEnd.getDate() - 7); }
+      else if (popupDataRange === '1month') { prevStart.setMonth(prevStart.getMonth() - 1); prevEnd.setMonth(prevEnd.getMonth() - 1); }
+      else if (popupDataRange === '3months') { prevStart.setMonth(prevStart.getMonth() - 3); prevEnd.setMonth(prevEnd.getMonth() - 3); }
+      else if (popupDataRange === '6months') { prevStart.setMonth(prevStart.getMonth() - 6); prevEnd.setMonth(prevEnd.getMonth() - 6); }
+      const prevFiltered = sorted.filter(e => new Date(e.date) >= prevStart && new Date(e.date) <= prevEnd);
+      prevData = prevFiltered.map(e => e.weight);
+      while (prevData.length < popupData.length) prevData.unshift(0);
+      while (prevData.length > popupData.length) prevData.pop();
+    } else if (currentGraphType === 'weight') {
+      const sorted = [...weightHistory].sort((a,b)=>new Date(a.date)-new Date(b.date));
+      const now = new Date();
+      let startDate = new Date(now);
+      if (popupDataRange === '7days') startDate.setDate(now.getDate() - 6);
+      else if (popupDataRange === '1month') startDate.setMonth(now.getMonth() - 1);
+      else if (popupDataRange === '3months') startDate.setMonth(now.getMonth() - 3);
+      else if (popupDataRange === '6months') startDate.setMonth(now.getMonth() - 6);
+      const filtered = sorted.filter(e => new Date(e.date) >= startDate);
+      popupLabels = filtered.map(e => new Date(e.date).toLocaleDateString());
+      popupData = filtered.map(e => e.weight);
+      let prevStart = new Date(startDate);
+      let prevEnd = new Date(now);
+      if (popupDataRange === '7days') { prevStart.setDate(prevStart.getDate() - 7); prevEnd.setDate(prevEnd.getDate() - 7); }
+      else if (popupDataRange === '1month') { prevStart.setMonth(prevStart.getMonth() - 1); prevEnd.setMonth(prevEnd.getMonth() - 1); }
+      else if (popupDataRange === '3months') { prevStart.setMonth(prevStart.getMonth() - 3); prevEnd.setMonth(prevEnd.getMonth() - 3); }
+      else if (popupDataRange === '6months') { prevStart.setMonth(prevStart.getMonth() - 6); prevEnd.setMonth(prevEnd.getMonth() - 6); }
+      const prevFiltered = sorted.filter(e => new Date(e.date) >= prevStart && new Date(e.date) <= prevEnd);
+      prevData = prevFiltered.map(e => e.weight);
+      while (prevData.length < popupData.length) prevData.unshift(0);
+      while (prevData.length > popupData.length) prevData.pop();
+    }
+  }
+
+  function renderGraphPopup() {
+    const canvas = document.getElementById('popupCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (popupChart) popupChart.destroy();
+    if (currentGraphType === 'workoutHours') return;
+    if (popupChartType === 'line') {
+      const datasets = [{ data: popupData, borderColor: '#32D74B', backgroundColor: 'rgba(50,215,75,0.1)', tension: 0.3, fill: true, pointRadius: 3, pointBackgroundColor: '#FF6B00', label: 'Current' }];
+      if (prevData.length && prevData.some(v => v > 0)) datasets.push({ data: prevData, borderColor: '#888', borderDash: [5,5], pointRadius: 0, fill: false, label: 'Previous Period' });
+      popupChart = new Chart(ctx, { type: 'line', data: { labels: popupLabels, datasets }, options: { responsive: true, maintainAspectRatio: true, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,107,0,0.3)' } }, x: { ticks: { maxRotation: 0, autoSkip: true }, grid: { color: 'rgba(255,107,0,0.3)' } } }, plugins: { tooltip: { callbacks: { label: (ctx) => `${ctx.raw} kg` } }, legend: { display: false } } } });
+    } else if (popupChartType === 'bar') {
+      const datasets = [{ data: popupData, backgroundColor: '#3498db', label: 'Current', type: 'bar' }];
+      if (prevData.length && prevData.some(v => v > 0)) datasets.push({ data: prevData, borderColor: '#888', borderDash: [5,5], pointRadius: 0, fill: false, label: 'Previous Period', type: 'line' });
+      popupChart = new Chart(ctx, { type: 'bar', data: { labels: popupLabels, datasets }, options: { responsive: true, maintainAspectRatio: true, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,107,0,0.3)' } }, x: { ticks: { maxRotation: 0, autoSkip: true }, grid: { color: 'rgba(255,107,0,0.3)' } } }, plugins: { tooltip: { callbacks: { label: (ctx) => `${ctx.raw} kg` } }, legend: { display: false } } } });
+    } else if (popupChartType === 'combo') {
+      const comboDatasets = [
+        { type: 'bar', data: popupData, backgroundColor: '#3498db', label: 'Current (Bar)', yAxisID: 'y', order: 2 },
+        { type: 'line', data: popupData, borderColor: '#32D74B', backgroundColor: 'transparent', tension: 0.3, fill: false, pointRadius: 3, pointBackgroundColor: '#32D74B', label: 'Current (Line)', yAxisID: 'y' },
+        { type: 'line', data: prevData, borderColor: '#888', borderDash: [5,5], pointRadius: 0, fill: false, label: 'Previous Period', yAxisID: 'y' }
+      ];
+      popupChart = new Chart(ctx, { type: 'bar', data: { labels: popupLabels, datasets: comboDatasets }, options: { responsive: true, maintainAspectRatio: true, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,107,0,0.3)' } }, x: { ticks: { maxRotation: 0, autoSkip: true }, grid: { color: 'rgba(255,107,0,0.3)' } } }, plugins: { tooltip: { callbacks: { label: (ctx) => `${ctx.raw} kg` } }, legend: { display: false } } } });
+    }
+  }
+
+  // ========== AUTH & PROFILE ==========
+  async function uploadSignupImage(file) {
+    const fd = new FormData(); fd.append('image', file);
+    const res = await fetch('/api/upload-signup', { method:'POST', body:fd });
+    const data = await res.json();
+    return res.ok && data.url ? data.url : null;
+  }
+
+  function showAuthChoice() {
+    const modal = document.getElementById('authChoiceModal');
+    document.getElementById('authChoiceContent').innerHTML = `
+      <button class="modal-close-btn" id="closeAuthChoice">&times;</button>
+      <div class="modal-title-center">Welcome to Daily Doze</div>
+      <div class="auth-toggle-row">
+        <div class="auth-card" id="choiceSignup"><h2>Sign Up</h2><p>New Member</p></div>
+        <div class="auth-card" id="choiceLogin"><h2>Log In</h2><p>Already a member</p></div>
+      </div>
+    `;
+    modal.style.display = 'flex';
+    document.getElementById('closeAuthChoice').onclick = () => modal.style.display = 'none';
+    document.getElementById('choiceSignup').onclick = () => { modal.style.display = 'none'; showSignupModal(); };
+    document.getElementById('choiceLogin').onclick = () => { modal.style.display = 'none'; showLoginModal(); };
+    modal.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
+  }
+
+  function showSignupModal() {
+    const modal = document.getElementById('signupModal');
+    document.getElementById('signupContent').innerHTML = `
+      <button class="modal-close-btn" id="closeSignup">&times;</button>
+      <div class="modal-title-center">Create Account</div>
+      <div style="text-align:center;">
+        <img id="signupAvatarPreview" src="defaultpfp.png" style="width:80px;height:80px;border-radius:50%;border:2px solid #FF6B00;margin-bottom:0.5rem;">
+        <div class="click-to-upload" id="signupUploadBtn">📸 Upload Profile Photo</div>
+        <input type="file" id="signupPhotoFile" accept="image/*" style="display:none;">
+      </div>
+      <div class="field-group"><label>Full Name *</label><input type="text" id="signupName" placeholder="First and last name"></div>
+      <div class="field-group"><label>Email *</label><input type="email" id="signupEmail" placeholder="Email"></div>
+      <div class="field-group"><label>Password *</label><div class="password-wrapper"><input type="password" id="signupPassword" placeholder="Password"><button type="button" class="toggle-password" data-target="signupPassword"><i class="fas fa-eye-slash"></i></button></div></div>
+      <div class="field-group"><label>Confirm Password *</label><div class="password-wrapper"><input type="password" id="signupConfirmPassword" placeholder="Confirm"><button type="button" class="toggle-password" data-target="signupConfirmPassword"><i class="fas fa-eye-slash"></i></button></div></div>
+      <div class="field-group"><label>Age *</label><input type="number" id="signupAge" placeholder="Age"></div>
+      <div class="field-group"><label>Phone *</label><input type="tel" id="signupPhone" placeholder="Phone number"></div>
+      <div class="field-group"><label>Gender</label><select id="signupGender"><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option></select></div>
+      <div class="field-group"><label>Fitness Goal</label><select id="signupGoal"><option value="musclegain">💪 Muscle Gain</option><option value="weightloss">🔥 Weight Loss</option></select></div>
+      <div class="button-group-center"><button class="btn-solid-gold" id="doSignupBtn">Sign Up</button><button class="btn-outline-gold" id="cancelSignupBtn">Cancel</button></div>
+    `;
+    modal.style.display = 'flex';
+    document.getElementById('closeSignup').onclick = () => modal.style.display = 'none';
+    document.getElementById('cancelSignupBtn').onclick = () => modal.style.display = 'none';
+    document.querySelectorAll('#signupModal .toggle-password').forEach(btn => btn.addEventListener('click', function(){ let inp=document.getElementById(this.getAttribute('data-target')); inp.type=inp.type==='password'?'text':'password'; this.innerHTML=inp.type==='password'?'<i class="fas fa-eye-slash"></i>':'<i class="fas fa-eye"></i>'; }));
+    let selectedPhoto = null;
+    document.getElementById('signupUploadBtn').onclick = () => document.getElementById('signupPhotoFile').click();
+    document.getElementById('signupPhotoFile').onchange = (e) => { const f=e.target.files[0]; if(f){ selectedPhoto=f; const reader=new FileReader(); reader.onload=ev=>document.getElementById('signupAvatarPreview').src=ev.target.result; reader.readAsDataURL(f); } };
+    document.getElementById('doSignupBtn').onclick = async () => {
+      const fullName = document.getElementById('signupName').value.trim(), email=document.getElementById('signupEmail').value.trim(), pass=document.getElementById('signupPassword').value, confirm=document.getElementById('signupConfirmPassword').value, age=parseInt(document.getElementById('signupAge').value), phone=document.getElementById('signupPhone').value.trim(), gender=document.getElementById('signupGender').value, goal=document.getElementById('signupGoal').value;
+      if(!fullName||!email||!pass||!confirm||!age||!phone){ showPopup('Please fill all required fields',false); return; }
+      if(pass!==confirm){ showPopup('Passwords do not match',false); return; }
+      if(age<12||age>120){ showPopup('Enter valid age',false); return; }
+      let photoUrl='defaultpfp.png';
+      if(selectedPhoto){ const up=await uploadSignupImage(selectedPhoto); if(up) photoUrl=up; }
+      const parts=fullName.split(' '), firstName=parts[0], lastName=parts.slice(1).join(' ')||'';
+      const payload={firstName,lastName,email,password:pass,age,phone,gender,goal,photoUrl};
+      const res=await fetch(`${API_BASE}/auth/member-register`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      const data=await res.json();
+      if(res.ok&&data.token){ memberToken=data.token; setStoredToken(memberToken,true); await loadDashboard(); modal.style.display='none'; showPopup('Account created! Welcome.'); }
+      else showPopup(data.error||'Registration failed',false);
+    };
+  }
+
+  function showLoginModal() {
+    const modal = document.getElementById('loginModal');
+    document.getElementById('loginContent').innerHTML = `
+      <button class="modal-close-btn" id="closeLogin">&times;</button>
+      <div class="modal-title-center">Log In</div>
+      <div class="field-group"><label>Email or Phone</label><input type="text" id="loginIdentifier" placeholder="Email or phone number"></div>
+      <div class="field-group"><label>Password</label><div class="password-wrapper"><input type="password" id="loginPassword" placeholder="Password"><button type="button" class="toggle-password" data-target="loginPassword"><i class="fas fa-eye-slash"></i></button></div></div>
+      <div class="remember-checkbox"><input type="checkbox" id="rememberMeCheckbox" checked> <label>Remember Me</label></div>
+      <div class="button-group-center"><button class="btn-solid-gold" id="doLoginBtn">Log In</button><button class="btn-outline-gold" id="cancelLoginBtn">Cancel</button></div>
+    `;
+    modal.style.display = 'flex';
+    document.getElementById('closeLogin').onclick = () => modal.style.display = 'none';
+    document.getElementById('cancelLoginBtn').onclick = () => modal.style.display = 'none';
+    document.querySelectorAll('#loginModal .toggle-password').forEach(btn=>btn.addEventListener('click',function(){let inp=document.getElementById(this.getAttribute('data-target')); inp.type=inp.type==='password'?'text':'password'; this.innerHTML=inp.type==='password'?'<i class="fas fa-eye-slash"></i>':'<i class="fas fa-eye"></i>';}));
+    document.getElementById('doLoginBtn').onclick = async () => {
+      const id=document.getElementById('loginIdentifier').value.trim(), pwd=document.getElementById('loginPassword').value, remember=document.getElementById('rememberMeCheckbox').checked;
+      if(!id||!pwd){ showPopup('Please fill both fields',false); return; }
+      const isEmail=id.includes('@');
+      const body=isEmail?{email:id,password:pwd}:{phone:id,password:pwd};
+      const res=await fetch(`${API_BASE}/auth/member-login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+      const data=await res.json();
+      if(res.ok&&data.token){ memberToken=data.token; setStoredToken(memberToken,remember); await loadDashboard(); modal.style.display='none'; showPopup('Login successful'); }
+      else showPopup(data.error||'Invalid credentials',false);
+    };
+  }
+
+  async function uploadMemberImage(file, token) {
+    const fd=new FormData(); fd.append('image',file);
+    const res=await fetch('/api/member/upload',{method:'POST',headers:{'Authorization':`Bearer ${token}`},body:fd});
+    const data=await res.json();
+    return res.ok&&data.url?data.url:null;
+  }
+
+  async function openProfileModal() {
+    if(!memberToken||!currentMember||currentMember.name==='Guest'){ showAuthChoice(); return; }
+    const modal=document.getElementById('profileModal');
+    const fname=currentMember.firstName||'', lname=currentMember.lastName||'';
+    document.getElementById('profileModalContent').innerHTML=`
+      <button class="modal-close-btn" id="profileClose">&times;</button>
+      <div class="modal-title-center">Edit Profile</div>
+      <div class="profile-container">
+        <div class="profile-avatar-wrapper"><img src="${currentMember.photoUrl||'dailydoze_logo.png'}" class="profile-avatar" id="profileAvatar"><div class="profile-edit-icon" id="changeDpBtn"><i class="fas fa-pencil-alt"></i></div></div>
+        <div class="click-to-upload" id="uploadProfilePicBtn">📸 Change Photo</div>
+        <div class="profile-field"><label>First Name</label><div class="value" id="firstNameValue">${escapeHtml(fname)} <button class="edit-btn" id="editFirstNameBtn"><i class="fas fa-edit"></i></button></div><div id="firstNameEditContainer" style="display:none;"><input type="text" id="firstNameInput" value="${escapeHtml(fname)}"></div></div>
+        <div class="profile-field"><label>Last Name</label><div class="value" id="lastNameValue">${escapeHtml(lname)} <button class="edit-btn" id="editLastNameBtn"><i class="fas fa-edit"></i></button></div><div id="lastNameEditContainer" style="display:none;"><input type="text" id="lastNameInput" value="${escapeHtml(lname)}"></div></div>
+        <div class="profile-field"><label>Age</label><div class="value" id="ageValue">${currentMember.age||''} <button class="edit-btn" id="editAgeBtn"><i class="fas fa-edit"></i></button></div><div id="ageEditContainer" style="display:none;"><input type="number" id="ageInput" value="${currentMember.age||''}"></div></div>
+        <div class="profile-field"><label>Gender</label><div class="value" id="genderValue">${currentMember.gender==='male'?'Male':(currentMember.gender==='female'?'Female':'Other')} <button class="edit-btn" id="editGenderBtn"><i class="fas fa-edit"></i></button></div><div id="genderEditContainer" style="display:none;"><select id="genderInput"><option value="male" ${currentMember.gender==='male'?'selected':''}>Male</option><option value="female" ${currentMember.gender==='female'?'selected':''}>Female</option><option value="other" ${currentMember.gender==='other'?'selected':''}>Other</option></select></div></div>
+        <div class="profile-field"><label>Phone</label><div class="value" id="phoneValue">${escapeHtml(currentMember.phone||'')} <button class="edit-btn" id="editPhoneBtn"><i class="fas fa-edit"></i></button></div><div id="phoneEditContainer" style="display:none;"><input type="tel" id="phoneInput" value="${escapeHtml(currentMember.phone||'')}"></div></div>
+        <div class="profile-field"><label>Email</label><div class="value" id="emailValue">${escapeHtml(currentMember.email||'')} <button class="edit-btn" id="editEmailBtn"><i class="fas fa-edit"></i></button></div><div id="emailEditContainer" style="display:none;"><input type="email" id="emailInput" value="${escapeHtml(currentMember.email||'')}"></div></div>
+        <div class="button-group-center"><button class="btn-outline-gold" id="cancelProfileBtn">Cancel</button><button class="btn-solid-gold" id="saveProfileBtn">Save</button></div>
+      </div>
+    `;
+    modal.style.display='flex';
+    let editMode={firstName:false,lastName:false,age:false,gender:false,phone:false,email:false};
+    const updateDisplay=()=>{
+      document.getElementById('firstNameValue').style.display=editMode.firstName?'none':'flex'; document.getElementById('firstNameEditContainer').style.display=editMode.firstName?'block':'none';
+      document.getElementById('lastNameValue').style.display=editMode.lastName?'none':'flex'; document.getElementById('lastNameEditContainer').style.display=editMode.lastName?'block':'none';
+      document.getElementById('ageValue').style.display=editMode.age?'none':'flex'; document.getElementById('ageEditContainer').style.display=editMode.age?'block':'none';
+      document.getElementById('genderValue').style.display=editMode.gender?'none':'flex'; document.getElementById('genderEditContainer').style.display=editMode.gender?'block':'none';
+      document.getElementById('phoneValue').style.display=editMode.phone?'none':'flex'; document.getElementById('phoneEditContainer').style.display=editMode.phone?'block':'none';
+      document.getElementById('emailValue').style.display=editMode.email?'none':'flex'; document.getElementById('emailEditContainer').style.display=editMode.email?'block':'none';
+    };
+    document.getElementById('editFirstNameBtn').onclick=()=>{editMode.firstName=true; updateDisplay();};
+    document.getElementById('editLastNameBtn').onclick=()=>{editMode.lastName=true; updateDisplay();};
+    document.getElementById('editAgeBtn').onclick=()=>{editMode.age=true; updateDisplay();};
+    document.getElementById('editGenderBtn').onclick=()=>{editMode.gender=true; updateDisplay();};
+    document.getElementById('editPhoneBtn').onclick=()=>{editMode.phone=true; updateDisplay();};
+    document.getElementById('editEmailBtn').onclick=()=>{editMode.email=true; updateDisplay();};
+    document.getElementById('cancelProfileBtn').onclick=()=>modal.style.display='none';
+    document.getElementById('saveProfileBtn').onclick=async()=>{
+      const updates={};
+      if(editMode.firstName) updates.firstName=document.getElementById('firstNameInput').value;
+      if(editMode.lastName) updates.lastName=document.getElementById('lastNameInput').value;
+      if(editMode.age) updates.age=parseInt(document.getElementById('ageInput').value);
+      if(editMode.gender) updates.gender=document.getElementById('genderInput').value;
+      if(editMode.phone) updates.phone=document.getElementById('phoneInput').value;
+      if(editMode.email) updates.email=document.getElementById('emailInput').value;
+      if(Object.keys(updates).length){
+        const res=await fetchJSON(`${API_BASE}/member/profile`,{method:'PUT',body:JSON.stringify(updates)});
+        if(res){ Object.assign(currentMember,updates); await loadDashboard(); showPopup('Profile updated'); modal.style.display='none'; }
+        else showPopup('Update failed',false);
+      } else modal.style.display='none';
+    };
+    document.getElementById('profileClose').onclick=()=>modal.style.display='none';
+    const uploadPic=document.getElementById('uploadProfilePicBtn');
+    uploadPic.onclick=()=>{
+      const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*';
+      inp.onchange=async(e)=>{
+        const file=e.target.files[0]; if(!file) return;
+        const url=await uploadMemberImage(file,memberToken);
+        if(url){
+          const up=await fetchJSON(`${API_BASE}/member/profile`,{method:'PUT',body:JSON.stringify({photoUrl:url})});
+          if(up){ document.getElementById('profileAvatar').src=url; showPopup('Profile picture updated'); await loadDashboard(); }
+        }
+      };
+      inp.click();
+    };
+    document.getElementById('changeDpBtn').onclick=()=>uploadPic.click();
+    updateDisplay();
+  }
+
+  async function openLiftsModal() {
+    if(!memberToken){ showAuthChoice(); return; }
+    const modal=document.getElementById('liftsModal');
+    const bestWeight = getBestWeight();
+    const bestWeightText = bestWeight ? `${bestWeight} kg` : '—';
+    let html=`<div class="premium-modal-card"><button class="modal-close-btn" id="liftsModalClose">&times;</button><div class="modal-title-center">Track Your Progress</div><div class="lifts-list">`;
+    html += `<div class="muscle-pr-row" data-type="weight" style="background: linear-gradient(135deg, #1e1e1e, #2a2a2a); border: 1px solid #FF6B00;"><span class="muscle-name">WEIGHT</span><span class="muscle-pr">${bestWeightText}</span></div>`;
+    for(const [name,val] of Object.entries(exercisePRs)) {
+      html+=`<div class="muscle-pr-row" data-exercise="${name}"><span class="muscle-name">${name.toUpperCase()}</span><span class="muscle-pr">${val} kg</span></div>`;
+    }
+    html+=`</div></div>`;
+    modal.innerHTML=html;
+    modal.style.display='flex';
+    document.getElementById('liftsModalClose').onclick=()=>modal.style.display='none';
+    const weightRow = modal.querySelector('[data-type="weight"]');
+    if(weightRow) weightRow.addEventListener('click',()=>{ modal.style.display='none'; openWeightModal(); });
+    document.querySelectorAll('.muscle-pr-row[data-exercise]').forEach(row=>row.addEventListener('click',()=>{ const ex=row.getAttribute('data-exercise'); modal.style.display='none'; openExerciseHistoryModal(ex); }));
+  }
+
+  async function openAttendanceModal() {
+    if(!memberToken){ showAuthChoice(); return; }
+    const modal=document.getElementById('attendanceActionModal');
+    document.getElementById('attendanceActionContent').innerHTML=`
+      <button class="modal-close-btn" id="closeAttModal">&times;</button>
+      <div class="modal-title-center">Attendance</div>
+      <div style="text-align:center;"><img src="${currentMember?.photoUrl||'dailydoze_logo.png'}" style="width:80px;height:80px;border-radius:50%;border:2px solid #FF6B00;"><h3 style="color:#FF6B00;">Hi, ${currentMember?.name||'Member'}</h3><p>Best of luck for today's workout!</p><div style="display:flex; justify-content:center; gap:2rem; margin:1.5rem 0;"><button class="btn-checkin" id="memberCheckInBtn">Check In</button><button class="btn-checkout" id="memberCheckOutBtn">Check Out</button></div></div>
+    `;
+    modal.style.display='flex';
+    document.getElementById('closeAttModal').onclick=()=>modal.style.display='none';
+    document.getElementById('memberCheckInBtn').onclick=async()=>{
+      const res=await fetch(`${API_BASE}/member/attendance`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${memberToken}`},body:JSON.stringify({action:'checkin'})});
+      if(res.ok){ showPopup('Checked In'); modal.style.display='none'; await loadDashboard(); }
+      else showPopup('Failed',false);
+    };
+    document.getElementById('memberCheckOutBtn').onclick=async()=>{
+      const res=await fetch(`${API_BASE}/member/attendance`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${memberToken}`},body:JSON.stringify({action:'checkout'})});
+      if(res.ok){
+        showPopup('Checked Out'); modal.style.display='none'; await loadDashboard();
+        const today=new Date().toISOString().split('T')[0];
+        const record=attendanceLogs.find(l=>l.date===today);
+        if(record&&record.checkinTime&&record.checkoutTime){
+          const calcHours=(inT,outT)=>{ let [h1,m1]=inT.split(':'), [h2,m2]=outT.split(':'); return ((parseInt(h2)*60+parseInt(m2))-(parseInt(h1)*60+parseInt(m1)))/60; };
+          const hours=calcHours(record.checkinTime,record.checkoutTime);
+          document.getElementById('summaryContent').innerHTML=`<div style="text-align:center;"><img src="${currentMember?.photoUrl||'dailydoze_logo.png'}" style="width:70px;height:70px;border-radius:50%;border:2px solid #FF6B00;"><h3 style="color:#FF6B00;">Great Workout Today, ${currentMember?.name}!</h3><p>${new Date().toLocaleDateString()}</p><div class="shift-time-row"><span>Check In</span><span style="color:#3498db;">${record.checkinTime}</span></div><div class="shift-time-row"><span>Check Out</span><span style="color:#e74c3c;">${record.checkoutTime}</span></div><div class="shift-time-row"><span>Workout Hours</span><span style="color:#FF6B00;">${hours.toFixed(1)} hrs</span></div><button class="ok-button" id="closeSummaryBtn">OK</button></div>`;
+          document.getElementById('workoutSummaryPopup').classList.add('show');
+          document.getElementById('closeSummaryBtn').onclick=()=>document.getElementById('workoutSummaryPopup').classList.remove('show');
+        }
+      } else showPopup('Failed',false);
+    };
+  }
+
+  async function openHeatmapModal() {
+    if(!memberToken){ showAuthChoice(); return; }
+    await loadDashboard();
+    const attendanceSet=new Set(attendanceLogs.filter(l=>l.checkinTime).map(l=>l.date));
+    const modal=document.getElementById('attendanceHeatmapModal');
+    let currentDate=new Date();
+    const MIN_DATE=new Date(2026,5,1), TODAY=new Date();
+    const clampDate=(d)=>{ if(d<MIN_DATE) return new Date(MIN_DATE); if(d>TODAY) return new Date(TODAY); return d; };
+    currentDate=clampDate(currentDate);
+    const weekdays=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const render=()=>{
+      const year=currentDate.getFullYear(), month=currentDate.getMonth();
+      const firstDay=new Date(year,month,1).getDay();
+      const daysInMonth=new Date(year,month+1,0).getDate();
+      let daysHtml='';
+      for(let i=0;i<firstDay;i++) daysHtml+='<div class="compact-day empty"></div>';
+      for(let d=1;d<=daysInMonth;d++){
+        const dateStr=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const dateObj=new Date(year,month,d);
+        const isFuture=dateObj>TODAY, isSunday=dateObj.getDay()===0;
+        const attended=attendanceSet.has(dateStr);
+        let cls='compact-day';
+        if(isFuture) cls+=' future';
+        if(isSunday) cls+=' sunday';
+        if(attended&&!isFuture) cls+=' present';
+        else if(!attended&&!isFuture&&!isSunday&&dateObj>=MIN_DATE) cls+=' absent';
+        daysHtml+=`<div class="${cls}">${d}${attended&&!isFuture?'<div style="width:6px;height:6px;background:#32D74B;border-radius:50%;margin-top:2px;"></div>':''}</div>`;
+      }
+      document.getElementById('heatmapDays').innerHTML=daysHtml;
+      document.getElementById('heatmapMonthYear').innerText=`${new Date(year,month).toLocaleString('default',{month:'long'})} ${year}`;
+    };
+    document.getElementById('heatmapContent').innerHTML=`<button class="modal-close-btn" id="heatmapClose">&times;</button><div class="modal-title-center">My Attendance</div><div class="compact-calendar"><div style="display:flex; justify-content:space-between;"><h4 id="heatmapMonthYear"></h4><div><button id="prevMonthBtn"><i class="fas fa-chevron-left"></i></button> <button id="nextMonthBtn"><i class="fas fa-chevron-right"></i></button></div></div><div class="compact-weekdays">${weekdays.map(d=>`<div>${d}</div>`).join('')}</div><div class="compact-days" id="heatmapDays"></div></div>`;
+    modal.style.display='flex';
+    render();
+    document.getElementById('prevMonthBtn').onclick=()=>{ let nd=new Date(currentDate); nd.setMonth(currentDate.getMonth()-1); nd=clampDate(nd); if(nd.getTime()!==currentDate.getTime()){ currentDate=nd; render(); } };
+    document.getElementById('nextMonthBtn').onclick=()=>{ let nd=new Date(currentDate); nd.setMonth(currentDate.getMonth()+1); nd=clampDate(nd); if(nd.getTime()!==currentDate.getTime()){ currentDate=nd; render(); } };
+    document.getElementById('heatmapClose').onclick=()=>modal.style.display='none';
+  }
+
+  // ========== LIVE STATUS & PWA INSTALL ==========
+  function updateLiveStatus() {
+    const now=new Date(), hours=now.getHours();
+    const isOpen=(hours>=5&&hours<10)||(hours>=17&&hours<21);
+    const dot=document.getElementById('statusDot'), text=document.getElementById('statusText');
+    if(isOpen){ dot.className='pulse-dot'; text.innerText='Open now – Closing at '+(hours<10?'10:00 AM':'9:00 PM'); }
+    else{ dot.className='pulse-dot red'; text.innerText='Closed now – opens at 5:00 AM'; }
+  }
+  setInterval(updateLiveStatus,1000); updateLiveStatus();
+
+  let deferredPrompt;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    document.getElementById('installAppBtn').style.display = 'inline-flex';
+  });
+
+  function updateHeroButton() {
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    const installBtn = document.getElementById('installAppBtn');
+    if (isStandalone) {
+      installBtn.innerHTML = '<i class="fas fa-user"></i> Profile';
+      installBtn.onclick = (e) => { e.preventDefault(); openProfileModal(); };
+    } else {
+      installBtn.innerHTML = '<i class="fas fa-mobile-alt"></i> Download Daily Doze App';
+      installBtn.onclick = (e) => {
+        e.preventDefault();
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          deferredPrompt.userChoice.then((choice) => {
+            if (choice.outcome === 'accepted') console.log('Install accepted');
+            deferredPrompt = null;
+          });
+        } else {
+          showPopup('Tap menu → Add to Home Screen', false);
+        }
+      };
+    }
+  }
+  updateHeroButton();
+  window.matchMedia('(display-mode: standalone)').addListener(updateHeroButton);
+
+  function checkUrlForSignup() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('signup') === 'true') {
+      history.replaceState({}, document.title, window.location.pathname);
+      setTimeout(() => {
+        showSignupModal();
+      }, 100);
+    }
+  }
+
+  document.getElementById('profileBtn').onclick = (e) => { e.preventDefault(); if (memberToken && currentMember && currentMember.name !== 'Guest') openProfileModal(); else showAuthChoice(); };
+  document.getElementById('attendanceModalBtn').onclick = openAttendanceModal;
+  document.getElementById('checkAttendanceBtn').onclick = openHeatmapModal;
+  document.getElementById('weightStatCard').onclick = openWeightModal;
+  document.getElementById('weightChangeStat').onclick = openWeightModal;
+  document.getElementById('updateLiftsBtn').onclick = openLiftsModal;
+  document.getElementById('leavesStatCard').onclick = openHeatmapModal;
+  document.getElementById('workoutDaysStat').onclick = openAttendanceModal;
+  document.getElementById('avgWorkoutHrsStat').onclick = openWorkoutHoursGraph;
+  document.getElementById('membershipStatusCard').onclick = openMembershipModal;
+  document.getElementById('membershipValidCard').onclick = openMembershipModal;
+  
+  window.addEventListener('scroll', () => document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50));
+  document.getElementById('hamburger').onclick = () => document.getElementById('navLinks').classList.toggle('active');
+
+  function escapeHtml(str) { return String(str).replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m] || m)); }
+
+  // CHAT BOT
+  const chatBubble = document.getElementById('chatBubble');
+  const chatWindow = document.getElementById('chatWindow');
+  const chatClose = document.getElementById('chatCloseBtn');
+  function toggleChatWindow(open) { if (open) chatWindow.classList.add('open'); else chatWindow.classList.remove('open'); }
+  chatBubble.addEventListener('click', () => toggleChatWindow(true));
+  chatClose.addEventListener('click', () => toggleChatWindow(false));
+  const chatMessagesDiv = document.getElementById('chatMessages');
+  const chatInputField = document.getElementById('chatInput');
+  const chatSendBtn = document.getElementById('chatSendBtn');
+  async function sendChatMessage() {
+    const message = chatInputField.value.trim();
+    if (!message) return;
+    const token = getStoredToken();
+    if (!token) { showPopup('Please login to use chat.', false); return; }
+    const userMsgDiv = document.createElement('div'); userMsgDiv.className = 'message user-message'; userMsgDiv.textContent = message;
+    chatMessagesDiv.appendChild(userMsgDiv);
+    chatInputField.value = '';
+    chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+    const typingDiv = document.createElement('div'); typingDiv.classList.add('typing-indicator'); typingDiv.innerHTML = '<span></span><span></span><span></span>';
+    chatMessagesDiv.appendChild(typingDiv);
+    chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+    try {
+      const response = await fetch(`${API_BASE}/chat-groq`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ message })
+      });
+      if (typingDiv && typingDiv.parentNode === chatMessagesDiv) chatMessagesDiv.removeChild(typingDiv);
+      if (response.status === 401) { showPopup('Session expired. Please login again.', false); return; }
+      const data = await response.json();
+      if (response.ok && data.reply) {
+        const botMsgDiv = document.createElement('div'); botMsgDiv.className = 'message bot-message'; botMsgDiv.textContent = data.reply;
+        chatMessagesDiv.appendChild(botMsgDiv);
+      } else throw new Error(data.error || 'No response');
+    } catch (err) {
+      if (typingDiv && typingDiv.parentNode === chatMessagesDiv) chatMessagesDiv.removeChild(typingDiv);
+      const errorMsgDiv = document.createElement('div'); errorMsgDiv.className = 'message bot-message';
+      errorMsgDiv.textContent = '🏋️ Sorry, I’m having trouble connecting. Please try again later.';
+      chatMessagesDiv.appendChild(errorMsgDiv);
+    }
+    chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+  }
+  chatSendBtn.addEventListener('click', sendChatMessage);
+  chatInputField.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendChatMessage(); });
+
+  // Graph button for home screen
+  const graphBtn = document.getElementById('graphBtn');
+  const exerciseDropdownSelect = document.getElementById('exerciseDropdown');
+  
+  exerciseDropdownSelect.addEventListener('change', (e) => {
+    renderHomeProgressGraph(e.target.value);
+  });
+  
+  graphBtn.addEventListener('click', () => {
+    const selected = exerciseDropdownSelect.value;
+    if (selected === 'weight') {
+      openGraphPopup('weight');
+    } else {
+      openGraphPopup('exercise', selected);
+    }
+  });
+
+  if (memberToken) loadDashboard(); else resetToGuest();
+  checkUrlForSignup();
+</script>
+</body>
+</html>

@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#121212" />
+  <title>UltraFit Admin | Manage Workout Plans</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <style>
+    /* ========== EXACT SAME STYLES AS WORKOUT.HTML (with admin extras) ========== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background-color: #121212;
+      font-family: 'Montserrat', 'Archivo', sans-serif;
+      color: #eaeaea;
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+    :root {
+      --gold: #FFD700;
+      --gold-glow: 0 0 12px rgba(255,215,0,0.4);
+      --dark-bg: #121212;
+      --card-bg: rgba(28,28,32,0.88);
+      --glass-edge: 1px solid rgba(255,215,0,0.2);
+    }
+    .container {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      background: transparent;
+      transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      padding: 1.2rem 0;
+    }
+    .navbar.scrolled {
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      padding: 0.7rem 0;
+    }
+    .nav-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .nav-logo-img {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid rgba(255, 215, 0, 0.4);
+    }
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+    }
+    .logo-ultra { color: #ffffff; }
+    .logo-fit { color: #FFD700; }
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+      align-items: center;
+    }
+    .nav-link {
+      color: #f0f0f0;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+      padding: 0.5rem 0;
+      position: relative;
+    }
+    .nav-link:not(.join-now-nav):hover { color: #FFD700; }
+    .nav-link:not(.join-now-nav)::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: #FFD700;
+      transform: scaleX(0);
+      transition: transform 0.2s ease;
+    }
+    .nav-link:not(.join-now-nav):hover::after { transform: scaleX(1); }
+    .join-now-nav {
+      background: #FFD700;
+      color: #121212 !important;
+      padding: 0.6rem 1.6rem !important;
+      border-radius: 40px;
+      font-weight: 700;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+    .join-now-nav:hover {
+      background: #e6c300;
+      transform: translateY(-2px);
+    }
+    .hamburger {
+      display: none;
+      font-size: 1.8rem;
+      cursor: pointer;
+      color: #FFD700;
+      min-width: 44px;
+      text-align: center;
+    }
+    @media (max-width: 900px) {
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        background: rgba(0, 0, 0, 0.95);
+        backdrop-filter: blur(12px);
+        padding: 1.5rem;
+        gap: 1.2rem;
+        text-align: center;
+      }
+      .nav-links.active { display: flex; }
+      .hamburger { display: block; }
+      .container { padding: 0 1.5rem; }
+      .join-now-nav {
+        padding: 0.5rem 1.2rem !important;
+        font-size: 0.9rem;
+      }
+    }
+    .workout-hero {
+      position: relative;
+      min-height: 65vh;
+      background: linear-gradient(115deg, #000000d9 0%, #0a0a0a 100%), url('https://images.pexels.com/photos/1954524/pexels-photo-1954524.jpeg?auto=compress&cs=tinysrgb&w=1600');
+      background-size: cover;
+      background-position: center 35%;
+      background-attachment: fixed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      border-bottom: 2px solid rgba(255,215,0,0.3);
+    }
+    .hero-content-center {
+      position: relative;
+      z-index: 2;
+      animation: heroZoomFade 1.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    }
+    @keyframes heroZoomFade {
+      0% { opacity: 0; transform: scale(0.96) translateY(20px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .hero-content-center h1 {
+      font-size: 4.2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #FFFFFF 0%, #FFD700 80%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .hero-sub {
+      font-size: 1.2rem;
+      color: #e0e0e0;
+      max-width: 600px;
+      margin: 1rem auto 0;
+    }
+    .category-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin: 3rem 0 0.5rem;
+    }
+    .category-luxury {
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: #fff;
+      position: relative;
+      display: inline-block;
+    }
+    .category-luxury span {
+      background: linear-gradient(120deg, #FFD700, #FFE55C);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .category-luxury::after {
+      content: '';
+      display: block;
+      width: 100px;
+      height: 3px;
+      background: #FFD700;
+      margin: 0.8rem auto 0;
+      border-radius: 4px;
+      box-shadow: 0 0 8px #FFD700;
+    }
+    .category-sub {
+      text-align: center;
+      font-size: 1rem;
+      color: #FFD700;
+      letter-spacing: 1px;
+      margin-top: 0.2rem;
+      margin-bottom: 2rem;
+      font-weight: 500;
+    }
+    .edit-category-btn, .add-day-btn {
+      background: rgba(255,215,0,0.1);
+      border: 1px solid rgba(255,215,0,0.4);
+      border-radius: 40px;
+      padding: 0.4rem 1rem;
+      color: #FFD700;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .edit-category-btn:hover, .add-day-btn:hover {
+      background: #FFD700;
+      color: #121212;
+    }
+    .workout-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 2rem;
+      margin: 2rem 0 3rem;
+    }
+    .workout-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(8px);
+      border-radius: 32px;
+      border: 1px solid rgba(255,215,0,0.25);
+      overflow: hidden;
+      transition: all 0.4s;
+      position: relative;
+    }
+    .workout-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(255,215,0,0.5);
+    }
+    .card-header {
+      padding: 1.2rem 1.5rem 0.5rem;
+      border-bottom: 1px solid rgba(255,215,0,0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .card-header h3 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #FFD700;
+    }
+    .exercise-list {
+      padding: 1rem 1.5rem;
+      background: rgba(0,0,0,0.3);
+    }
+    .exercise-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      padding: 0.45rem 0;
+      border-bottom: 1px dashed rgba(255,215,0,0.15);
+      color: #eaeaea;
+    }
+    .card-carousel-container {
+      padding: 1rem 1rem 0.5rem;
+    }
+    .workout-carousel {
+      position: relative;
+      overflow: hidden;
+      border-radius: 24px;
+      background: #0a0a0a;
+      touch-action: pan-y pinch-zoom;
+      border: 1px solid rgba(255,215,0,0.3);
+    }
+    .carousel-track {
+      display: flex;
+      transition: transform 0.4s cubic-bezier(0.2, 0.85, 0.4, 1);
+      cursor: grab;
+    }
+    .carousel-slide {
+      flex: 0 0 100%;
+      position: relative;
+    }
+    .carousel-slide img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      display: block;
+    }
+    .image-label {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(6px);
+      padding: 4px 12px;
+      border-radius: 30px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #FFD700;
+      border-left: 2px solid #FFD700;
+    }
+    .carousel-controls {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin: 0.6rem 0 0.4rem;
+    }
+    .carousel-btn {
+      background: #1e1e1e;
+      border: 1px solid #FFD700;
+      color: #FFD700;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .carousel-dots {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin: 8px 0 10px;
+    }
+    .dot {
+      width: 6px;
+      height: 6px;
+      background: #555;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .dot.active {
+      background: #FFD700;
+      transform: scale(1.4);
+    }
+    .admin-edit-btn {
+      background: rgba(0,0,0,0.7);
+      border: 1px solid #FFD700;
+      border-radius: 40px;
+      padding: 0.3rem 0.8rem;
+      color: #FFD700;
+      font-size: 0.7rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .admin-edit-btn:hover {
+      background: #FFD700;
+      color: #121212;
+    }
+    .standard-update-btn {
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(8px);
+      border: 1px solid #FFD700;
+      border-radius: 40px;
+      padding: 0.5rem 1.2rem;
+      color: #FFD700;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .standard-update-btn:hover {
+      background: #FFD700;
+      color: #121212;
+    }
+    .premium-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.92);
+      backdrop-filter: blur(16px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 5000;
+    }
+    .premium-modal-card {
+      background: #121212;
+      border: 1px solid #FFD700;
+      border-radius: 32px;
+      width: 90%;
+      max-width: 800px;
+      padding: 2rem;
+      max-height: 85vh;
+      overflow-y: auto;
+      scroll-behavior: smooth;
+    }
+    .premium-modal-card::-webkit-scrollbar {
+      width: 6px;
+    }
+    .premium-modal-card::-webkit-scrollbar-track { background: #1e1e1e; }
+    .premium-modal-card::-webkit-scrollbar-thumb { background: #FFD700; }
+    .field-group { margin-bottom: 1.2rem; }
+    .field-group label {
+      display: block;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: #aaa;
+      margin-bottom: 0.3rem;
+    }
+    .field-group input, .field-group textarea, .field-group select {
+      width: 100%;
+      background: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 20px;
+      padding: 0.7rem 1rem;
+      color: white;
+      font-family: inherit;
+    }
+    .modal-image-container {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .modal-image {
+      max-width: 200px;
+      max-height: 200px;
+      border-radius: 16px;
+      border: 1px solid #FFD700;
+      object-fit: cover;
+    }
+    .image-upload-area {
+      border: 2px dashed #FFD700;
+      border-radius: 20px;
+      padding: 1rem;
+      text-align: center;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      background: rgba(0,0,0,0.3);
+      transition: 0.2s;
+    }
+    .image-upload-area:hover {
+      background: rgba(255,215,0,0.05);
+    }
+    .image-preview {
+      width: 100%;
+      max-height: 150px;
+      object-fit: contain;
+      border-radius: 16px;
+      margin-bottom: 0.5rem;
+    }
+    .modal-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .modal-btn-delete, .modal-btn-cancel, .modal-btn-save {
+      padding: 0.6rem 1.2rem;
+      border-radius: 40px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+    .modal-btn-delete {
+      background: rgba(200,0,0,0.2);
+      border: 1px solid #e74c3c;
+      color: #e74c3c;
+    }
+    .modal-btn-delete:hover {
+      background: #e74c3c;
+      color: white;
+    }
+    .modal-btn-cancel {
+      background: rgba(100,100,100,0.2);
+      border: 1px solid #888;
+      color: #ccc;
+    }
+    .modal-btn-cancel:hover {
+      background: #888;
+      color: white;
+    }
+    .modal-btn-save {
+      background: #FFD700;
+      border: none;
+      color: #121212;
+    }
+    .modal-btn-save:hover {
+      background: #e6c300;
+      transform: scale(1.02);
+    }
+    .exercise-variant-card, .image-variant-card {
+      background: #1a1a1a;
+      border-radius: 24px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border: 1px solid rgba(255,215,0,0.2);
+    }
+    .variant-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    .btn-remove-variant {
+      background: rgba(200,0,0,0.2);
+      border: 1px solid #e74c3c;
+      color: #e74c3c;
+      padding: 0.2rem 0.6rem;
+      border-radius: 40px;
+      cursor: pointer;
+      font-size: 0.7rem;
+    }
+    .btn-add-variant {
+      background: rgba(255,215,0,0.1);
+      border: 1px solid rgba(255,215,0,0.4);
+      color: #FFD700;
+      padding: 0.4rem 1rem;
+      border-radius: 40px;
+      cursor: pointer;
+      margin-top: 1rem;
+      width: 100%;
+    }
+    .confirm-modal, .success-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.92);
+      backdrop-filter: blur(16px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 5100;
+    }
+    .confirm-card, .success-card {
+      background: #121212;
+      border: 1px solid #FFD700;
+      border-radius: 32px;
+      padding: 2rem;
+      text-align: center;
+      max-width: 400px;
+    }
+    .confirm-yes, .confirm-no, .success-card button {
+      padding: 0.6rem 1.5rem;
+      border-radius: 40px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+      margin: 0 0.5rem;
+      border: none;
+    }
+    .confirm-yes {
+      background: #FFD700;
+      color: #121212;
+    }
+    .confirm-yes:hover {
+      background: #e6c300;
+      transform: scale(1.02);
+    }
+    .confirm-no {
+      background: #333;
+      color: #ccc;
+      border: 1px solid #555;
+    }
+    .confirm-no:hover {
+      background: #444;
+      color: white;
+    }
+    .success-card button {
+      background: #FFD700;
+      color: #121212;
+      margin-top: 1rem;
+    }
+    .success-card button:hover {
+      background: #e6c300;
+    }
+    .admin-toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(0,0,0,0.92);
+      backdrop-filter: blur(12px);
+      color: #FFD700;
+      padding: 12px 28px;
+      border-radius: 60px;
+      font-weight: 600;
+      z-index: 6000;
+      transition: transform 0.3s ease;
+      border-left: 4px solid #FFD700;
+    }
+    .admin-toast.show { transform: translateX(-50%) translateY(0); }
+    footer {
+      background: #000;
+      padding: 3rem 0;
+      border-top: 1px solid rgba(255, 215, 0, 0.3);
+      text-align: center;
+    }
+    .footer-grid {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+    .footer-links ul {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      list-style: none;
+      margin: 1rem 0;
+      flex-wrap: wrap;
+    }
+    .footer-links a {
+      color: #ccc;
+      text-decoration: none;
+      transition: 0.2s;
+    }
+    .footer-links a:hover {
+      color: #FFD700;
+    }
+    .credit {
+      margin-top: 1rem;
+    }
+    .credit a {
+      color: #FFD700;
+      text-decoration: none;
+    }
+    .credit a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+<header class="navbar" id="navbar">
+  <div class="container nav-container">
+    <div class="logo-wrapper">
+      <img src="UltraFit logo.png" alt="UltraFit Logo" class="nav-logo-img" width="38" height="38" />
+      <div class="logo"><span class="logo-ultra">ULTRA</span><span class="logo-fit">FIT</span></div>
+    </div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="admin.html" class="nav-link join-now-nav">Join Now</a></li>
+      <li><a href="admin-diet.html" class="nav-link">Diet Plan</a></li>
+      <li><a href="admin-workout.html" class="nav-link">Workout Plan</a></li>
+      <li><a href="admin-members.html" class="nav-link">Gym Members</a></li>
+      <li><a href="admin-shop.html" class="nav-link">Shop</a></li>
+    </ul>
+    <div class="hamburger" id="hamburger"><i class="fas fa-bars"></i></div>
+  </div>
+</header>
+
+<main>
+  <div class="workout-hero" id="heroSection">
+    <div class="hero-content-center">
+      <h1 id="heroTitle">Weekly Workout Plan</h1>
+      <p id="heroSubheading" class="hero-sub">Periodized programming · Elite coaching · Unlock your athletic ceiling</p>
+      <button class="standard-update-btn" id="editHeroBtn" style="margin-top: 1.5rem;"><i class="fas fa-pencil-alt"></i> Edit Section</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div id="workoutRoot"></div>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-links">
+      <h4>UltraFit Gym</h4>
+      <ul>
+        <li><a href="admin-privacy.html">Privacy Policy</a></li>
+        <li><a href="admin-refund.html">Refund Policy</a></li>
+        <li><a href="admin-terms.html">Terms & Conditions</a></li>
+      </ul>
+      <p class="credit">Designed by <a href="https://ekansh-mishra-webdeveloper.github.io/Brand-Bazar/" target="_blank">Brand Bazaar</a></p>
+    </div>
+  </div>
+</footer>
+
+<div id="modalContainer" class="premium-modal"></div>
+<div id="confirmModal" class="confirm-modal"><div class="confirm-card"><p id="confirmMessage">Are you sure?</p><button class="confirm-yes" id="confirmYesBtn">Yes</button><button class="confirm-no" id="confirmNoBtn">No</button></div></div>
+<div id="successModal" class="success-modal"><div class="success-card"><p id="successMessage">Success</p><button id="successOkBtn">OK</button></div></div>
+<div id="adminToast" class="admin-toast"></div>
+
+<script>
+  // ========== WORKOUT ADMIN WITH HARDCODED CATEGORIES & 6 DEFAULT DAYS ==========
+  const API_BASE = '/api';
+  const DEFAULT_IMAGE = 'https://images.pexels.com/photos/1954524/pexels-photo-1954524.jpeg?auto=compress&w=400';
+  
+  // Hardcoded categories (no need to fetch from DB)
+  const HARD_CODED_CATEGORIES = [
+    { key: "beginner", displayName: "Beginner", subheading: "Foundation – 1 to 6 Months", order: 1 },
+    { key: "intermediate", displayName: "Intermediate", subheading: "Strength Building – 1 to 2 Years", order: 2 },
+    { key: "expert", displayName: "Expert", subheading: "Advanced Performance – 3+ Years", order: 3 }
+  ];
+
+  // Default exercises for a new day (4 exercises)
+  const DEFAULT_EXERCISES = [
+    { name: "Warm-up", reps: "10 min cardio" },
+    { name: "Main exercise 1", reps: "3x10" },
+    { name: "Main exercise 2", reps: "3x12" },
+    { name: "Cool-down", reps: "5 min stretching" }
+  ];
+
+  // Default image for a new day
+  const DEFAULT_IMAGES = [{ url: DEFAULT_IMAGE, label: "Workout" }];
+
+  // Authentication
+  let adminToken = localStorage.getItem('adminToken');
+  let isAuthenticated = !!adminToken;
+
+  function getAuthHeaders() {
+    return adminToken ? { 'Authorization': `Bearer ${adminToken}` } : {};
+  }
+
+  if (!isAuthenticated) {
+    alert('Please log in to the admin panel first.');
+    window.location.href = 'admin.html';
+  }
+
+  function showToast(msg, isError = false) {
+    const toast = document.getElementById('adminToast');
+    toast.innerText = msg;
+    toast.style.borderLeftColor = isError ? '#e74c3c' : '#FFD700';
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+  }
+
+  function confirmAction(message) {
+    return new Promise((resolve) => {
+      const modal = document.getElementById('confirmModal');
+      document.getElementById('confirmMessage').innerText = message;
+      modal.style.display = 'flex';
+      const yesBtn = document.getElementById('confirmYesBtn');
+      const noBtn = document.getElementById('confirmNoBtn');
+      const cleanup = () => {
+        yesBtn.removeEventListener('click', yesHandler);
+        noBtn.removeEventListener('click', noHandler);
+        modal.style.display = 'none';
+      };
+      const yesHandler = () => { cleanup(); resolve(true); };
+      const noHandler = () => { cleanup(); resolve(false); };
+      yesBtn.addEventListener('click', yesHandler);
+      noBtn.addEventListener('click', noHandler);
+    });
+  }
+
+  function showSuccessModal(message) {
+    return new Promise((resolve) => {
+      const modal = document.getElementById('successModal');
+      document.getElementById('successMessage').innerText = message;
+      modal.style.display = 'flex';
+      const okBtn = document.getElementById('successOkBtn');
+      const handleOk = () => {
+        modal.style.display = 'none';
+        okBtn.removeEventListener('click', handleOk);
+        resolve();
+      };
+      okBtn.addEventListener('click', handleOk);
+    });
+  }
+
+  async function fetchJSON(url, options = {}) {
+    try {
+      const res = await fetch(url, {
+        ...options,
+        headers: { 
+          'Content-Type': 'application/json',
+          ...getAuthHeaders(),
+          ...options.headers
+        }
+      });
+      if (res.status === 401) {
+        localStorage.removeItem('adminToken');
+        adminToken = null;
+        alert('Session expired. Please login again.');
+        window.location.href = 'admin.html';
+        return null;
+      }
+      const text = await res.text();
+      let data;
+      try { data = JSON.parse(text); } catch(e) { data = text; }
+      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+      return data;
+    } catch (err) {
+      console.error(err);
+      showToast(err.message, true);
+      return null;
+    }
+  }
+
+  let siteSettings = {};
+  let workoutDays = [];  // will hold all days from DB
+
+  async function loadAllData() {
+    // Load site settings
+    const settings = await fetchJSON(`${API_BASE}/sitesettings`);
+    if (settings) siteSettings = settings;
+    
+    // Load existing workout days
+    const days = await fetchJSON(`${API_BASE}/workoutdays`);
+    if (days) workoutDays = days;
+    else workoutDays = [];
+    
+    // Ensure each category has exactly 6 days (create missing ones)
+    await ensureDefaultDays();
+    
+    renderHero();
+    renderWorkoutSections();
+  }
+
+  async function ensureDefaultDays() {
+    // For each category, check if there are at least 6 days
+    for (const cat of HARD_CODED_CATEGORIES) {
+      const existingDays = workoutDays.filter(d => d.categoryKey === cat.key);
+      const existingCount = existingDays.length;
+      if (existingCount < 6) {
+        // Need to create missing days
+        for (let i = existingCount + 1; i <= 6; i++) {
+          const defaultDayTitle = `Day ${i}`;
+          const newOrder = i;
+          const payload = {
+            dayTitle: defaultDayTitle,
+            order: newOrder,
+            exercises: DEFAULT_EXERCISES.map(ex => ({ ...ex })),
+            images: DEFAULT_IMAGES.map(img => ({ ...img })),
+            categoryKey: cat.key
+          };
+          const created = await fetchJSON(`${API_BASE}/workoutdays`, { method: 'POST', body: JSON.stringify(payload) });
+          if (created) {
+            workoutDays.push(created);
+          }
+        }
+        // Reload days after creation to get fresh IDs
+        const refreshed = await fetchJSON(`${API_BASE}/workoutdays`);
+        if (refreshed) workoutDays = refreshed;
+      }
+    }
+  }
+
+  function renderHero() {
+    const heroTitle = document.getElementById('heroTitle');
+    const heroSub = document.getElementById('heroSubheading');
+    if (heroTitle && siteSettings.workoutHeroHeading) heroTitle.innerText = siteSettings.workoutHeroHeading;
+    if (heroSub && siteSettings.workoutHeroSubheading) heroSub.innerText = siteSettings.workoutHeroSubheading;
+    if (siteSettings.workoutHeroImage) {
+      document.querySelector('.workout-hero').style.backgroundImage = `linear-gradient(115deg, #000000d9 0%, #0a0a0a 100%), url('${siteSettings.workoutHeroImage}')`;
+    }
+  }
+
+  function createCarousel(container, images) {
+    if (!images.length) return;
+    const carouselDiv = document.createElement('div');
+    carouselDiv.className = 'workout-carousel';
+    const track = document.createElement('div');
+    track.className = 'carousel-track';
+    images.forEach(img => {
+      const slide = document.createElement('div');
+      slide.className = 'carousel-slide';
+      slide.innerHTML = `<img src="${img.url}" alt="exercise"><div class="image-label">${escapeHtml(img.label)}</div>`;
+      track.appendChild(slide);
+    });
+    carouselDiv.appendChild(track);
+    const controls = document.createElement('div');
+    controls.className = 'carousel-controls';
+    const prevBtn = document.createElement('button');
+    prevBtn.className = 'carousel-btn';
+    prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+    const nextBtn = document.createElement('button');
+    nextBtn.className = 'carousel-btn';
+    nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+    controls.append(prevBtn, nextBtn);
+    const dotsDiv = document.createElement('div');
+    dotsDiv.className = 'carousel-dots';
+    carouselDiv.append(controls, dotsDiv);
+    container.appendChild(carouselDiv);
+
+    let current = 0;
+    let autoTimer, pauseTimer;
+    const update = () => {
+      track.style.transform = `translateX(-${current * 100}%)`;
+      Array.from(dotsDiv.children).forEach((dot, i) => dot.classList.toggle('active', i === current));
+    };
+    for (let i = 0; i < images.length; i++) {
+      const dot = document.createElement('div');
+      dot.classList.add('dot');
+      dot.addEventListener('click', () => { current = i; update(); resetAuto(); });
+      dotsDiv.appendChild(dot);
+    }
+    prevBtn.addEventListener('click', () => { current = (current - 1 + images.length) % images.length; update(); resetAuto(); });
+    nextBtn.addEventListener('click', () => { current = (current + 1) % images.length; update(); resetAuto(); });
+    function startAuto() { if (autoTimer) clearInterval(autoTimer); autoTimer = setInterval(() => { current = (current + 1) % images.length; update(); }, 3000); }
+    function resetAuto() { if (pauseTimer) clearTimeout(pauseTimer); if (autoTimer) clearInterval(autoTimer); pauseTimer = setTimeout(startAuto, 6000); }
+    startAuto();
+    update();
+  }
+
+  // Edit category (only subheading can be changed, displayName is fixed)
+  async function editCategory(category) {
+    const modal = document.getElementById('modalContainer');
+    modal.innerHTML = `
+      <div class="premium-modal-card">
+        <h3><i class="fas fa-tag"></i> Edit Category: ${escapeHtml(category.displayName)}</h3>
+        <div class="field-group"><label>Subheading</label><input type="text" id="catSubheading" value="${escapeHtml(category.subheading)}"></div>
+        <div class="modal-buttons">
+          <button class="modal-btn-cancel" id="cancelEditCat">Cancel</button>
+          <button class="modal-btn-save" id="saveEditCat">Save Changes</button>
+        </div>
+      </div>
+    `;
+    modal.style.display = 'flex';
+
+    document.getElementById('cancelEditCat').onclick = () => modal.style.display = 'none';
+    document.getElementById('saveEditCat').onclick = async () => {
+      const newSubheading = document.getElementById('catSubheading').value;
+      // Update siteSettings? Categories are hardcoded, but subheadings can be stored in siteSettings or a separate collection.
+      // For simplicity, we store in siteSettings under workoutCategorySubheadings JSON.
+      const currentSubheadings = siteSettings.workoutCategorySubheadings || {};
+      currentSubheadings[category.key] = newSubheading;
+      const updatedSettings = { workoutCategorySubheadings: currentSubheadings };
+      const res = await fetchJSON(`${API_BASE}/sitesettings`, { method: 'PUT', body: JSON.stringify(updatedSettings) });
+      if (res) {
+        siteSettings = { ...siteSettings, ...updatedSettings };
+        category.subheading = newSubheading;
+        modal.style.display = 'none';
+        await showSuccessModal('Category updated');
+        renderWorkoutSections(); // re-render to show new subheading
+      } else showToast('Update failed', true);
+    };
+  }
+
+  async function addNewDay(categoryKey) {
+    const daysInCat = workoutDays.filter(d => d.categoryKey === categoryKey);
+    const nextOrder = daysInCat.length > 0 ? Math.max(...daysInCat.map(d => d.order)) + 1 : 1;
+    const defaultDayTitle = `Day ${nextOrder}`;
+    
+    const modal = document.getElementById('modalContainer');
+    let exercisesHtml = '';
+    DEFAULT_EXERCISES.forEach((ex, idx) => {
+      exercisesHtml += `
+        <div class="exercise-variant-card" data-exercise-index="${idx}">
+          <div class="variant-header">
+            <h4>Exercise ${idx+1}</h4>
+            <button class="btn-remove-variant" data-exercise-idx="${idx}">Remove</button>
+          </div>
+          <div class="field-group"><label>Exercise Name</label><input type="text" id="exName${idx}" value="${escapeHtml(ex.name)}"></div>
+          <div class="field-group"><label>Reps / Duration</label><input type="text" id="exReps${idx}" value="${escapeHtml(ex.reps)}"></div>
+        </div>
+      `;
+    });
+    let imagesHtml = '';
+    DEFAULT_IMAGES.forEach((img, idx) => {
+      imagesHtml += `
+        <div class="image-variant-card" data-image-index="${idx}">
+          <div class="variant-header">
+            <h4>Image ${idx+1}</h4>
+            <button class="btn-remove-variant" data-image-idx="${idx}">Remove</button>
+          </div>
+          <div class="field-group"><label>Image URL</label><input type="text" id="imgUrl${idx}" value="${escapeHtml(img.url)}"><img class="image-preview" src="${img.url}" onerror="this.src='${DEFAULT_IMAGE}'"></div>
+          <div class="field-group"><label>Label</label><input type="text" id="imgLabel${idx}" value="${escapeHtml(img.label)}"></div>
+          <div class="image-upload-area" data-img-idx="${idx}">Upload New Image</div>
+        </div>
+      `;
+    });
+
+    modal.innerHTML = `
+      <div class="premium-modal-card">
+        <h3><i class="fas fa-plus-circle"></i> Add Workout Day for ${categoryKey === 'beginner' ? 'Beginner' : categoryKey === 'intermediate' ? 'Intermediate' : 'Expert'}</h3>
+        <div class="field-group"><label>Day Title</label><input type="text" id="dayTitleInput" value="${defaultDayTitle}"></div>
+        <div class="field-group"><label>Order</label><input type="number" id="dayOrderInput" value="${nextOrder}" min="1" max="20"></div>
+        <h4>Exercises</h4>
+        <div id="exercisesContainer">${exercisesHtml}</div>
+        <button class="btn-add-variant" id="addExerciseBtn">+ Add Exercise</button>
+        <h4 style="margin-top: 1rem;">Carousel Images</h4>
+        <div id="imagesContainer">${imagesHtml}</div>
+        <button class="btn-add-variant" id="addImageBtn">+ Add Image</button>
+        <div class="modal-buttons">
+          <button class="modal-btn-cancel" id="cancelBtn">Cancel</button>
+          <button class="modal-btn-save" id="saveBtn">Create Day</button>
+        </div>
+      </div>
+    `;
+    modal.style.display = 'flex';
+
+    function attachImageUploads() {
+      document.querySelectorAll('.image-upload-area').forEach(area => {
+        area.onclick = async () => {
+          const imgIdx = area.getAttribute('data-img-idx');
+          const input = document.createElement('input');
+          input.type = 'file';
+          input.accept = 'image/*';
+          input.onchange = async (ev) => {
+            const file = ev.target.files[0];
+            if (!file) return;
+            const originalText = area.innerText;
+            area.style.opacity = '0.6';
+            area.style.cursor = 'wait';
+            area.innerText = 'Uploading...';
+            const formData = new FormData();
+            formData.append('image', file);
+            try {
+              const res = await fetch('/api/upload', {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: formData
+              });
+              if (res.status === 401) {
+                localStorage.removeItem('adminToken');
+                adminToken = null;
+                alert('Session expired. Please login again.');
+                window.location.href = 'admin.html';
+                return;
+              }
+              const data = await res.json();
+              if (data.url) {
+                document.getElementById(`imgUrl${imgIdx}`).value = data.url;
+                const preview = document.querySelector(`#imgUrl${imgIdx}`)?.closest('.image-variant-card')?.querySelector('.image-preview');
+                if (preview) preview.src = data.url;
+                showToast('Image uploaded successfully');
+              } else {
+                showToast('Upload failed – no URL returned', true);
+              }
+            } catch (err) {
+              console.error(err);
+              showToast('Upload error: ' + err.message, true);
+            } finally {
+              area.style.opacity = '1';
+              area.style.cursor = 'pointer';
+              area.innerText = originalText;
+            }
+          };
+          input.click();
+        };
+      });
+    }
+    attachImageUploads();
+
+    document.querySelectorAll('.btn-remove-variant[data-exercise-idx]').forEach(btn => {
+      btn.onclick = () => btn.closest('.exercise-variant-card').remove();
+    });
+    document.querySelectorAll('.btn-remove-variant[data-image-idx]').forEach(btn => {
+      btn.onclick = () => btn.closest('.image-variant-card').remove();
+    });
+
+    document.getElementById('addExerciseBtn').onclick = () => {
+      const newIdx = document.querySelectorAll('.exercise-variant-card').length;
+      const newHtml = `
+        <div class="exercise-variant-card" data-exercise-index="${newIdx}">
+          <div class="variant-header">
+            <h4>Exercise ${newIdx+1}</h4>
+            <button class="btn-remove-variant" data-exercise-idx="${newIdx}">Remove</button>
+          </div>
+          <div class="field-group"><label>Exercise Name</label><input type="text" id="exName${newIdx}" value="New Exercise"></div>
+          <div class="field-group"><label>Reps / Duration</label><input type="text" id="exReps${newIdx}" value="3x12"></div>
+        </div>
+      `;
+      document.getElementById('exercisesContainer').insertAdjacentHTML('beforeend', newHtml);
+      document.querySelectorAll('.btn-remove-variant[data-exercise-idx]').forEach(btn => {
+        btn.onclick = () => btn.closest('.exercise-variant-card').remove();
+      });
+    };
+
+    document.getElementById('addImageBtn').onclick = () => {
+      const newIdx = document.querySelectorAll('.image-variant-card').length;
+      const newHtml = `
+        <div class="image-variant-card" data-image-index="${newIdx}">
+          <div class="variant-header">
+            <h4>Image ${newIdx+1}</h4>
+            <button class="btn-remove-variant" data-image-idx="${newIdx}">Remove</button>
+          </div>
+          <div class="field-group"><label>Image URL</label><input type="text" id="imgUrl${newIdx}" value="${DEFAULT_IMAGE}"><img class="image-preview" src="${DEFAULT_IMAGE}"></div>
+          <div class="field-group"><label>Label</label><input type="text" id="imgLabel${newIdx}" value="Workout"></div>
+          <div class="image-upload-area" data-img-idx="${newIdx}">Upload New Image</div>
+        </div>
+      `;
+      document.getElementById('imagesContainer').insertAdjacentHTML('beforeend', newHtml);
+      attachImageUploads();
+      document.querySelectorAll('.btn-remove-variant[data-image-idx]').forEach(btn => {
+        btn.onclick = () => btn.closest('.image-variant-card').remove();
+      });
+    };
+
+    document.getElementById('cancelBtn').onclick = async () => {
+      if (await confirmAction('Discard changes?')) modal.style.display = 'none';
+    };
+
+    document.getElementById('saveBtn').onclick = async () => {
+      if (!await confirmAction('Create this workout day?')) return;
+      const dayTitle = document.getElementById('dayTitleInput').value;
+      const order = parseInt(document.getElementById('dayOrderInput').value);
+      const exerciseCards = document.querySelectorAll('.exercise-variant-card');
+      const exercises = [];
+      exerciseCards.forEach((card, idx) => {
+        const name = document.getElementById(`exName${idx}`)?.value || '';
+        const reps = document.getElementById(`exReps${idx}`)?.value || '';
+        if (name) exercises.push({ name, reps });
+      });
+      const imageCards = document.querySelectorAll('.image-variant-card');
+      const images = [];
+      imageCards.forEach((card, idx) => {
+        const url = document.getElementById(`imgUrl${idx}`)?.value || '';
+        const label = document.getElementById(`imgLabel${idx}`)?.value || '';
+        if (url) images.push({ url, label });
+      });
+      const payload = {
+        dayTitle,
+        order,
+        exercises,
+        images,
+        categoryKey
+      };
+      const res = await fetchJSON(`${API_BASE}/workoutdays`, { method: 'POST', body: JSON.stringify(payload) });
+      if (res) {
+        modal.style.display = 'none';
+        await showSuccessModal('Workout day created');
+        loadAllData(); // reload to show new day
+      } else showToast('Creation failed', true);
+    };
+  }
+
+  async function openDayEditor(dayId) {
+    const day = workoutDays.find(d => d._id === dayId);
+    if (!day) return;
+    const modal = document.getElementById('modalContainer');
+    let exercisesHtml = '';
+    day.exercises.forEach((ex, idx) => {
+      exercisesHtml += `
+        <div class="exercise-variant-card" data-exercise-index="${idx}">
+          <div class="variant-header">
+            <h4>Exercise ${idx+1}</h4>
+            <button class="btn-remove-variant" data-exercise-idx="${idx}">Remove</button>
+          </div>
+          <div class="field-group"><label>Exercise Name</label><input type="text" id="exName${idx}" value="${escapeHtml(ex.name)}"></div>
+          <div class="field-group"><label>Reps / Duration</label><input type="text" id="exReps${idx}" value="${escapeHtml(ex.reps)}"></div>
+        </div>
+      `;
+    });
+    let imagesHtml = '';
+    (day.images || []).forEach((img, idx) => {
+      imagesHtml += `
+        <div class="image-variant-card" data-image-index="${idx}">
+          <div class="variant-header">
+            <h4>Image ${idx+1}</h4>
+            <button class="btn-remove-variant" data-image-idx="${idx}">Remove</button>
+          </div>
+          <div class="field-group"><label>Image URL</label><input type="text" id="imgUrl${idx}" value="${escapeHtml(img.url)}"><img class="image-preview" src="${img.url}" onerror="this.src='${DEFAULT_IMAGE}'"></div>
+          <div class="field-group"><label>Label</label><input type="text" id="imgLabel${idx}" value="${escapeHtml(img.label)}"></div>
+          <div class="image-upload-area" data-img-idx="${idx}">Upload New Image</div>
+        </div>
+      `;
+    });
+    modal.innerHTML = `
+      <div class="premium-modal-card">
+        <h3><i class="fas fa-dumbbell"></i> Edit Workout Day: ${escapeHtml(day.dayTitle)}</h3>
+        <div class="field-group"><label>Day Title</label><input type="text" id="dayTitleInput" value="${escapeHtml(day.dayTitle)}"></div>
+        <div class="field-group"><label>Order</label><input type="number" id="dayOrderInput" value="${day.order}" min="1" max="20"></div>
+        <h4>Exercises</h4>
+        <div id="exercisesContainer">${exercisesHtml}</div>
+        <button class="btn-add-variant" id="addExerciseBtn">+ Add Exercise</button>
+        <h4 style="margin-top: 1rem;">Carousel Images</h4>
+        <div id="imagesContainer">${imagesHtml}</div>
+        <button class="btn-add-variant" id="addImageBtn">+ Add Image</button>
+        <div class="modal-buttons">
+          <button class="modal-btn-delete" id="deleteDayBtn">Delete Entire Day</button>
+          <button class="modal-btn-cancel" id="cancelBtn">Cancel</button>
+          <button class="modal-btn-save" id="saveBtn">Save Changes</button>
+        </div>
+      </div>
+    `;
+    modal.style.display = 'flex';
+
+    function attachImageUploads() {
+      document.querySelectorAll('.image-upload-area').forEach(area => {
+        area.onclick = async () => {
+          const imgIdx = area.getAttribute('data-img-idx');
+          const input = document.createElement('input');
+          input.type = 'file';
+          input.accept = 'image/*';
+          input.onchange = async (ev) => {
+            const file = ev.target.files[0];
+            if (!file) return;
+            const originalText = area.innerText;
+            area.style.opacity = '0.6';
+            area.style.cursor = 'wait';
+            area.innerText = 'Uploading...';
+            const formData = new FormData();
+            formData.append('image', file);
+            try {
+              const res = await fetch('/api/upload', {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: formData
+              });
+              if (res.status === 401) {
+                localStorage.removeItem('adminToken');
+                adminToken = null;
+                alert('Session expired. Please login again.');
+                window.location.href = 'admin.html';
+                return;
+              }
+              const data = await res.json();
+              if (data.url) {
+                document.getElementById(`imgUrl${imgIdx}`).value = data.url;
+                const preview = document.querySelector(`#imgUrl${imgIdx}`)?.closest('.image-variant-card')?.querySelector('.image-preview');
+                if (preview) preview.src = data.url;
+                showToast('Image uploaded successfully');
+              } else {
+                showToast('Upload failed – no URL returned', true);
+              }
+            } catch (err) {
+              console.error(err);
+              showToast('Upload error: ' + err.message, true);
+            } finally {
+              area.style.opacity = '1';
+              area.style.cursor = 'pointer';
+              area.innerText = originalText;
+            }
+          };
+          input.click();
+        };
+      });
+    }
+    attachImageUploads();
+
+    document.querySelectorAll('.btn-remove-variant[data-exercise-idx]').forEach(btn => {
+      btn.onclick = () => btn.closest('.exercise-variant-card').remove();
+    });
+    document.querySelectorAll('.btn-remove-variant[data-image-idx]').forEach(btn => {
+      btn.onclick = () => btn.closest('.image-variant-card').remove();
+    });
+
+    document.getElementById('addExerciseBtn').onclick = () => {
+      const newIdx = document.querySelectorAll('.exercise-variant-card').length;
+      const newHtml = `
+        <div class="exercise-variant-card" data-exercise-index="${newIdx}">
+          <div class="variant-header">
+            <h4>Exercise ${newIdx+1}</h4>
+            <button class="btn-remove-variant" data-exercise-idx="${newIdx}">Remove</button>
+          </div>
+          <div class="field-group"><label>Exercise Name</label><input type="text" id="exName${newIdx}" value="New Exercise"></div>
+          <div class="field-group"><label>Reps / Duration</label><input type="text" id="exReps${newIdx}" value="3x12"></div>
+        </div>
+      `;
+      document.getElementById('exercisesContainer').insertAdjacentHTML('beforeend', newHtml);
+      document.querySelectorAll('.btn-remove-variant[data-exercise-idx]').forEach(btn => {
+        btn.onclick = () => btn.closest('.exercise-variant-card').remove();
+      });
+    };
+
+    document.getElementById('addImageBtn').onclick = () => {
+      const newIdx = document.querySelectorAll('.image-variant-card').length;
+      const newHtml = `
+        <div class="image-variant-card" data-image-index="${newIdx}">
+          <div class="variant-header">
+            <h4>Image ${newIdx+1}</h4>
+            <button class="btn-remove-variant" data-image-idx="${newIdx}">Remove</button>
+          </div>
+          <div class="field-group"><label>Image URL</label><input type="text" id="imgUrl${newIdx}" value="${DEFAULT_IMAGE}"><img class="image-preview" src="${DEFAULT_IMAGE}"></div>
+          <div class="field-group"><label>Label</label><input type="text" id="imgLabel${newIdx}" value="Workout"></div>
+          <div class="image-upload-area" data-img-idx="${newIdx}">Upload New Image</div>
+        </div>
+      `;
+      document.getElementById('imagesContainer').insertAdjacentHTML('beforeend', newHtml);
+      attachImageUploads();
+      document.querySelectorAll('.btn-remove-variant[data-image-idx]').forEach(btn => {
+        btn.onclick = () => btn.closest('.image-variant-card').remove();
+      });
+    };
+
+    document.getElementById('deleteDayBtn').onclick = async () => {
+      if (await confirmAction(`Delete day "${day.dayTitle}" permanently?`)) {
+        const res = await fetchJSON(`${API_BASE}/workoutdays/${day._id}`, { method: 'DELETE' });
+        if (res) {
+          modal.style.display = 'none';
+          await showSuccessModal('Day deleted');
+          loadAllData();
+        } else showToast('Delete failed', true);
+      }
+    };
+
+    document.getElementById('cancelBtn').onclick = async () => {
+      if (await confirmAction('Discard changes?')) modal.style.display = 'none';
+    };
+
+    document.getElementById('saveBtn').onclick = async () => {
+      if (!await confirmAction('Save changes?')) return;
+      const newTitle = document.getElementById('dayTitleInput').value;
+      const newOrder = parseInt(document.getElementById('dayOrderInput').value);
+      const exerciseCards = document.querySelectorAll('.exercise-variant-card');
+      const exercises = [];
+      exerciseCards.forEach((card, idx) => {
+        const name = document.getElementById(`exName${idx}`)?.value || '';
+        const reps = document.getElementById(`exReps${idx}`)?.value || '';
+        if (name) exercises.push({ name, reps });
+      });
+      const imageCards = document.querySelectorAll('.image-variant-card');
+      const images = [];
+      imageCards.forEach((card, idx) => {
+        const url = document.getElementById(`imgUrl${idx}`)?.value || '';
+        const label = document.getElementById(`imgLabel${idx}`)?.value || '';
+        if (url) images.push({ url, label });
+      });
+      const payload = {
+        dayTitle: newTitle,
+        order: newOrder,
+        exercises,
+        images,
+        categoryKey: day.categoryKey
+      };
+      const res = await fetchJSON(`${API_BASE}/workoutdays/${day._id}`, { method: 'PUT', body: JSON.stringify(payload) });
+      if (res) {
+        modal.style.display = 'none';
+        await showSuccessModal('Workout day updated');
+        loadAllData();
+      } else showToast('Update failed', true);
+    };
+  }
+
+  async function editHero() {
+    const modal = document.getElementById('modalContainer');
+    const currentImageUrl = siteSettings.workoutHeroImage || '';
+    const currentTitle = siteSettings.workoutHeroHeading || 'Weekly Workout Plan';
+    const currentSub = siteSettings.workoutHeroSubheading || 'Periodized programming · Elite coaching · Unlock your athletic ceiling';
+
+    modal.innerHTML = `
+      <div class="premium-modal-card">
+        <h3><i class="fas fa-image"></i> Edit Section</h3>
+        <div style="margin-bottom: 1rem;">
+          <label>Current Hero Image</label>
+          <div class="modal-image-container">
+            <img id="currentHeroImagePreview" class="modal-image" 
+                 src="${currentImageUrl}" 
+                 onerror="this.src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22200%22%20height%3D%22100%22%3E%3Crect%20width%3D%22200%22%20height%3D%22100%22%20fill%3D%22%23333%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20text-anchor%3D%22middle%22%20fill%3D%22%23FFD700%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+          </div>
+        </div>
+        <div class="field-group">
+          <label>Upload New Hero Image</label>
+          <div class="image-upload-area" id="heroBgUploadArea">
+            <i class="fas fa-cloud-upload-alt"></i> Click to upload
+          </div>
+        </div>
+        <div class="field-group">
+          <label>Title (Heading)</label>
+          <input type="text" id="heroTitleInput" value="${escapeHtml(currentTitle)}">
+        </div>
+        <div class="field-group">
+          <label>Subheading</label>
+          <input type="text" id="heroSubInput" value="${escapeHtml(currentSub)}">
+        </div>
+        <div class="modal-buttons">
+          <button class="modal-btn-cancel" id="modalCancelBtn">Cancel</button>
+          <button class="modal-btn-save" id="modalSaveBtn">Save Changes</button>
+        </div>
+      </div>
+    `;
+    modal.style.display = 'flex';
+
+    let newImageUrl = currentImageUrl;
+    const previewImg = document.getElementById('currentHeroImagePreview');
+    const uploadArea = document.getElementById('heroBgUploadArea');
+    uploadArea.onclick = async () => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const formData = new FormData();
+        formData.append('image', file);
+        const originalText = uploadArea.innerText;
+        uploadArea.style.opacity = '0.6';
+        uploadArea.style.cursor = 'wait';
+        uploadArea.innerText = 'Uploading...';
+        try {
+          const res = await fetch('/api/upload', {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: formData
+          });
+          if (res.status === 401) {
+            localStorage.removeItem('adminToken');
+            adminToken = null;
+            alert('Session expired. Please login again.');
+            window.location.href = 'admin.html';
+            return;
+          }
+          const data = await res.json();
+          if (data.url) {
+            newImageUrl = data.url;
+            previewImg.src = newImageUrl;
+            showToast('Image uploaded. Click Save to apply.');
+          } else {
+            showToast('Upload failed', true);
+          }
+        } catch (err) {
+          showToast('Upload error: ' + err.message, true);
+        } finally {
+          uploadArea.style.opacity = '1';
+          uploadArea.style.cursor = 'pointer';
+          uploadArea.innerText = originalText;
+        }
+      };
+      input.click();
+    };
+
+    document.getElementById('modalCancelBtn').onclick = async () => {
+      if (await confirmAction('Discard changes?')) modal.style.display = 'none';
+    };
+    document.getElementById('modalSaveBtn').onclick = async () => {
+      if (!await confirmAction('Save changes?')) return;
+      const updatedSettings = {
+        workoutHeroHeading: document.getElementById('heroTitleInput').value,
+        workoutHeroSubheading: document.getElementById('heroSubInput').value,
+        workoutHeroImage: newImageUrl
+      };
+      const res = await fetchJSON(`${API_BASE}/sitesettings`, {
+        method: 'PUT',
+        body: JSON.stringify(updatedSettings)
+      });
+      if (res) {
+        siteSettings = { ...siteSettings, ...updatedSettings };
+        renderHero();
+        modal.style.display = 'none';
+        await showSuccessModal('Hero section updated');
+      } else {
+        showToast('Update failed', true);
+      }
+    };
+  }
+
+  function renderWorkoutSections() {
+    const root = document.getElementById('workoutRoot');
+    root.innerHTML = '';
+    // Use hardcoded categories (their subheadings may be overridden by siteSettings)
+    const subheadingsFromSettings = siteSettings.workoutCategorySubheadings || {};
+    const categoriesToRender = HARD_CODED_CATEGORIES.map(cat => ({
+      ...cat,
+      subheading: subheadingsFromSettings[cat.key] || cat.subheading
+    }));
+    
+    categoriesToRender.forEach(cat => {
+      const catDays = workoutDays.filter(d => d.categoryKey === cat.key).sort((a,b) => a.order - b.order);
+      const sectionDiv = document.createElement('div');
+      sectionDiv.innerHTML = `
+        <div class="category-header">
+          <div class="category-luxury"><span>${escapeHtml(cat.displayName)}</span></div>
+          <div style="display: flex; gap: 0.8rem;">
+            <button class="add-day-btn" data-cat-key="${cat.key}"><i class="fas fa-plus"></i> Add</button>
+            <button class="edit-category-btn" data-cat-key="${cat.key}"><i class="fas fa-edit"></i> Edit Category</button>
+          </div>
+        </div>
+        <div class="category-sub">${escapeHtml(cat.subheading)}</div>
+        <div class="workout-cards-grid" id="grid-${cat.key}"></div>
+      `;
+      root.appendChild(sectionDiv);
+      const grid = document.getElementById(`grid-${cat.key}`);
+      if (catDays.length === 0) {
+        grid.innerHTML = '<p style="color: #aaa; text-align:center;">No days yet. Click "+ Add" to create a workout day.</p>';
+      } else {
+        catDays.forEach(day => {
+          const card = document.createElement('div');
+          card.className = 'workout-card';
+          const exercisesHtml = day.exercises.map(ex => `<div class="exercise-item"><span class="exercise-name">${escapeHtml(ex.name)}</span><span class="exercise-reps">${escapeHtml(ex.reps)}</span></div>`).join('');
+          card.innerHTML = `
+            <div class="card-header">
+              <h3>${escapeHtml(day.dayTitle)}</h3>
+              <button class="admin-edit-btn" data-day-id="${day._id}"><i class="fas fa-edit"></i> Edit</button>
+            </div>
+            <div class="exercise-list">${exercisesHtml}</div>
+            <div class="card-carousel-container"></div>
+          `;
+          grid.appendChild(card);
+          const carouselContainer = card.querySelector('.card-carousel-container');
+          if (day.images && day.images.length) {
+            createCarousel(carouselContainer, day.images);
+          }
+        });
+      }
+    });
+    
+    // Attach event listeners for category edit and add day
+    document.querySelectorAll('.edit-category-btn').forEach(btn => {
+      const catKey = btn.getAttribute('data-cat-key');
+      const category = HARD_CODED_CATEGORIES.find(c => c.key === catKey);
+      btn.addEventListener('click', () => editCategory(category));
+    });
+    document.querySelectorAll('.add-day-btn').forEach(btn => {
+      const catKey = btn.getAttribute('data-cat-key');
+      btn.addEventListener('click', () => addNewDay(catKey));
+    });
+    document.querySelectorAll('.admin-edit-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const dayId = btn.getAttribute('data-day-id');
+        openDayEditor(dayId);
+      });
+    });
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, (m) => {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  document.getElementById('editHeroBtn').addEventListener('click', editHero);
+
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 50) navbar.classList.add('scrolled');
+    else navbar.classList.remove('scrolled');
+  });
+  const hamburger = document.getElementById('hamburger');
+  const navLinksEl = document.getElementById('navLinks');
+  if (hamburger) hamburger.addEventListener('click', () => navLinksEl.classList.toggle('active'));
+
+  loadAllData();
+</script>
+</body>
+</html>

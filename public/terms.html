@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#121212" />
+  <title>UltraFit Gym | Terms & Conditions</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="index.css" />
+  <style>
+    .legal-card ul { margin-left: 1.5rem; margin-top: 0.5rem; }
+    .legal-card li { margin-bottom: 0.3rem; }
+  </style>
+</head>
+<body>
+
+<header class="navbar" id="navbar">
+  <div class="container nav-container">
+    <div class="logo-wrapper">
+      <img src="UltraFit logo.png" alt="UltraFit Logo" class="nav-logo-img" width="38" height="38" />
+      <div class="logo"><span class="logo-ultra">ULTRA</span><span class="logo-fit">FIT</span></div>
+    </div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html" class="nav-link join-now-nav">Join Now</a></li>
+      <li><a href="index.html#contact-section" class="nav-link">Contact Us</a></li>
+      <li><a href="diet.html" class="nav-link">Diet Plan</a></li>
+      <li><a href="workout.html" class="nav-link">Workout Plan</a></li>
+      <li><a href="members.html" class="nav-link">Gym Members</a></li>
+      <li><a href="shop.html" class="nav-link">Shop</a></li>
+    </ul>
+    <div class="hamburger" id="hamburger"><i class="fas fa-bars"></i></div>
+  </div>
+</header>
+
+<main>
+  <section class="legal-hero">
+    <div class="container">
+      <h1 class="legal-title" id="heroHeading">Terms & Conditions</h1>
+      <p class="legal-subtitle" id="heroSubheading">Loading...</p>
+    </div>
+  </section>
+  <section class="legal-content-section">
+    <div class="container" id="sectionsContainer">
+      <!-- sections injected dynamically -->
+    </div>
+  </section>
+  <footer>
+    <div class="container footer-grid">
+      <div class="footer-links">
+        <h4>UltraFit Gym</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="privacy.html">Privacy Policy</a></li>
+          <li><a href="refund.html">Refund Policy</a></li>
+          <li><a href="terms.html">Terms & Conditions</a></li>
+        </ul>
+        <p class="credit">Designed by Brand Bazaar</p>
+      </div>
+    </div>
+  </footer>
+</main>
+<div id="modalOverlay" class="modal-overlay"><div class="modal-content"><span class="close-modal">&times;</span><div id="modalDynamicBody"></div></div></div>
+
+<script>
+  // Determine page key from URL
+  const path = window.location.pathname;
+  let pageKey = 'terms';
+  if (path.includes('privacy')) pageKey = 'privacy';
+  else if (path.includes('refund')) pageKey = 'refund';
+  else pageKey = 'terms';
+
+  const API_BASE = window.location.hostname === 'localhost' 
+    ? '/api' 
+    : 'https://ultrafit-gym-unnao.onrender.com/api';
+
+  async function fetchJSON(url) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    } catch (err) {
+      console.error(`Fetch error ${url}:`, err);
+      return null;
+    }
+  }
+
+  async function loadLegalContent() {
+    const data = await fetchJSON(`${API_BASE}/legal/${pageKey}`);
+    if (!data) return;
+    document.getElementById('heroHeading').innerText = data.heroHeading;
+    document.getElementById('heroSubheading').innerText = data.heroSubheading;
+    const container = document.getElementById('sectionsContainer');
+    container.innerHTML = '';
+    data.sections.forEach(section => {
+      const card = document.createElement('div');
+      card.className = 'legal-card fade-up';
+      card.innerHTML = `
+        <h2 class="legal-card-title"><i class="fas fa-file-alt"></i> ${section.title}</h2>
+        <div>${section.content}</div>
+      `;
+      container.appendChild(card);
+    });
+    const fadeElements = document.querySelectorAll('.legal-card');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('appear'); });
+    }, { threshold: 0.2 });
+    fadeElements.forEach(el => { el.classList.add('fade-up'); observer.observe(el); });
+  }
+
+  loadLegalContent();
+
+  // Navbar scroll & hamburger
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 50) navbar.classList.add('scrolled');
+    else navbar.classList.remove('scrolled');
+  });
+  const hamburger = document.getElementById('hamburger');
+  const navLinks = document.getElementById('navLinks');
+  if (hamburger) hamburger.addEventListener('click', () => navLinks.classList.toggle('active'));
+</script>
+</body>
+</html>

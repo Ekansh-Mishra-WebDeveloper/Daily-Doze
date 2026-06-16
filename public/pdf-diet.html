@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generating PDF – UltraFit Gym</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #1a1a1a;
+      font-family: 'Montserrat', 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .pdf-preview {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: #0a0a0a;
+      border-radius: 16px;
+      box-shadow: 0 20px 35px rgba(0,0,0,0.5);
+      overflow: hidden;
+    }
+    .loading {
+      text-align: center;
+      padding: 3rem;
+      color: #FFD700;
+      font-size: 1.2rem;
+      font-weight: 600;
+      background: #0a0a0a;
+    }
+    /* PDF content styles – premium dark theme */
+    .pdf-content {
+      background: #0a0a0a;
+      padding: 2rem;
+      color: #eaeaea;
+      font-family: 'Montserrat', 'Segoe UI', sans-serif;
+    }
+    .pdf-content .logo-pdf {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .pdf-content .logo-pdf img {
+      width: 80px;
+      border-radius: 50%;
+      border: 2px solid #FFD700;
+      padding: 4px;
+      background: #0a0a0a;
+    }
+    .pdf-content h1 {
+      color: #FFD700;
+      font-size: 2.5rem;
+      text-align: center;
+      margin-bottom: 0.5rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    .pdf-content .subhead {
+      text-align: center;
+      color: #aaaaaa;
+      margin-bottom: 2rem;
+      border-bottom: 2px solid #FFD700;
+      display: inline-block;
+      width: auto;
+      margin-left: auto;
+      margin-right: auto;
+      padding-bottom: 0.3rem;
+      font-weight: 500;
+    }
+    /* Force page break before each meal section (except first) */
+    .meal-section {
+      margin-bottom: 2rem;
+      page-break-inside: avoid;
+      background: rgba(255,255,255,0.03);
+      border-radius: 16px;
+      padding: 0.5rem;
+    }
+    .first-section {
+      page-break-before: auto;
+    }
+    .meal-section:not(.first-section) {
+      page-break-before: always;
+    }
+    .meal-header-pdf {
+      background: #1a1a1a;
+      padding: 0.8rem;
+      border-left: 6px solid #FFD700;
+      margin-bottom: 1rem;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #FFD700;
+      border-radius: 12px 0 0 12px;
+    }
+    .pdf-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1rem;
+      background: rgba(255,255,255,0.02);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .pdf-content th, .pdf-content td {
+      border: 1px solid #2a2a2a;
+      padding: 10px;
+      vertical-align: top;
+    }
+    .pdf-content th {
+      background: #1a1a1a;
+      color: #FFD700;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+    }
+    .pdf-content td {
+      color: #dddddd;
+    }
+    .recommended-badge {
+      background: #FFD700;
+      color: #0a0a0a;
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-left: 8px;
+      font-weight: 800;
+    }
+    .meal-img {
+      max-width: 100px;
+      border-radius: 12px;
+      display: block;
+      border: 1px solid #FFD700;
+      padding: 2px;
+      background: #1a1a1a;
+    }
+    /* Footer only on last page – will be placed after all meal sections */
+    .pdf-footer {
+      margin-top: 2rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #777;
+      border-top: 1px solid #2a2a2a;
+      padding-top: 1rem;
+      page-break-before: avoid;
+    }
+  </style>
+</head>
+<body>
+<div class="pdf-preview">
+  <div class="loading" id="loadingMsg">📄 Generating your premium PDF...<br>Please wait, this may take a few seconds.</div>
+</div>
+
+<script>
+  const API_BASE = window.location.hostname === 'localhost' 
+    ? '/api' 
+    : 'https://ultrafit-gym-unnao.onrender.com/api';
+  const urlParams = new URLSearchParams(window.location.search);
+  const categoryKey = urlParams.get('category');
+  const planType = urlParams.get('type');
+
+  if (!categoryKey || !planType) {
+    document.body.innerHTML = '<div style="color:#FFD700; text-align:center; padding:2rem;">Missing parameters. Use ?category=veg&type=gain</div>';
+    throw new Error('Missing parameters');
+  }
+
+  async function fetchJSON(url) {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status} – ${url}`);
+    return res.json();
+  }
+
+  async function loadAndGenerate() {
+    try {
+      const [categories, meals] = await Promise.all([
+        fetchJSON(`${API_BASE}/dietcategories`),
+        fetchJSON(`${API_BASE}/dietmeals`)
+      ]);
+
+      const category = categories.find(c => c.key === categoryKey);
+      if (!category) throw new Error(`Category "${categoryKey}" not found`);
+      const displayCategory = category.displayName;
+      const planLabel = planType === 'gain' ? 'Muscle Gain' : 'Fat Loss';
+      const mealsForPlan = meals.filter(m => m.categoryKey === categoryKey && m.type === planType);
+      if (!mealsForPlan.length) throw new Error(`No ${planLabel} meals found for ${displayCategory}`);
+
+      // Group by mealTime and sort: Breakfast, Lunch, Dinner
+      const mealOrder = ['breakfast', 'lunch', 'dinner'];
+      const grouped = {};
+      mealsForPlan.forEach(meal => {
+        const time = meal.mealTime;
+        if (!grouped[time]) grouped[time] = [];
+        grouped[time].push(meal);
+      });
+      const sortedMealTimes = Object.keys(grouped).sort((a,b) => {
+        const ia = mealOrder.indexOf(a);
+        const ib = mealOrder.indexOf(b);
+        return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
+      });
+
+      // Build HTML – first page with branding, then each meal section on a new page, then footer only at the end
+      let html = `
+        <div class="pdf-content">
+          <div class="logo-pdf">
+            <img src="UltraFit logo.png" alt="UltraFit Gym" onerror="this.src='https://via.placeholder.com/80?text=UltraFit'">
+          </div>
+          <h1>${escapeHtml(displayCategory)} – ${planLabel} Plan</h1>
+          <div style="text-align:center;"><span class="subhead">UltraFit Gym • Scientifically crafted nutrition</span></div>
+          <p style="text-align:center; margin-top:1rem; color:#aaa;">Generated on ${new Date().toLocaleDateString()}</p>
+      `;
+
+      let isFirst = true;
+      for (const mealTime of sortedMealTimes) {
+        const mealsArray = grouped[mealTime];
+        const displayMeal = mealTime.charAt(0).toUpperCase() + mealTime.slice(1);
+        const sectionClass = isFirst ? 'meal-section first-section' : 'meal-section';
+        html += `<div class="${sectionClass}"><div class="meal-header-pdf">${displayMeal}</div>`;
+        html += `<table><thead><tr><th>Image</th><th>Meal</th><th>Ingredients</th><th>Quantity</th><th>Calories</th><th>Protein (g)</th></tr></thead><tbody>`;
+        mealsArray.forEach(meal => {
+          html += `
+            <tr>
+              <td><img class="meal-img" src="${meal.imageUrl}" alt="${escapeHtml(meal.name)}" onerror="this.src='https://via.placeholder.com/100?text=No+Image'"></td>
+              <td><strong style="color:#fff;">${escapeHtml(meal.name)}</strong> ${meal.isRecommended ? '<span class="recommended-badge">⭐ RECOMMENDED</span>' : ''}</td>
+              <td>${escapeHtml(meal.ingredients)}</td>
+              <td>${escapeHtml(meal.quantity)}</td>
+              <td>${meal.calories}</td>
+              <td>${meal.protein}</td>
+            </tr>
+          `;
+        });
+        html += `</tbody></table></div>`;
+        isFirst = false;
+      }
+
+      // Footer only at the end (last page)
+      html += `
+        <div class="pdf-footer">
+          © UltraFit Gym – Empowering your transformation
+        </div>
+      </div>`;
+
+      const container = document.querySelector('.pdf-preview');
+      container.innerHTML = html;
+      const element = document.querySelector('.pdf-content');
+
+      // Wait for images to settle
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      const opt = {
+        margin: [0.5, 0.5, 0.5, 0.5],
+        filename: `UltraFit_Diet_${displayCategory}_${planLabel}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, letterRendering: true, backgroundColor: '#0a0a0a' },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+      };
+      await html2pdf().from(element).set(opt).save();
+
+      setTimeout(() => window.close(), 1500);
+    } catch (err) {
+      console.error(err);
+      document.body.innerHTML = `<div style="color:#FFD700; text-align:center; padding:2rem;">Error: ${err.message}<br><button onclick="window.close()" style="margin-top:1rem; background:#FFD700; border:none; padding:0.5rem 1rem; border-radius:40px;">Close</button></div>`;
+    }
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  loadAndGenerate();
+</script>
+</body>
+</html>
