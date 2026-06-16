@@ -62,7 +62,7 @@ function showLoginModal() {
   modal.className = 'login-modal';
   modal.innerHTML = `
     <div class="login-card">
-      <h2 style="color:#FFD700;">Admin Login</h2>
+      <h2 style="color:#FF6B00;">Admin Login</h2>
       <input type="email" id="loginEmail" placeholder="Email" autocomplete="email">
       <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password">
       <button id="loginSubmitBtn">Login</button>
@@ -118,7 +118,7 @@ const DEFAULT_REVIEWER_AVATARS = [
 function showToast(msg, isError = false) {
   const toast = document.getElementById('adminToast');
   toast.innerText = msg;
-  toast.style.borderLeftColor = isError ? '#e74c3c' : '#FFD700';
+  toast.style.borderLeftColor = isError ? '#e74c3c' : '#FF6B00';
   toast.classList.add('show');
   setTimeout(() => toast.classList.remove('show'), 2500);
 }
@@ -178,9 +178,9 @@ let sectionHeadings = {
   dietHeading: "Diet Plans",
   workoutHeading: "Workout Plan",
   membershipHeading: "Gym Membership",
-  shopHeading: "UltraFit Shop",
-  galleryHeading: "UltraFit Gallery",
-  reelsHeading: "UltraFit Reels",
+  shopHeading: "Daily Doze Shop",
+  galleryHeading: "Daily Doze Gallery",
+  reelsHeading: "Daily Doze Reels",
   reviewsHeading: "Reviews"
 };
 
@@ -217,13 +217,13 @@ async function loadAllData() {
 }
 
 function renderHero() {
-  document.getElementById('heroLogo').src = siteSettings.logoUrl || 'UltraFit logo.png';
+  document.getElementById('heroLogo').src = siteSettings.logoUrl || 'DailyDoze logo.png';
   document.getElementById('heroSubheading').innerText = siteSettings.heroSubheading || 'The Standard of Strength';
   document.getElementById('liveStatusText').innerText = siteSettings.liveStatusText || 'Open Now – Closing at 10 PM';
   document.getElementById('floatingCtaBtn').innerText = siteSettings.floatingButtonText || 'Book 3-Day Free Trial';
   const brandEl = document.getElementById('heroBrandText');
   if (brandEl && siteSettings.heroBrand) brandEl.innerText = siteSettings.heroBrand;
-  else if (brandEl) brandEl.innerText = 'ULTRAFIT';
+  else if (brandEl) brandEl.innerText = 'DAILY DOZE';
   const heroBg = document.querySelector('.hero .hero-video-wrapper');
   if (siteSettings.heroBackgroundImage && heroBg) {
     heroBg.style.backgroundImage = `url('${siteSettings.heroBackgroundImage}')`;
@@ -269,8 +269,8 @@ function showTrainerProfile(trainer) {
   modal.innerHTML = `
     <div class="premium-modal-card">
       <div style="text-align:center;">
-        <img src="${trainer.photoUrl}" style="width:120px;height:120px;border-radius:50%;border:2px solid #FFD700;margin-bottom:1rem;">
-        <h2 style="color:#FFD700;">${escapeHtml(trainer.name)}</h2>
+        <img src="${trainer.photoUrl}" style="width:120px;height:120px;border-radius:50%;border:2px solid #FF6B00;margin-bottom:1rem;">
+        <h2 style="color:#FF6B00;">${escapeHtml(trainer.name)}</h2>
         <p style="color:#bbb;">${escapeHtml(trainer.position)}</p>
         <p style="line-height:1.5;margin-top:1rem;">${escapeHtml(trainer.bio || 'No bio available.')}</p>
       </div>
@@ -405,7 +405,7 @@ function renderProducts() {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const product = btn.getAttribute('data-product');
-      window.open(`https://wa.me/?text=Hello%20UltraFit%2C%20I%27m%20interested%20in%20${encodeURIComponent(product)}`, '_blank');
+      window.open(`https://wa.me/?text=Hello%20Daily%20Doze%2C%20I%27m%20interested%20in%20${encodeURIComponent(product)}`, '_blank');
     });
   });
 }
@@ -1199,9 +1199,9 @@ function openHeroModal() {
       <div class="field-group">
         <label>Current Hero Background Image</label>
         <div class="modal-image-container">
-          <img id="heroBgPreview" class="modal-image" style="max-width:100%; max-height:200px; object-fit:contain; border:1px solid #FFD700;" 
+          <img id="heroBgPreview" class="modal-image" style="max-width:100%; max-height:200px; object-fit:contain; border:1px solid #FF6B00;" 
                src="${currentImageUrl}" 
-               onerror="this.src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22200%22%20height%3D%22100%22%3E%3Crect%20width%3D%22200%22%20height%3D%22100%22%20fill%3D%22%23333%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20text-anchor%3D%22middle%22%20fill%3D%22%23FFD700%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
+               onerror="this.src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22200%22%20height%3D%22100%22%3E%3Crect%20width%3D%22200%22%20height%3D%22100%22%20fill%3D%22%23333%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20text-anchor%3D%22middle%22%20fill%3D%22%23FF6B00%22%3ENo%20Image%3C%2Ftext%3E%3C%2Fsvg%3E'">
         </div>
         <div class="image-upload-area" id="heroBgUpload">Upload New Background Image</div>
       </div>
@@ -1286,7 +1286,7 @@ function openHeroModal() {
 
 function openLogoModal() {
   const modal = document.getElementById('modalContainer');
-  const currentLogo = siteSettings.logoUrl || 'UltraFit logo.png';
+  const currentLogo = siteSettings.logoUrl || 'DailyDoze logo.png';
   modal.innerHTML = `
     <div class="premium-modal-card">
       <h3>Edit Logo</h3>

@@ -1,0 +1,27 @@
+[{
+  "_id": {
+    "$oid": "6a1e4835f385c5ccc4c114e3"
+  },
+  "name": "Pooja Gupta",
+  "photoUrl": "https://res.cloudinary.com/doogaohul/image/upload/v1781170964/ultrafit_gym/itomvm5mbhoxkhqakbpo.png",
+  "review": "The best gym I have ever joined. Trainers really care.",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a1e4835f385c5ccc4c114e4"
+  },
+  "name": "Rahul",
+  "photoUrl": "https://res.cloudinary.com/doogaohul/image/upload/v1781171033/ultrafit_gym/gk5407ze4r1hbex5hvlf.jpg",
+  "review": "Ultrafit is the best gym in PD Nagar Unnao.",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a1e4835f385c5ccc4c114e5"
+  },
+  "name": "Kriti Singh",
+  "photoUrl": "https://res.cloudinary.com/doogaohul/image/upload/v1781170923/ultrafit_gym/dw1awgcwpiv0ywjaui4l.png",
+  "review": "Ultrafit provides a totally safe and comfortable atmoshphere.",
+  "__v": 0
+}]

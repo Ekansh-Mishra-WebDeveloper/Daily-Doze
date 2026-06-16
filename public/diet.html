@@ -3,32 +3,33 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#121212" />
-  <title>UltraFit Gym | Diet & Nutrition Plans</title>
+  <meta name="theme-color" content="#0A0A0A" />
+  <title>Daily Doze Gym | Diet & Nutrition Plans</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <link rel="stylesheet" href="index.css" />
   <style>
-    /* ========== SAME STYLES AS ORIGINAL (unchanged) ========== */
+    /* ========== REBRANDED STYLES FOR DAILY DOZE ========== */
     #calculateCalorieBtn {
       padding: 0.8rem 1.5rem !important;
       font-size: 1rem !important;
       white-space: nowrap;
     }
     :root {
-      --gold: #FFD700;
-      --gold-glow: 0 0 12px rgba(255,215,0,0.5);
-      --dark-bg: #121212;
-      --card-bg: rgba(28,28,32,0.85);
-      --glass-edge: 1px solid rgba(255,215,0,0.2);
+      --primary: #FF6B00;
+      --primary-hover: #FF8124;
+      --gold-glow: 0 0 12px rgba(255,107,0,0.5);
+      --dark-bg: #0A0A0A;
+      --card-bg: rgba(21,21,21,0.85);
+      --glass-edge: 1px solid rgba(255,107,0,0.2);
     }
-    body { background: #0a0a0a; }
+    body { background: #0A0A0A; }
 
     .diet-hero {
       position: relative;
       min-height: 65vh;
-      background: linear-gradient(115deg, #000000d0 0%, #0a0a0a 100%), url('https://images.pexels.com/photos/1640774/pexels-photo-1640774.jpeg?auto=compress&cs=tinysrgb&w=1600');
+      background: linear-gradient(115deg, #000000d0 0%, #0A0A0A 100%), url('https://images.pexels.com/photos/1640774/pexels-photo-1640774.jpeg?auto=compress&cs=tinysrgb&w=1600');
       background-size: cover;
       background-position: center 30%;
       background-attachment: fixed;
@@ -37,7 +38,7 @@
       justify-content: center;
       text-align: center;
       margin-top: 0;
-      border-bottom: 2px solid rgba(255,215,0,0.3);
+      border-bottom: 2px solid rgba(255,107,0,0.3);
     }
     .hero-content-center {
       position: relative;
@@ -51,7 +52,7 @@
     .hero-content-center h1 {
       font-size: 4.2rem;
       font-weight: 800;
-      background: linear-gradient(135deg, #FFFFFF 0%, #FFD700 80%);
+      background: linear-gradient(135deg, #FFFFFF 0%, #FF6B00 80%);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
@@ -76,7 +77,7 @@
       width: 100%;
     }
     .category-luxury span {
-      background: linear-gradient(120deg, #FFD700, #FFE55C);
+      background: linear-gradient(120deg, #FF6B00, #FF8124);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
@@ -87,10 +88,10 @@
       display: block;
       width: 100px;
       height: 3px;
-      background: #FFD700;
+      background: #FF6B00;
       margin: 0.8rem auto 0;
       border-radius: 4px;
-      box-shadow: 0 0 8px #FFD700;
+      box-shadow: 0 0 8px #FF6B00;
     }
     .plan-group {
       margin-bottom: 3rem;
@@ -108,8 +109,8 @@
       justify-content: space-between;
       align-items: center;
       gap: 0.8rem;
-      color: #FFD700;
-      border-left: 4px solid #FFD700;
+      color: #FF6B00;
+      border-left: 4px solid #FF6B00;
       padding-left: 1rem;
       flex-wrap: wrap;
     }
@@ -120,10 +121,10 @@
     }
     .pdf-btn-inside {
       background: transparent;
-      border: 1px solid #FFD700;
+      border: 1px solid #FF6B00;
       padding: 0.4rem 1rem;
       border-radius: 40px;
-      color: #FFD700;
+      color: #FF6B00;
       font-size: 0.8rem;
       font-weight: 600;
       cursor: pointer;
@@ -131,8 +132,8 @@
       white-space: nowrap;
     }
     .pdf-btn-inside:hover {
-      background: #FFD700;
-      color: #121212;
+      background: #FF6B00;
+      color: #FFFFFF;
     }
     .meal-carousel-container {
       margin-bottom: 2rem;
@@ -151,12 +152,12 @@
       letter-spacing: -0.2px;
     }
     .meal-totals {
-      background: rgba(255,215,0,0.1);
+      background: rgba(255,107,0,0.1);
       padding: 0.3rem 1rem;
       border-radius: 60px;
       font-size: 0.9rem;
       font-weight: 600;
-      color: #FFD700;
+      color: #FF6B00;
     }
     .meal-carousel {
       position: relative;
@@ -165,11 +166,11 @@
       touch-action: pan-y pinch-zoom;
       background: rgba(20,20,25,0.6);
       backdrop-filter: blur(8px);
-      border: 1px solid rgba(255,215,0,0.25);
+      border: 1px solid rgba(255,107,0,0.25);
       transition: box-shadow 0.3s;
     }
     .meal-carousel:hover {
-      box-shadow: 0 20px 30px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,215,0,0.3);
+      box-shadow: 0 20px 30px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,107,0,0.3);
     }
     .carousel-track {
       display: flex;
@@ -196,7 +197,7 @@
       object-fit: cover;
       border-radius: 24px;
       margin-bottom: 1rem;
-      border: 1px solid rgba(255,215,0,0.3);
+      border: 1px solid rgba(255,107,0,0.3);
     }
     .food-items {
       font-weight: 500;
@@ -213,8 +214,8 @@
       border-radius: 50px;
     }
     .badge-recommended {
-      background: #FFD700;
-      color: #000;
+      background: #FF6B00;
+      color: #FFFFFF;
       font-size: 0.7rem;
       font-weight: 800;
       padding: 0.2rem 0.8rem;
@@ -233,7 +234,7 @@
     .progress-fill {
       width: 0%;
       height: 100%;
-      background: linear-gradient(90deg, #FFD700, #FFB347);
+      background: linear-gradient(90deg, #FF6B00, #FF8124);
       border-radius: 30px;
     }
     .carousel-controls {
@@ -244,8 +245,8 @@
     }
     .carousel-btn {
       background: #1e1e1e;
-      border: 1px solid #FFD700;
-      color: #FFD700;
+      border: 1px solid #FF6B00;
+      color: #FF6B00;
       width: 36px;
       height: 36px;
       border-radius: 50%;
@@ -253,8 +254,8 @@
       transition: all 0.2s;
     }
     .carousel-btn:hover {
-      background: #FFD700;
-      color: #000;
+      background: #FF6B00;
+      color: #FFFFFF;
       transform: scale(1.05);
     }
     .carousel-dots {
@@ -272,9 +273,9 @@
       transition: all 0.2s;
     }
     .dot.active {
-      background: #FFD700;
+      background: #FF6B00;
       transform: scale(1.3);
-      box-shadow: 0 0 6px gold;
+      box-shadow: 0 0 6px #FF6B00;
     }
     .calculator-luxury {
       background: rgba(20,20,28,0.85);
@@ -283,7 +284,7 @@
       padding: 2rem;
       max-width: 750px;
       margin: 2rem auto;
-      border: 1px solid rgba(255,215,0,0.3);
+      border: 1px solid rgba(255,107,0,0.3);
       transition: all 0.3s;
     }
     .input-group-custom { margin-bottom: 1.2rem; }
@@ -297,15 +298,15 @@
       width: 100%;
       padding: 0.8rem 1rem;
       background: #1e1e1e;
-      border: 1px solid #333;
+      border: 1px solid #252525;
       border-radius: 40px;
       color: white;
       transition: 0.2s;
     }
     .input-group-custom input:focus, .input-group-custom select:focus {
-      border-color: #FFD700;
+      border-color: #FF6B00;
       outline: none;
-      box-shadow: 0 0 0 2px rgba(255,215,0,0.3);
+      box-shadow: 0 0 0 2px rgba(255,107,0,0.3);
     }
     .calc-result {
       background: #00000066;
@@ -325,9 +326,9 @@
     }
     footer { margin-top: 3rem; }
     footer {
-      background: #000;
+      background: #0A0A0A;
       padding: 3rem 0;
-      border-top: 1px solid rgba(255,215,0,0.3);
+      border-top: 1px solid rgba(255,107,0,0.3);
       text-align: center;
     }
     .footer-links ul {
@@ -337,8 +338,8 @@
       list-style: none;
       flex-wrap: wrap;
     }
-    .footer-links a { color: #ccc; text-decoration: none; }
-    .footer-links a:hover { color: var(--gold); }
+    .footer-links a { color: #B8B8B8; text-decoration: none; }
+    .footer-links a:hover { color: var(--primary); }
     
     /* PWA mode: hide footer links except credit line */
     @media all and (display-mode: standalone) {
@@ -368,7 +369,7 @@
       backdrop-filter: blur(4px);
       transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
       padding: 1.2rem 0;
-      border-bottom: 1px solid rgba(255,215,0,0.2);
+      border-bottom: 1px solid rgba(255,107,0,0.2);
     }
     .navbar.scrolled {
       background: #000000;
@@ -393,7 +394,7 @@
       height: 38px;
       border-radius: 50%;
       object-fit: cover;
-      border: 1px solid rgba(255,215,0,0.4);
+      border: 1px solid rgba(255,107,0,0.4);
     }
     .logo {
       font-size: 1.8rem;
@@ -401,7 +402,7 @@
       letter-spacing: 2px;
     }
     .logo-ultra { color: #fff; }
-    .logo-fit { color: #FFD700; }
+    .logo-fit { color: #FF6B00; }
     .nav-links {
       display: flex;
       gap: 2rem;
@@ -414,19 +415,20 @@
       font-weight: 500;
       transition: 0.2s;
     }
-    .nav-link:hover { color: #FFD700; }
+    .nav-link:hover { color: #FF6B00; }
     .join-now-nav {
-      background: #FFD700;
-      color: #121212 !important;
+      background: #FF6B00;
+      color: #FFFFFF !important;
       padding: 0.6rem 1.6rem;
       border-radius: 40px;
       font-weight: 700;
     }
+    .join-now-nav:hover { background: #FF8124; }
     .hamburger {
       display: none;
       font-size: 1.8rem;
       cursor: pointer;
-      color: #FFD700;
+      color: #FF6B00;
     }
     @media (max-width: 900px) {
       .nav-links {
@@ -454,7 +456,7 @@
       color: #121212;
     }
     .pdf-print-container h1 {
-      color: #FFD700;
+      color: #FF6B00;
       font-size: 2.5rem;
       text-align: center;
       margin-bottom: 0.5rem;
@@ -463,7 +465,7 @@
       text-align: center;
       color: #333;
       margin-bottom: 2rem;
-      border-bottom: 2px solid #FFD700;
+      border-bottom: 2px solid #FF6B00;
       display: inline-block;
       width: auto;
       margin-left: auto;
@@ -477,7 +479,7 @@
     .pdf-print-container .meal-header-pdf {
       background: #f5f5f5;
       padding: 0.8rem;
-      border-left: 6px solid #FFD700;
+      border-left: 6px solid #FF6B00;
       margin-bottom: 1rem;
       font-size: 1.4rem;
       font-weight: 700;
@@ -493,13 +495,13 @@
       vertical-align: top;
     }
     .pdf-print-container th {
-      background: #FFD700;
-      color: #121212;
+      background: #FF6B00;
+      color: #FFFFFF;
       font-weight: 700;
     }
     .pdf-print-container .recommended-badge {
-      background: #FFD700;
-      color: #121212;
+      background: #FF6B00;
+      color: #FFFFFF;
       font-size: 0.7rem;
       padding: 2px 8px;
       border-radius: 20px;
@@ -519,7 +521,7 @@
       padding-top: 1rem;
     }
 
-    /* AI Chat Bubble (same as index.html) */
+    /* AI Chat Bubble */
     .ai-chat-container {
       position: fixed;
       bottom: 110px;
@@ -535,11 +537,11 @@
       align-items: center;
       gap: 0px;
       background: linear-gradient(135deg, #1e1e1e, #0a0a0a);
-      border: 1px solid rgba(255,215,0,0.4);
+      border: 1px solid rgba(255,107,0,0.4);
       border-radius: 60px;
       padding: 0.7rem;
       cursor: pointer;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.4), 0 0 15px rgba(255,215,0,0.2);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4), 0 0 15px rgba(255,107,0,0.2);
       transition: all 0.3s cubic-bezier(0.2,0.9,0.4,1.1);
       backdrop-filter: blur(8px);
       width: fit-content;
@@ -549,7 +551,7 @@
       padding: 0.7rem 1.5rem 0.7rem 1rem;
     }
     .ai-icon {
-      background: #FFD700;
+      background: #FF6B00;
       width: 42px;
       height: 42px;
       border-radius: 50%;
@@ -557,8 +559,8 @@
       align-items: center;
       justify-content: center;
       font-size: 1.6rem;
-      color: #121212;
-      box-shadow: 0 0 12px rgba(255,215,0,0.6);
+      color: #FFFFFF;
+      box-shadow: 0 0 12px rgba(255,107,0,0.6);
       transition: transform 0.2s;
     }
     .chat-bubble:hover .ai-icon {
@@ -568,7 +570,7 @@
       font-weight: 700;
       font-size: 0rem;
       letter-spacing: 1px;
-      background: linear-gradient(120deg, #fff, #FFD700);
+      background: linear-gradient(120deg, #fff, #FF6B00);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
@@ -586,7 +588,7 @@
       height: 500px;
       background: #1a1a1a;
       border-radius: 28px;
-      border: 1px solid rgba(255,215,0,0.4);
+      border: 1px solid rgba(255,107,0,0.4);
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -605,12 +607,12 @@
       pointer-events: auto;
     }
     .chat-header {
-      background: #FFD700;
+      background: #FF6B00;
       padding: 1rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      color: #121212;
+      color: #FFFFFF;
       font-weight: 800;
     }
     .chat-header h3 {
@@ -625,7 +627,7 @@
       border: none;
       font-size: 1.4rem;
       cursor: pointer;
-      color: #121212;
+      color: #FFFFFF;
       transition: transform 0.2s;
     }
     .chat-close:hover { transform: scale(1.1); }
@@ -646,8 +648,8 @@
       line-height: 1.4;
     }
     .user-message {
-      background: #FFD700;
-      color: #121212;
+      background: #FF6B00;
+      color: #FFFFFF;
       align-self: flex-end;
       border-bottom-right-radius: 6px;
     }
@@ -656,38 +658,38 @@
       color: #eee;
       align-self: flex-start;
       border-bottom-left-radius: 6px;
-      border: 1px solid rgba(255,215,0,0.2);
+      border: 1px solid rgba(255,107,0,0.2);
     }
     .chat-input-area {
       display: flex;
       padding: 12px;
       background: #0a0a0a;
-      border-top: 1px solid rgba(255,215,0,0.2);
+      border-top: 1px solid rgba(255,107,0,0.2);
       gap: 8px;
     }
     .chat-input {
       flex: 1;
       background: #1e1e1e;
-      border: 1px solid #333;
+      border: 1px solid #252525;
       border-radius: 40px;
       padding: 10px 16px;
       color: white;
       font-family: inherit;
       outline: none;
     }
-    .chat-input:focus { border-color: #FFD700; }
+    .chat-input:focus { border-color: #FF6B00; }
     .chat-send {
-      background: #FFD700;
+      background: #FF6B00;
       border: none;
       border-radius: 40px;
       padding: 0 18px;
       font-weight: 700;
       cursor: pointer;
-      color: #121212;
+      color: #FFFFFF;
       transition: all 0.2s;
     }
     .chat-send:hover {
-      background: #e6c300;
+      background: #FF8124;
       transform: scale(1.02);
     }
     .typing-indicator {
@@ -733,8 +735,8 @@
       z-index: 5000;
     }
     .premium-modal-card {
-      background: #121212;
-      border: 1px solid #FFD700;
+      background: #151515;
+      border: 1px solid #FF6B00;
       border-radius: 40px;
       width: 90%;
       max-width: 800px;
@@ -749,24 +751,24 @@
       right: 1.5rem;
       background: transparent;
       border: none;
-      color: #FFD700;
+      color: #FF6B00;
       font-size: 1.8rem;
       cursor: pointer;
     }
-    .modal-close-btn:hover { transform: scale(1.1); }
+    .modal-close-btn:hover { transform: scale(1.1); color: #FF8124; }
     .modal-title-center {
       text-align: center;
       font-size: 1.8rem;
       margin-bottom: 1.5rem;
-      color: #FFD700;
+      color: #FF6B00;
       font-weight: 700;
     }
     .field-group { margin-bottom: 1rem; position: relative; }
-    .field-group label { display: block; font-size: 0.75rem; color: #aaa; margin-bottom: 0.3rem; }
+    .field-group label { display: block; font-size: 0.75rem; color: #B8B8B8; margin-bottom: 0.3rem; }
     .field-group input, .field-group select {
       width: 100%;
       background: #1e1e1e;
-      border: 1px solid #333;
+      border: 1px solid #252525;
       border-radius: 20px;
       padding: 0.7rem 1rem;
       color: white;
@@ -780,7 +782,7 @@
       top: 50%;
       transform: translateY(-50%);
       cursor: pointer;
-      color: #FFD700;
+      color: #FF6B00;
       background: transparent;
       border: none;
     }
@@ -789,25 +791,26 @@
       margin: 0.8rem auto;
       font-size: 0.9rem;
       font-weight: 600;
-      color: #FFD700;
+      color: #FF6B00;
       cursor: pointer;
       background: transparent;
-      border: 1.5px solid #FFD700;
+      border: 1.5px solid #FF6B00;
       border-radius: 40px;
       padding: 0.5rem 1rem;
       display: inline-block;
       width: fit-content;
     }
-    .click-to-upload:hover { background: #FFD700; color: #121212; }
+    .click-to-upload:hover { background: #FF6B00; color: #FFFFFF; }
     .remember-checkbox { display: flex; align-items: center; gap: 0.5rem; margin: 1rem 0; }
     .remember-checkbox input { width: auto; }
     .button-group-center { display: flex; justify-content: center; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap; }
-    .btn-solid-gold { background: #FFD700; border: none; color: #121212; padding: 0.7rem 1.8rem; border-radius: 60px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; }
-    .btn-outline-gold { background: transparent; border: 1.5px solid #FFD700; color: #FFD700; padding: 0.7rem 1.8rem; border-radius: 60px; font-weight: 600; cursor: pointer; }
-    .btn-outline-gold:hover { background: rgba(255,215,0,0.1); }
+    .btn-solid-gold { background: #FF6B00; border: none; color: #FFFFFF; padding: 0.7rem 1.8rem; border-radius: 60px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; }
+    .btn-solid-gold:hover { background: #FF8124; }
+    .btn-outline-gold { background: transparent; border: 1.5px solid #FF6B00; color: #FF6B00; padding: 0.7rem 1.8rem; border-radius: 60px; font-weight: 600; cursor: pointer; }
+    .btn-outline-gold:hover { background: rgba(255,107,0,0.1); }
     .auth-card {
       cursor: pointer;
-      background: rgba(255,215,0,0.1);
+      background: rgba(255,107,0,0.1);
       padding: 1rem;
       border-radius: 28px;
       text-align: center;
@@ -815,7 +818,7 @@
       transition: 0.2s;
     }
     .auth-card:hover {
-      background: rgba(255,215,0,0.2);
+      background: rgba(255,107,0,0.2);
       transform: translateY(-2px);
     }
   </style>
@@ -825,11 +828,11 @@
 <header class="navbar" id="navbar">
   <div class="container nav-container">
     <div class="logo-wrapper">
-      <img src="UltraFit logo.png" alt="UltraFit Logo" class="nav-logo-img" width="38" height="38" />
-      <div class="logo"><span class="logo-ultra">ULTRA</span><span class="logo-fit">FIT</span></div>
+      <img src="DailyDoze logo.png" alt="Daily Doze Logo" class="nav-logo-img" width="38" height="38" />
+      <div class="logo"><span class="logo-ultra">DAILY</span><span class="logo-fit">DOZE</span></div>
     </div>
     <ul class="nav-links" id="navLinks">
-      <!-- Dynamic button: "Sign Up" or "UltraFit App" -->
+      <!-- Dynamic button: "Sign Up" or "Daily Doze App" -->
       <li><a href="#" class="nav-link join-now-nav" id="authNavBtn">Sign Up</a></li>
       <li><a href="index.html" class="nav-link">Home</a></li>
       <li><a href="diet.html" class="nav-link">Diet Plan</a></li>
@@ -870,8 +873,8 @@
       <div class="input-group-custom"><label>Weight (kg)</label><input type="number" id="calcWeight" value="72"></div>
       <div class="input-group-custom"><label>Height Category</label><select id="heightCategory"><option value="short">Short (160 cm)</option><option value="medium" selected>Medium (175 cm)</option><option value="tall">Tall (190 cm)</option></select></div>
       <div class="input-group-custom"><label>Activity Level</label><select id="activityProfile"><option value="student">Student (Light activity)</option><option value="working" selected>Working Professional (Moderate)</option><option value="athlete">Athlete (Very Active)</option><option value="homemaker">Homemaker (Light-Moderate)</option></select></div>
-      <button id="calculateCalorieBtn" class="btn-pdf" style="width:100%; background:#FFD700; color:#000; font-weight:800;">Calculate My Energy Need</button>
-      <div id="calorieOutput" class="calc-result hidden"><span id="calorieNumber" style="font-size:2rem; font-weight:800; color:#FFD700;">0</span> <span style="color:#FFD700;">kcal/day</span><p id="calorieAdvice" style="color:#ccc;"></p><button id="downloadCaloriePdfBtn" class="btn-pdf" style="margin-top:1rem;">📥 Download Results PDF</button></div>
+      <button id="calculateCalorieBtn" class="btn-pdf" style="width:100%; background:#FF6B00; color:#fff; font-weight:800;">Calculate My Energy Need</button>
+      <div id="calorieOutput" class="calc-result hidden"><span id="calorieNumber" style="font-size:2rem; font-weight:800; color:#FF6B00;">0</span> <span style="color:#FF6B00;">kcal/day</span><p id="calorieAdvice" style="color:#ccc;"></p><button id="downloadCaloriePdfBtn" class="btn-pdf" style="margin-top:1rem;">📥 Download Results PDF</button></div>
     </div>
   </div>
 </main>
@@ -879,7 +882,7 @@
 <footer>
   <div class="container footer-grid">
     <div class="footer-links">
-      <h4>UltraFit Gym</h4>
+      <h4>Daily Doze Gym</h4>
       <ul>
         <li><a href="privacy.html">Privacy Policy</a></li>
         <li><a href="refund.html">Refund Policy</a></li>
@@ -894,15 +897,15 @@
 <div class="ai-chat-container">
   <div class="chat-bubble" id="chatBubble">
     <div class="ai-icon"><i class="fas fa-comment-dots"></i></div>
-    <span class="ai-text">UltraFit AI Coach</span>
+    <span class="ai-text">Daily Doze AI Coach</span>
   </div>
   <div class="chat-window" id="chatWindow">
     <div class="chat-header">
-      <h3><i class="fas fa-brain"></i> UltraFit AI Coach</h3>
+      <h3><i class="fas fa-brain"></i> Daily Doze AI Coach</h3>
       <button class="chat-close" id="chatCloseBtn">✕</button>
     </div>
     <div class="chat-messages" id="chatMessages">
-      <div class="message bot-message">💪 Hey! I'm your UltraFit AI Coach. Ask me anything about workouts, nutrition, or gym plans.</div>
+      <div class="message bot-message">💪 Hey! I'm your Daily Doze AI Coach. Ask me anything about workouts, nutrition, or gym plans.</div>
     </div>
     <div class="chat-input-area">
       <input type="text" class="chat-input" id="chatInput" placeholder="Ask your fitness question...">
@@ -917,7 +920,7 @@
 <div id="loginModal" class="premium-modal"><div class="premium-modal-card" id="loginContent"></div></div>
 
 <script>
-  // ========== AUTH & UI LOGIC (same as index.html) ==========
+  // ========== AUTH & UI LOGIC (rebranded for Daily Doze) ==========
   const API_BASE = '/api';
   let memberToken = localStorage.getItem('memberToken') || sessionStorage.getItem('memberToken') || null;
   let currentMember = null;
@@ -954,7 +957,7 @@
   function updateNavButton() {
     const authBtn = document.getElementById('authNavBtn');
     if (memberToken && currentMember) {
-      authBtn.innerText = 'UltraFit App';
+      authBtn.innerText = 'Daily Doze App';
       authBtn.onclick = (e) => { e.preventDefault(); window.location.href = 'user.html'; };
     } else {
       authBtn.innerText = 'Sign Up';
@@ -966,7 +969,7 @@
     const modal = document.getElementById('authChoiceModal');
     document.getElementById('authChoiceContent').innerHTML = `
       <button class="modal-close-btn" id="closeAuthChoice">&times;</button>
-      <div class="modal-title-center">Welcome to UltraFit</div>
+      <div class="modal-title-center">Welcome to Daily Doze</div>
       <div style="display:flex; gap:1rem; justify-content:center;">
         <div class="auth-card" id="choiceSignup"><h3>Sign Up</h3><p>New Member</p></div>
         <div class="auth-card" id="choiceLogin"><h3>Log In</h3><p>Existing</p></div>
@@ -990,7 +993,7 @@
     document.getElementById('signupContent').innerHTML = `
       <button class="modal-close-btn" id="closeSignup">&times;</button>
       <div class="modal-title-center">Create Account</div>
-      <div style="text-align:center;"><img id="signupAvatarPreview" src="defaultpfp.png" style="width:80px;height:80px;border-radius:50%;border:2px solid #FFD700;margin-bottom:0.5rem;"><div class="click-to-upload" id="signupUploadBtn">📸 Upload Profile Photo</div><input type="file" id="signupPhotoFile" accept="image/*" style="display:none;"></div>
+      <div style="text-align:center;"><img id="signupAvatarPreview" src="defaultpfp.png" style="width:80px;height:80px;border-radius:50%;border:2px solid #FF6B00;margin-bottom:0.5rem;"><div class="click-to-upload" id="signupUploadBtn">📸 Upload Profile Photo</div><input type="file" id="signupPhotoFile" accept="image/*" style="display:none;"></div>
       <div class="field-group"><label>Full Name *</label><input type="text" id="signupName" placeholder="First and last name"></div>
       <div class="field-group"><label>Email *</label><input type="email" id="signupEmail" placeholder="Email"></div>
       <div class="field-group"><label>Password *</label><div class="password-wrapper"><input type="password" id="signupPassword"><button type="button" class="toggle-password" data-target="signupPassword"><i class="fas fa-eye-slash"></i></button></div></div>
@@ -1113,7 +1116,7 @@
   chatSend.addEventListener('click', sendChatMessage);
   chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendChatMessage(); });
 
-  // ========== ORIGINAL DIET PAGE SCRIPT (unchanged) ==========
+  // ========== ORIGINAL DIET PAGE SCRIPT (rebranded) ==========
   const dietAPI_BASE = window.location.hostname === 'localhost' ? '/api' : 'https://ultrafit-gym-unnao.onrender.com/api';
   let siteSettings = {};
   let dietCategories = [];
@@ -1180,7 +1183,7 @@
     let htmlContent = `
       <div class="pdf-print-container">
         <h1>${escapeHtml(displayCategory)} – ${planLabel} Plan</h1>
-        <div style="text-align:center;"><span class="subhead">UltraFit Gym • Scientifically crafted nutrition</span></div>
+        <div style="text-align:center;"><span class="subhead">Daily Doze Gym • Scientifically crafted nutrition</span></div>
         <p style="text-align:center; margin-top:1rem;">Generated on ${new Date().toLocaleDateString()}</p>
     `;
 
@@ -1212,12 +1215,12 @@
 
     htmlContent += `
         <div style="margin-top:2rem; background:#f9f9f9; padding:1rem; border-radius:12px;">
-          <h3 style="color:#FFD700;">Daily Nutrition Summary</h3>
+          <h3 style="color:#FF6B00;">Daily Nutrition Summary</h3>
           <p><strong>Total Calories:</strong> ${totalDailyCalories} kcal</p>
           <p><strong>Total Protein:</strong> ${totalDailyProtein} g</p>
         </div>
         <div class="pdf-footer">
-          © UltraFit Gym – Empowering your transformation
+          © Daily Doze Gym – Empowering your transformation
         </div>
       </div>
     `;
@@ -1232,7 +1235,7 @@
 
     const opt = {
       margin: [0.5, 0.5, 0.5, 0.5],
-      filename: `UltraFit_Diet_${displayCategory}_${planLabel}.pdf`,
+      filename: `DailyDoze_Diet_${displayCategory}_${planLabel}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2, letterRendering: true, useCORS: true },
       jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
@@ -1264,7 +1267,7 @@
       card.className = 'meal-card';
       const recommended = item.isRecommended ? '<div class="badge-recommended">⭐ RECOMMENDED</div>' : '';
       const proteinPercent = (item.protein / 60) * 100;
-      const tagsHtml = (item.tags || []).map(t => `<span style="background:rgba(255,215,0,0.2); padding:2px 8px; border-radius:20px; margin-right:5px;">${escapeHtml(t)}</span>`).join('');
+      const tagsHtml = (item.tags || []).map(t => `<span style="background:rgba(255,107,0,0.2); padding:2px 8px; border-radius:20px; margin-right:5px;">${escapeHtml(t)}</span>`).join('');
       card.innerHTML = `${recommended}<img class="card-img" src="${item.imageUrl}" alt="meal"><div class="food-items"><strong>${escapeHtml(item.name)}</strong><br>${escapeHtml(item.ingredients)}<br>${escapeHtml(item.quantity)}</div><div class="nutrition-row"><span>🔥 ${item.calories} cal</span><span>💪 ${item.protein}g protein</span></div><div class="progress-bar-bg"><div class="progress-fill" style="width: ${Math.min(proteinPercent,100)}%;"></div></div><div style="margin-top:6px;">${tagsHtml}</div>`;
       track.appendChild(card);
     });
@@ -1392,9 +1395,9 @@
     const val = document.getElementById('calorieNumber').innerText;
     const advice = document.getElementById('calorieAdvice').innerText;
     const pdfContent = document.createElement('div');
-    pdfContent.style.background = '#121212'; pdfContent.style.padding = '2rem'; pdfContent.style.color = '#fff';
-    pdfContent.innerHTML = `<h2 style="color:#FFD700;">UltraFit Calorie Report</h2><p>Daily Caloric Need: <strong style="font-size:2rem;">${val} kcal</strong></p><p>${advice}</p><p>Generated by UltraFit AI Nutritionist</p>`;
-    html2pdf().from(pdfContent).set({ margin: 0.5, filename: 'UltraFit_Calorie_Result.pdf' }).save();
+    pdfContent.style.background = '#0A0A0A'; pdfContent.style.padding = '2rem'; pdfContent.style.color = '#fff';
+    pdfContent.innerHTML = `<h2 style="color:#FF6B00;">Daily Doze Calorie Report</h2><p>Daily Caloric Need: <strong style="font-size:2rem;">${val} kcal</strong></p><p>${advice}</p><p>Generated by Daily Doze AI Nutritionist</p>`;
+    html2pdf().from(pdfContent).set({ margin: 0.5, filename: 'DailyDoze_Calorie_Result.pdf' }).save();
   });
 
   function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }

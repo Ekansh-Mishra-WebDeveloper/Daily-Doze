@@ -1,0 +1,36 @@
+[{
+  "_id": {
+    "$oid": "6a1e4835f385c5ccc4c114ed"
+  },
+  "key": "beginner",
+  "displayName": "Beginner",
+  "subheading": "Foundation – 1 to 6 Months",
+  "pdfUrl": "",
+  "order": 1,
+  "active": true,
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a1e4835f385c5ccc4c114ee"
+  },
+  "key": "intermediate",
+  "displayName": "Intermediate",
+  "subheading": "Strength Building – 1 to 2 Years",
+  "pdfUrl": "",
+  "order": 2,
+  "active": true,
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a1e4835f385c5ccc4c114ef"
+  },
+  "key": "expert",
+  "displayName": "Expert",
+  "subheading": "Advanced Performance – 3+ Years",
+  "pdfUrl": "",
+  "order": 3,
+  "active": true,
+  "__v": 0
+}]

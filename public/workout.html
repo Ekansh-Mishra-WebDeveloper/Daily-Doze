@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#121212" />
-  <title>UltraFit Gym | Elite Workout Plans</title>
+  <meta name="theme-color" content="#0A0A0A" />
+  <title>Daily Doze Gym | Elite Workout Plans</title>
   <!-- Google Fonts & Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
@@ -13,15 +13,16 @@
   <!-- Global stylesheet (shared across all pages) -->
   <link rel="stylesheet" href="index.css" />
   <style>
-    /* ===== WORKOUT PAGE SPECIFIC ENHANCEMENTS (LUXURY, MATCHES DIET PAGE) ===== */
+    /* ===== WORKOUT PAGE SPECIFIC ENHANCEMENTS (REBRANDED FOR DAILY DOZE) ===== */
     :root {
-      --gold: #FFD700;
-      --gold-glow: 0 0 12px rgba(255,215,0,0.4);
-      --card-bg: rgba(28,28,32,0.88);
-      --glass-edge: 1px solid rgba(255,215,0,0.2);
+      --primary: #FF6B00;
+      --primary-hover: #FF8124;
+      --gold-glow: 0 0 12px rgba(255,107,0,0.4);
+      --card-bg: rgba(21,21,21,0.88);
+      --glass-edge: 1px solid rgba(255,107,0,0.2);
     }
 
-    /* Hero Premium – fixed background opacity (same as diet.html) */
+    /* Hero Premium – fixed background opacity */
     .workout-hero {
       position: relative;
       min-height: 65vh;
@@ -34,7 +35,7 @@
       justify-content: center;
       text-align: center;
       margin-top: 0;
-      border-bottom: 2px solid rgba(255,215,0,0.3);
+      border-bottom: 2px solid rgba(255,107,0,0.3);
     }
     .hero-content-center {
       position: relative;
@@ -48,7 +49,7 @@
     .hero-content-center h1 {
       font-size: 4.2rem;
       font-weight: 800;
-      background: linear-gradient(135deg, #FFFFFF 0%, #FFD700 80%);
+      background: linear-gradient(135deg, #FFFFFF 0%, #FF6B00 80%);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
@@ -74,7 +75,7 @@
       width: 100%;
     }
     .category-luxury span {
-      background: linear-gradient(120deg, #FFD700, #FFE55C);
+      background: linear-gradient(120deg, #FF6B00, #FF8124);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
@@ -85,22 +86,22 @@
       display: block;
       width: 100px;
       height: 3px;
-      background: #FFD700;
+      background: #FF6B00;
       margin: 0.8rem auto 0;
       border-radius: 4px;
-      box-shadow: 0 0 8px #FFD700;
+      box-shadow: 0 0 8px #FF6B00;
     }
     .category-sub {
       text-align: center;
       font-size: 1rem;
-      color: #FFD700;
+      color: #FF6B00;
       letter-spacing: 1px;
       margin-top: 0.2rem;
       margin-bottom: 2rem;
       font-weight: 500;
     }
 
-    /* Premium Workout Cards Grid - centered like diet.html */
+    /* Premium Workout Cards Grid - centered */
     .workout-cards-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
@@ -113,7 +114,7 @@
       background: var(--card-bg);
       backdrop-filter: blur(8px);
       border-radius: 32px;
-      border: 1px solid rgba(255,215,0,0.25);
+      border: 1px solid rgba(255,107,0,0.25);
       overflow: hidden;
       transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
       box-shadow: 0 12px 30px -8px rgba(0,0,0,0.4);
@@ -123,18 +124,18 @@
     }
     .workout-card:hover {
       transform: translateY(-6px);
-      border-color: rgba(255,215,0,0.5);
-      box-shadow: 0 25px 40px -12px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,215,0,0.2);
+      border-color: rgba(255,107,0,0.5);
+      box-shadow: 0 25px 40px -12px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,107,0,0.2);
     }
 
     .card-header {
       padding: 1.2rem 1.5rem 0.5rem;
-      border-bottom: 1px solid rgba(255,215,0,0.2);
+      border-bottom: 1px solid rgba(255,107,0,0.2);
     }
     .card-header h3 {
       font-size: 1.6rem;
       font-weight: 700;
-      color: #FFD700;
+      color: #FF6B00;
       margin-bottom: 0.2rem;
     }
 
@@ -148,14 +149,14 @@
       justify-content: space-between;
       font-size: 0.85rem;
       padding: 0.45rem 0;
-      border-bottom: 1px dashed rgba(255,215,0,0.15);
+      border-bottom: 1px dashed rgba(255,107,0,0.15);
       color: #eaeaea;
     }
     .exercise-name {
       font-weight: 500;
     }
     .exercise-reps {
-      color: #FFD700;
+      color: #FF6B00;
       font-weight: 600;
     }
 
@@ -169,7 +170,7 @@
       border-radius: 24px;
       background: #0a0a0a;
       touch-action: pan-y pinch-zoom;
-      border: 1px solid rgba(255,215,0,0.3);
+      border: 1px solid rgba(255,107,0,0.3);
     }
     .carousel-track {
       display: flex;
@@ -199,8 +200,8 @@
       border-radius: 30px;
       font-size: 0.7rem;
       font-weight: 600;
-      color: #FFD700;
-      border-left: 2px solid #FFD700;
+      color: #FF6B00;
+      border-left: 2px solid #FF6B00;
       letter-spacing: 0.5px;
     }
     .carousel-controls {
@@ -211,8 +212,8 @@
     }
     .carousel-btn {
       background: #1e1e1e;
-      border: 1px solid #FFD700;
-      color: #FFD700;
+      border: 1px solid #FF6B00;
+      color: #FF6B00;
       width: 32px;
       height: 32px;
       border-radius: 50%;
@@ -220,8 +221,8 @@
       transition: 0.2s;
     }
     .carousel-btn:hover {
-      background: #FFD700;
-      color: #000;
+      background: #FF6B00;
+      color: #FFFFFF;
       transform: scale(1.05);
     }
     .carousel-dots {
@@ -239,9 +240,9 @@
       transition: 0.2s;
     }
     .dot.active {
-      background: #FFD700;
+      background: #FF6B00;
       transform: scale(1.4);
-      box-shadow: 0 0 6px gold;
+      box-shadow: 0 0 6px #FF6B00;
     }
 
     /* PDF Button Group */
@@ -252,19 +253,19 @@
     }
     .btn-pdf {
       background: transparent;
-      border: 1px solid #FFD700;
+      border: 1px solid #FF6B00;
       padding: 0.5rem 1.4rem;
       border-radius: 60px;
-      color: #FFD700;
+      color: #FF6B00;
       font-weight: 600;
       transition: all 0.25s;
       cursor: pointer;
       font-size: 0.85rem;
     }
     .btn-pdf:hover {
-      background: #FFD700;
-      color: #121212;
-      box-shadow: 0 0 12px gold;
+      background: #FF6B00;
+      color: #FFFFFF;
+      box-shadow: 0 0 12px #FF6B00;
     }
 
     /* Body Mass Calculator */
@@ -275,7 +276,7 @@
       padding: 2rem;
       max-width: 750px;
       margin: 2rem auto 4rem;
-      border: 1px solid rgba(255,215,0,0.3);
+      border: 1px solid rgba(255,107,0,0.3);
       transition: all 0.3s;
     }
     .input-group-custom {
@@ -285,21 +286,21 @@
       display: block;
       font-weight: 500;
       margin-bottom: 0.3rem;
-      color: #ccc;
+      color: #B8B8B8;
     }
     .input-group-custom input, .input-group-custom select {
       width: 100%;
       padding: 0.8rem 1rem;
       background: #1e1e1e;
-      border: 1px solid #333;
+      border: 1px solid #252525;
       border-radius: 40px;
       color: white;
       transition: 0.2s;
     }
     .input-group-custom input:focus {
-      border-color: #FFD700;
+      border-color: #FF6B00;
       outline: none;
-      box-shadow: 0 0 0 2px rgba(255,215,0,0.3);
+      box-shadow: 0 0 0 2px rgba(255,107,0,0.3);
     }
     .calc-result {
       background: #00000066;
@@ -312,7 +313,7 @@
       display: none;
     }
 
-    /* AI Chat Bubble (same as index.html) */
+    /* AI Chat Bubble (rebranded) */
     .ai-chat-container {
       position: fixed;
       bottom: 110px;
@@ -328,11 +329,11 @@
       align-items: center;
       gap: 0px;
       background: linear-gradient(135deg, #1e1e1e, #0a0a0a);
-      border: 1px solid rgba(255,215,0,0.4);
+      border: 1px solid rgba(255,107,0,0.4);
       border-radius: 60px;
       padding: 0.7rem;
       cursor: pointer;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.4), 0 0 15px rgba(255,215,0,0.2);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4), 0 0 15px rgba(255,107,0,0.2);
       transition: all 0.3s cubic-bezier(0.2,0.9,0.4,1.1);
       backdrop-filter: blur(8px);
       width: fit-content;
@@ -342,7 +343,7 @@
       padding: 0.7rem 1.5rem 0.7rem 1rem;
     }
     .ai-icon {
-      background: #FFD700;
+      background: #FF6B00;
       width: 42px;
       height: 42px;
       border-radius: 50%;
@@ -350,8 +351,8 @@
       align-items: center;
       justify-content: center;
       font-size: 1.6rem;
-      color: #121212;
-      box-shadow: 0 0 12px rgba(255,215,0,0.6);
+      color: #FFFFFF;
+      box-shadow: 0 0 12px rgba(255,107,0,0.6);
       transition: transform 0.2s;
     }
     .chat-bubble:hover .ai-icon {
@@ -361,7 +362,7 @@
       font-weight: 700;
       font-size: 0rem;
       letter-spacing: 1px;
-      background: linear-gradient(120deg, #fff, #FFD700);
+      background: linear-gradient(120deg, #fff, #FF6B00);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
@@ -377,9 +378,9 @@
       right: 0;
       width: 360px;
       height: 500px;
-      background: #1a1a1a;
+      background: #151515;
       border-radius: 28px;
-      border: 1px solid rgba(255,215,0,0.4);
+      border: 1px solid rgba(255,107,0,0.4);
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -398,12 +399,12 @@
       pointer-events: auto;
     }
     .chat-header {
-      background: #FFD700;
+      background: #FF6B00;
       padding: 1rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      color: #121212;
+      color: #FFFFFF;
       font-weight: 800;
     }
     .chat-header h3 {
@@ -418,7 +419,7 @@
       border: none;
       font-size: 1.4rem;
       cursor: pointer;
-      color: #121212;
+      color: #FFFFFF;
       transition: transform 0.2s;
     }
     .chat-close:hover { transform: scale(1.1); }
@@ -439,8 +440,8 @@
       line-height: 1.4;
     }
     .user-message {
-      background: #FFD700;
-      color: #121212;
+      background: #FF6B00;
+      color: #FFFFFF;
       align-self: flex-end;
       border-bottom-right-radius: 6px;
     }
@@ -449,38 +450,38 @@
       color: #eee;
       align-self: flex-start;
       border-bottom-left-radius: 6px;
-      border: 1px solid rgba(255,215,0,0.2);
+      border: 1px solid rgba(255,107,0,0.2);
     }
     .chat-input-area {
       display: flex;
       padding: 12px;
       background: #0a0a0a;
-      border-top: 1px solid rgba(255,215,0,0.2);
+      border-top: 1px solid rgba(255,107,0,0.2);
       gap: 8px;
     }
     .chat-input {
       flex: 1;
       background: #1e1e1e;
-      border: 1px solid #333;
+      border: 1px solid #252525;
       border-radius: 40px;
       padding: 10px 16px;
       color: white;
       font-family: inherit;
       outline: none;
     }
-    .chat-input:focus { border-color: #FFD700; }
+    .chat-input:focus { border-color: #FF6B00; }
     .chat-send {
-      background: #FFD700;
+      background: #FF6B00;
       border: none;
       border-radius: 40px;
       padding: 0 18px;
       font-weight: 700;
       cursor: pointer;
-      color: #121212;
+      color: #FFFFFF;
       transition: all 0.2s;
     }
     .chat-send:hover {
-      background: #e6c300;
+      background: #FF8124;
       transform: scale(1.02);
     }
     .typing-indicator {
@@ -511,7 +512,7 @@
       .chat-bubble:hover .ai-text { font-size: 0.85rem; }
     }
 
-    /* Premium Modal styles (auth modals) */
+    /* Premium Modal styles (auth modals) – rebranded */
     .premium-modal {
       position: fixed;
       top: 0;
@@ -526,8 +527,8 @@
       z-index: 5000;
     }
     .premium-modal-card {
-      background: #121212;
-      border: 1px solid #FFD700;
+      background: #151515;
+      border: 1px solid #FF6B00;
       border-radius: 40px;
       width: 90%;
       max-width: 800px;
@@ -542,24 +543,24 @@
       right: 1.5rem;
       background: transparent;
       border: none;
-      color: #FFD700;
+      color: #FF6B00;
       font-size: 1.8rem;
       cursor: pointer;
     }
-    .modal-close-btn:hover { transform: scale(1.1); }
+    .modal-close-btn:hover { transform: scale(1.1); color: #FF8124; }
     .modal-title-center {
       text-align: center;
       font-size: 1.8rem;
       margin-bottom: 1.5rem;
-      color: #FFD700;
+      color: #FF6B00;
       font-weight: 700;
     }
     .field-group { margin-bottom: 1rem; position: relative; }
-    .field-group label { display: block; font-size: 0.75rem; color: #aaa; margin-bottom: 0.3rem; }
+    .field-group label { display: block; font-size: 0.75rem; color: #B8B8B8; margin-bottom: 0.3rem; }
     .field-group input, .field-group select {
       width: 100%;
       background: #1e1e1e;
-      border: 1px solid #333;
+      border: 1px solid #252525;
       border-radius: 20px;
       padding: 0.7rem 1rem;
       color: white;
@@ -573,7 +574,7 @@
       top: 50%;
       transform: translateY(-50%);
       cursor: pointer;
-      color: #FFD700;
+      color: #FF6B00;
       background: transparent;
       border: none;
     }
@@ -582,25 +583,26 @@
       margin: 0.8rem auto;
       font-size: 0.9rem;
       font-weight: 600;
-      color: #FFD700;
+      color: #FF6B00;
       cursor: pointer;
       background: transparent;
-      border: 1.5px solid #FFD700;
+      border: 1.5px solid #FF6B00;
       border-radius: 40px;
       padding: 0.5rem 1rem;
       display: inline-block;
       width: fit-content;
     }
-    .click-to-upload:hover { background: #FFD700; color: #121212; }
+    .click-to-upload:hover { background: #FF6B00; color: #FFFFFF; }
     .remember-checkbox { display: flex; align-items: center; gap: 0.5rem; margin: 1rem 0; }
     .remember-checkbox input { width: auto; }
     .button-group-center { display: flex; justify-content: center; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap; }
-    .btn-solid-gold { background: #FFD700; border: none; color: #121212; padding: 0.7rem 1.8rem; border-radius: 60px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; }
-    .btn-outline-gold { background: transparent; border: 1.5px solid #FFD700; color: #FFD700; padding: 0.7rem 1.8rem; border-radius: 60px; font-weight: 600; cursor: pointer; }
-    .btn-outline-gold:hover { background: rgba(255,215,0,0.1); }
+    .btn-solid-gold { background: #FF6B00; border: none; color: #FFFFFF; padding: 0.7rem 1.8rem; border-radius: 60px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; }
+    .btn-solid-gold:hover { background: #FF8124; }
+    .btn-outline-gold { background: transparent; border: 1.5px solid #FF6B00; color: #FF6B00; padding: 0.7rem 1.8rem; border-radius: 60px; font-weight: 600; cursor: pointer; }
+    .btn-outline-gold:hover { background: rgba(255,107,0,0.1); }
     .auth-card {
       cursor: pointer;
-      background: rgba(255,215,0,0.1);
+      background: rgba(255,107,0,0.1);
       padding: 1rem;
       border-radius: 28px;
       text-align: center;
@@ -608,7 +610,7 @@
       transition: 0.2s;
     }
     .auth-card:hover {
-      background: rgba(255,215,0,0.2);
+      background: rgba(255,107,0,0.2);
       transform: translateY(-2px);
     }
 
@@ -623,7 +625,7 @@
       backdrop-filter: blur(4px);
       transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
       padding: 1.2rem 0;
-      border-bottom: 1px solid rgba(255,215,0,0.2);
+      border-bottom: 1px solid rgba(255,107,0,0.2);
     }
     .navbar.scrolled {
       background: #000000;
@@ -648,7 +650,7 @@
       height: 38px;
       border-radius: 50%;
       object-fit: cover;
-      border: 1px solid rgba(255,215,0,0.4);
+      border: 1px solid rgba(255,107,0,0.4);
     }
     .logo {
       font-size: 1.8rem;
@@ -656,7 +658,7 @@
       letter-spacing: 2px;
     }
     .logo-ultra { color: #fff; }
-    .logo-fit { color: #FFD700; }
+    .logo-fit { color: #FF6B00; }
     .nav-links {
       display: flex;
       gap: 2rem;
@@ -669,10 +671,10 @@
       font-weight: 500;
       transition: 0.2s;
     }
-    .nav-link:hover { color: #FFD700; }
+    .nav-link:hover { color: #FF6B00; }
     .join-now-nav {
-      background: #FFD700;
-      color: #121212 !important;
+      background: #FF6B00;
+      color: #FFFFFF !important;
       padding: 0.6rem 1.6rem;
       border-radius: 40px;
       font-weight: 700;
@@ -681,7 +683,7 @@
       display: none;
       font-size: 1.8rem;
       cursor: pointer;
-      color: #FFD700;
+      color: #FF6B00;
     }
     @media (max-width: 900px) {
       .nav-links {
@@ -701,9 +703,9 @@
 
     /* PWA mode: hide footer links except credit line */
     footer {
-      background: #000;
+      background: #0A0A0A;
       padding: 3rem 0;
-      border-top: 1px solid rgba(255,215,0,0.3);
+      border-top: 1px solid rgba(255,107,0,0.3);
       text-align: center;
     }
     .footer-grid {
@@ -718,8 +720,8 @@
       list-style: none;
       flex-wrap: wrap;
     }
-    .footer-links a { color: #ccc; text-decoration: none; }
-    .footer-links a:hover { color: var(--gold); }
+    .footer-links a { color: #B8B8B8; text-decoration: none; }
+    .footer-links a:hover { color: var(--primary); }
     @media all and (display-mode: standalone) {
       .footer-links ul {
         display: none;
@@ -736,7 +738,7 @@
       }
     }
 
-    /* Mobile & responsive (keep original) */
+    /* Mobile & responsive */
     @media (max-width: 768px) {
       .hero-content-center h1 { font-size: 2.5rem; }
       .category-luxury { font-size: 2rem; }
@@ -811,11 +813,11 @@
 <header class="navbar" id="navbar">
   <div class="container nav-container">
     <div class="logo-wrapper">
-      <img src="UltraFit logo.png" alt="UltraFit Logo" class="nav-logo-img" width="38" height="38" />
-      <div class="logo"><span class="logo-ultra">ULTRA</span><span class="logo-fit">FIT</span></div>
+      <img src="DailyDoze logo.png" alt="Daily Doze Logo" class="nav-logo-img" width="38" height="38" />
+      <div class="logo"><span class="logo-ultra">DAILY</span><span class="logo-fit">DOZE</span></div>
     </div>
     <ul class="nav-links" id="navLinks">
-      <!-- Dynamic button: "Sign Up" or "UltraFit App" -->
+      <!-- Dynamic button: "Sign Up" or "Daily Doze App" -->
       <li><a href="#" class="nav-link join-now-nav" id="authNavBtn">Sign Up</a></li>
       <li><a href="index.html" class="nav-link">Home</a></li>
       <li><a href="diet.html" class="nav-link">Diet Plan</a></li>
@@ -843,9 +845,9 @@
     <div class="calculator-luxury" id="bmiCalculatorCard">
       <div class="input-group-custom"><label>Height (cm)</label><input type="number" id="bmiHeight" value="175" placeholder="cm"></div>
       <div class="input-group-custom"><label>Weight (kg)</label><input type="number" id="bmiWeight" value="72" placeholder="kg"></div>
-      <button id="calculateBmiBtn" class="btn-pdf" style="width:100%; background:#FFD700; color:#000; font-weight:800;">Calculate Body Mass Index</button>
+      <button id="calculateBmiBtn" class="btn-pdf" style="width:100%; background:#FF6B00; color:#fff; font-weight:800;">Calculate Body Mass Index</button>
       <div id="bmiOutput" class="calc-result hidden">
-        <div><span id="bmiValue" style="font-size:2rem; font-weight:800; color:#FFD700;">0</span> <span style="color:#FFD700;">BMI</span></div>
+        <div><span id="bmiValue" style="font-size:2rem; font-weight:800; color:#FF6B00;">0</span> <span style="color:#FF6B00;">BMI</span></div>
         <p id="bmiCategoryText" style="color:#ccc; margin:0.5rem 0;">—</p>
       </div>
     </div>
@@ -855,7 +857,7 @@
 <footer>
   <div class="container footer-grid">
     <div class="footer-links">
-      <h4>UltraFit Gym</h4>
+      <h4>Daily Doze Gym</h4>
       <ul>
         <li><a href="privacy.html">Privacy Policy</a></li>
         <li><a href="refund.html">Refund Policy</a></li>
@@ -870,15 +872,15 @@
 <div class="ai-chat-container">
   <div class="chat-bubble" id="chatBubble">
     <div class="ai-icon"><i class="fas fa-comment-dots"></i></div>
-    <span class="ai-text">UltraFit AI Coach</span>
+    <span class="ai-text">Daily Doze AI Coach</span>
   </div>
   <div class="chat-window" id="chatWindow">
     <div class="chat-header">
-      <h3><i class="fas fa-brain"></i> UltraFit AI Coach</h3>
+      <h3><i class="fas fa-brain"></i> Daily Doze AI Coach</h3>
       <button class="chat-close" id="chatCloseBtn">✕</button>
     </div>
     <div class="chat-messages" id="chatMessages">
-      <div class="message bot-message">💪 Hey! I'm your UltraFit AI Coach. Ask me anything about workouts, nutrition, or gym plans.</div>
+      <div class="message bot-message">💪 Hey! I'm your Daily Doze AI Coach. Ask me anything about workouts, nutrition, or gym plans.</div>
     </div>
     <div class="chat-input-area">
       <input type="text" class="chat-input" id="chatInput" placeholder="Ask your fitness question...">
@@ -893,7 +895,7 @@
 <div id="loginModal" class="premium-modal"><div class="premium-modal-card" id="loginContent"></div></div>
 
 <script>
-  // ========== AUTH & UI LOGIC (same as index.html) ==========
+  // ========== AUTH & UI LOGIC (rebranded for Daily Doze) ==========
   const API_BASE = '/api';
   let memberToken = localStorage.getItem('memberToken') || sessionStorage.getItem('memberToken') || null;
   let currentMember = null;
@@ -930,7 +932,7 @@
   function updateNavButton() {
     const authBtn = document.getElementById('authNavBtn');
     if (memberToken && currentMember) {
-      authBtn.innerText = 'UltraFit App';
+      authBtn.innerText = 'Daily Doze App';
       authBtn.onclick = (e) => { e.preventDefault(); window.location.href = 'user.html'; };
     } else {
       authBtn.innerText = 'Sign Up';
@@ -942,7 +944,7 @@
     const modal = document.getElementById('authChoiceModal');
     document.getElementById('authChoiceContent').innerHTML = `
       <button class="modal-close-btn" id="closeAuthChoice">&times;</button>
-      <div class="modal-title-center">Welcome to UltraFit</div>
+      <div class="modal-title-center">Welcome to Daily Doze</div>
       <div style="display:flex; gap:1rem; justify-content:center;">
         <div class="auth-card" id="choiceSignup"><h3>Sign Up</h3><p>New Member</p></div>
         <div class="auth-card" id="choiceLogin"><h3>Log In</h3><p>Existing</p></div>
@@ -966,7 +968,7 @@
     document.getElementById('signupContent').innerHTML = `
       <button class="modal-close-btn" id="closeSignup">&times;</button>
       <div class="modal-title-center">Create Account</div>
-      <div style="text-align:center;"><img id="signupAvatarPreview" src="defaultpfp.png" style="width:80px;height:80px;border-radius:50%;border:2px solid #FFD700;margin-bottom:0.5rem;"><div class="click-to-upload" id="signupUploadBtn">📸 Upload Profile Photo</div><input type="file" id="signupPhotoFile" accept="image/*" style="display:none;"></div>
+      <div style="text-align:center;"><img id="signupAvatarPreview" src="defaultpfp.png" style="width:80px;height:80px;border-radius:50%;border:2px solid #FF6B00;margin-bottom:0.5rem;"><div class="click-to-upload" id="signupUploadBtn">📸 Upload Profile Photo</div><input type="file" id="signupPhotoFile" accept="image/*" style="display:none;"></div>
       <div class="field-group"><label>Full Name *</label><input type="text" id="signupName" placeholder="First and last name"></div>
       <div class="field-group"><label>Email *</label><input type="email" id="signupEmail" placeholder="Email"></div>
       <div class="field-group"><label>Password *</label><div class="password-wrapper"><input type="password" id="signupPassword"><button type="button" class="toggle-password" data-target="signupPassword"><i class="fas fa-eye-slash"></i></button></div></div>
@@ -1089,7 +1091,7 @@
   chatSend.addEventListener('click', sendChatMessage);
   chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendChatMessage(); });
 
-  // ========== ORIGINAL WORKOUT PAGE SCRIPT (unchanged) ==========
+  // ========== ORIGINAL WORKOUT PAGE SCRIPT (rebranded) ==========
   const workoutAPI_BASE = '/api';
   let siteSettings = {};
   let categories = [];

@@ -96,13 +96,12 @@ app.post('/api/upload-signup', upload.single('image'), (req, res) => {
 });
 
 // ========== PUBLIC ROUTES (NO AUTHENTICATION REQUIRED) ==========
-// These must be placed BEFORE any protected routes or auth middleware
 app.use('/api/sitesettings', siteSettingsRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/memberships', membershipRoutes);
 app.use('/api/members-list', publicMemberRoutes);
 
-// ========== FREE TRIAL BOOKING (also public) ==========
+// ========== FREE TRIAL BOOKING (public) ==========
 const sendEmail = async (toEmail, toName, subject, htmlContent) => {
   try {
     await mailjet
@@ -113,7 +112,7 @@ const sendEmail = async (toEmail, toName, subject, htmlContent) => {
           {
             "From": {
               "Email": process.env.MJ_FROM_EMAIL || "your-verified-email@example.com",
-              "Name": process.env.MJ_FROM_NAME || "UltraFit Gym"
+              "Name": process.env.MJ_FROM_NAME || "Daily Doze Gym"
             },
             "To": [{ "Email": toEmail, "Name": toName }],
             "Subject": subject,
@@ -139,25 +138,25 @@ app.post('/api/book-trial', async (req, res) => {
     <p><strong>Name:</strong> ${name}</p>
     <p><strong>Phone:</strong> ${phone}</p>
     <p><strong>Email:</strong> ${email}</p>
-    <p>Please contact the member to schedule their one-day free trial.</p>
+    <p>Please contact the member to schedule their three‑day free trial.</p>
     <hr />
-    <p><em>UltraFit Gym Automated Notification</em></p>
+    <p><em>Daily Doze Gym Automated Notification</em></p>
   `;
   const userEmailContent = `
-    <div style="font-family: 'Montserrat', sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #121212; color: #eaeaea; border-radius: 20px; border: 1px solid #FFD700;">
-      <h2 style="color: #FFD700; text-align: center;">🎉 You're Almost There!</h2>
+    <div style="font-family: 'Montserrat', sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #121212; color: #eaeaea; border-radius: 20px; border: 1px solid #FF6B00;">
+      <h2 style="color: #FF6B00; text-align: center;">🎉 You're Almost There!</h2>
       <p>Dear <strong>${name}</strong>,</p>
-      <p>Thank you for booking a <strong>one-day free trial</strong> at <strong>UltraFit Gym</strong>.</p>
+      <p>Thank you for booking a <strong>three‑day free trial</strong> at <strong>Daily Doze Gym</strong>.</p>
       <p>We have received your request and our team will contact you shortly at <strong>${phone}</strong> to confirm your trial slot and answer any questions.</p>
       <p>If you have any immediate questions, please reply to this email or call us directly.</p>
       <br/>
       <p style="text-align: center;">💪 Get ready to transform your fitness journey!</p>
-      <hr style="border-color: #FFD700;" />
-      <p style="font-size: 12px; text-align: center;">UltraFit Gym – Where champions are made.</p>
+      <hr style="border-color: #FF6B00;" />
+      <p style="font-size: 12px; text-align: center;">Daily Doze Gym – Your daily dose of strength.</p>
     </div>
   `;
-  const adminEmailSent = await sendEmail(process.env.ADMIN_EMAIL || 'admin@example.com', 'UltraFit Admin', 'New Free Trial Booking', adminEmailContent);
-  const userEmailSent = await sendEmail(email, name, 'Your Free Trial Confirmation – UltraFit Gym', userEmailContent);
+  const adminEmailSent = await sendEmail(process.env.ADMIN_EMAIL || 'admin@example.com', 'Daily Doze Admin', 'New Free Trial Booking', adminEmailContent);
+  const userEmailSent = await sendEmail(email, name, 'Your Free Trial Confirmation – Daily Doze Gym', userEmailContent);
   if (adminEmailSent && userEmailSent) {
     res.status(200).json({ success: true, message: 'Trial booked successfully! Check your email for confirmation.' });
   } else if (adminEmailSent && !userEmailSent) {
@@ -310,7 +309,7 @@ Terms: ${publicData.termsSummary} (see terms.html)
         membersList += `- ${m.name} | Phone: ${m.phone || 'N/A'} | Email: ${m.email || 'N/A'} | Fee: ${m.feeStatus || 'unpaid'} | Active: ${m.status || 'active'} | Present today: ${present}\n`;
       }
 
-      systemPrompt = `You are UltraFit Coach (admin assistant). You have full access to gym operations and member contact details because you need to call members when required. Never invent numbers. Use the data below.
+      systemPrompt = `You are Daily Doze Coach (admin assistant). You have full access to gym operations and member contact details because you need to call members when required. Never invent numbers. Use the data below.
 
 ${publicInfo}
 
@@ -339,7 +338,7 @@ If asked about attendance history or other specific details, politely direct the
         membersList += `- ${m.name} | Phone: ${m.phone || 'N/A'} | Email: ${m.email || 'N/A'} | Fee: ${m.feeStatus || 'unpaid'} | Active: ${m.status || 'active'} | Present today: ${isPresent}\n`;
       }
 
-      systemPrompt = `You are UltraFit Coach (trainer assistant). You can see all gym members and their contact info because trainers need to contact them. You can also give general fitness advice. Never share revenue or staff salary data.
+      systemPrompt = `You are Daily Doze Coach (trainer assistant). You can see all gym members and their contact info because trainers need to contact them. You can also give general fitness advice. Never share revenue or staff salary data.
 
 ${publicInfo}
 
@@ -364,7 +363,7 @@ If asked about member attendance history, you can say "I can only see today's at
       const weightHistory = await MemberWeight.find({ memberId: userId }).sort({ date: -1 }).limit(5).lean();
       const weightStr = weightHistory.map(w => `${w.date.toDateString()}: ${w.weight} kg`).join(', ');
 
-      systemPrompt = `You are UltraFit Coach (member assistant). The person asking is ${member.name}. You can answer questions about their personal data and the gym. Never share this data with anyone else.
+      systemPrompt = `You are Daily Doze Coach (member assistant). The person asking is ${member.name}. You can answer questions about their personal data and the gym. Never share this data with anyone else.
 
 ${publicInfo}
 
@@ -400,7 +399,8 @@ You may also give fitness advice, diet tips, and answer gym policy questions.`;
 });
 
 // ========== MONGODB CONNECTION ==========
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://ekanshmishra124_db_user:jXNpKsmoGH2Oujas@ultrafit.9siu9qp.mongodb.net/ultrafit?retryWrites=true&w=majority';
+// Use environment variable or fallback to the Daily Doze database
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://ekanshmishra124_db_user:jXNpKsmoGH2Oujas@ultrafit.9siu9qp.mongodb.net/dailydoze?retryWrites=true&w=majority';
 mongoose.connect(MONGODB_URI)
   .then(() => {
     console.log('✅ MongoDB connected to Atlas');
@@ -408,10 +408,9 @@ mongoose.connect(MONGODB_URI)
   })
   .catch(err => console.error('❌ MongoDB connection error:', err));
 
-// ========== PROTECTED API ROUTES (require authentication) ==========
-// These are placed after public routes – they may use their own auth middleware
+// ========== PROTECTED API ROUTES ==========
 app.use('/api/trainers', trainerRoutes);
-app.use('/api/members', memberRoutes);            // Protected (profile, attendance, etc.)
+app.use('/api/members', memberRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/transformations', transformationRoutes);
 app.use('/api/dietplans', dietPlanRoutes);
@@ -427,18 +426,12 @@ app.use('/api/workoutdays', workoutDaysRoutes);
 app.use('/api/legal', legalRoutes);
 app.use('/api/upload', uploadRoutes);
 
-// Authentication routes (admin, trainer, member)
-app.use('/api/auth', authRoutes);                 // admin login
-app.use('/api/auth', trainerAuthRoutes);          // trainer login
-app.use('/api/auth', memberAuthRoutes);           // member register/login
+app.use('/api/auth', authRoutes);
+app.use('/api/auth', trainerAuthRoutes);
+app.use('/api/auth', memberAuthRoutes);
 
-// Trainer panel routes (protected)
 app.use('/api/trainer', trainerPanelRoutes);
-
-// Admin panel routes (protected)
 app.use('/api/admin', adminPanelRoutes);
-
-// Member self-service routes (protected)
 app.use('/api/member', memberSelfRoutes);
 
 // ========== FALLBACK FOR SPA ==========
@@ -448,5 +441,5 @@ app.get('*', (req, res) => {
 
 // ========== START SERVER ==========
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🚀 Daily Doze Gym server running on port ${PORT}`);
 });

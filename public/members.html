@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#121212" />
-  <title>UltraFit Gym | Members Elite Community</title>
+  <meta name="theme-color" content="#0A0A0A" />
+  <title>Daily Doze Gym | Members Elite Community</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <style>
@@ -14,18 +14,19 @@
       box-sizing: border-box;
     }
     body {
-      background-color: #121212;
+      background-color: #0A0A0A;
       font-family: 'Montserrat', 'Archivo', sans-serif;
-      color: #eaeaea;
+      color: #FFFFFF;
       scroll-behavior: smooth;
       overflow-x: hidden;
     }
     :root {
-      --gold: #FFD700;
-      --gold-glow: 0 0 12px rgba(255,215,0,0.4);
-      --dark-bg: #121212;
-      --card-bg: rgba(28,28,32,0.88);
-      --glass-edge: 1px solid rgba(255,215,0,0.2);
+      --primary: #FF6B00;
+      --primary-hover: #FF8124;
+      --gold-glow: 0 0 12px rgba(255,107,0,0.4);
+      --dark-bg: #0A0A0A;
+      --card-bg: rgba(21,21,21,0.88);
+      --glass-edge: 1px solid rgba(255,107,0,0.2);
     }
     .container {
       max-width: 1300px;
@@ -43,7 +44,7 @@
       backdrop-filter: blur(4px);
       transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
       padding: 1.2rem 0;
-      border-bottom: 1px solid rgba(255,215,0,0.2);
+      border-bottom: 1px solid rgba(255,107,0,0.2);
     }
     .navbar.scrolled {
       background: #000000;
@@ -65,7 +66,7 @@
       height: 38px;
       border-radius: 50%;
       object-fit: cover;
-      border: 1px solid rgba(255, 215, 0, 0.4);
+      border: 1px solid rgba(255,107,0,0.4);
     }
     .logo {
       font-size: 1.8rem;
@@ -73,7 +74,7 @@
       letter-spacing: 2px;
     }
     .logo-ultra { color: #ffffff; }
-    .logo-fit { color: #FFD700; }
+    .logo-fit { color: #FF6B00; }
     .nav-links {
       display: flex;
       gap: 2rem;
@@ -89,7 +90,7 @@
       padding: 0.5rem 0;
       position: relative;
     }
-    .nav-link:not(.join-now-nav):hover { color: #FFD700; }
+    .nav-link:not(.join-now-nav):hover { color: #FF6B00; }
     .nav-link:not(.join-now-nav)::after {
       content: '';
       position: absolute;
@@ -97,14 +98,14 @@
       left: 0;
       width: 100%;
       height: 2px;
-      background: #FFD700;
+      background: #FF6B00;
       transform: scaleX(0);
       transition: transform 0.2s ease;
     }
     .nav-link:not(.join-now-nav):hover::after { transform: scaleX(1); }
     .join-now-nav {
-      background: #FFD700;
-      color: #121212 !important;
+      background: #FF6B00;
+      color: #FFFFFF !important;
       padding: 0.6rem 1.6rem !important;
       border-radius: 40px;
       font-weight: 700;
@@ -112,14 +113,14 @@
       display: inline-block;
     }
     .join-now-nav:hover {
-      background: #e6c300;
+      background: #FF8124;
       transform: translateY(-2px);
     }
     .hamburger {
       display: none;
       font-size: 1.8rem;
       cursor: pointer;
-      color: #FFD700;
+      color: #FF6B00;
       min-width: 44px;
       text-align: center;
     }
@@ -152,7 +153,7 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      border-bottom: 2px solid rgba(255,215,0,0.3);
+      border-bottom: 2px solid rgba(255,107,0,0.3);
     }
     .hero-content {
       position: relative;
@@ -166,7 +167,7 @@
     .hero-content h1 {
       font-size: 4.2rem;
       font-weight: 800;
-      background: linear-gradient(135deg, #FFFFFF 0%, #FFD700 80%);
+      background: linear-gradient(135deg, #FFFFFF 0%, #FF6B00 80%);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
@@ -179,7 +180,7 @@
     }
     .stats-section {
       padding: 3rem 0;
-      background: #0a0a0a;
+      background: #0A0A0A;
     }
     .stats-grid {
       display: flex;
@@ -190,18 +191,19 @@
     }
     .stat-card h2 {
       font-size: 3rem;
-      color: #FFD700;
+      color: #FF6B00;
       font-weight: 800;
     }
     .stat-card p {
       font-size: 1.1rem;
       letter-spacing: 1px;
+      color: #B8B8B8;
     }
     .section-title {
       font-size: 2.5rem;
       margin: 2rem 0 1rem;
       text-align: center;
-      background: linear-gradient(120deg, #fff, #FFD700);
+      background: linear-gradient(120deg, #fff, #FF6B00);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
@@ -224,12 +226,12 @@
       backdrop-filter: blur(8px);
       padding: 0.4rem 0.8rem;
       border-radius: 60px;
-      border: 1px solid rgba(255,215,0,0.2);
+      border: 1px solid rgba(255,107,0,0.2);
     }
     .toggle-icon {
       background: transparent;
       border: none;
-      color: #aaa;
+      color: #B8B8B8;
       font-size: 1.4rem;
       cursor: pointer;
       padding: 0.4rem;
@@ -239,11 +241,11 @@
       text-align: center;
     }
     .toggle-icon.active {
-      color: #FFD700;
-      background: rgba(255,215,0,0.15);
+      color: #FF6B00;
+      background: rgba(255,107,0,0.15);
     }
     .toggle-icon:hover {
-      color: #FFD700;
+      color: #FF6B00;
     }
     .membership-cards {
       display: flex;
@@ -260,32 +262,33 @@
       width: 100%;
       max-width: 320px;
       text-align: center;
-      border: 1px solid rgba(255,215,0,0.25);
+      border: 1px solid rgba(255,107,0,0.25);
       transition: transform 0.3s;
     }
     .membership-card:hover {
       transform: translateY(-8px);
-      border-color: var(--gold);
+      border-color: var(--primary);
     }
-    .membership-card h3 { font-size: 1.8rem; color: var(--gold); }
-    .price { font-size: 2rem; font-weight: 800; margin: 1rem 0; }
+    .membership-card h3 { font-size: 1.8rem; color: var(--primary); }
+    .price { font-size: 2rem; font-weight: 800; margin: 1rem 0; color: #FFFFFF; }
     .btn-join {
-      background: var(--gold);
+      background: var(--primary);
       border: none;
       padding: 0.8rem 1.5rem;
       border-radius: 40px;
       font-weight: bold;
       cursor: pointer;
       transition: 0.2s;
+      color: #FFFFFF;
     }
-    .btn-join:hover { background: #e6c300; transform: scale(1.02); }
+    .btn-join:hover { background: var(--primary-hover); transform: scale(1.02); }
     .featured-scroll {
       display: flex;
       overflow-x: auto;
       gap: 1.5rem;
       padding: 1rem 0.5rem 2rem;
       scrollbar-width: thin;
-      scrollbar-color: var(--gold) #2a2a2a;
+      scrollbar-color: var(--primary) #2a2a2a;
     }
     .featured-card {
       flex: 0 0 280px;
@@ -293,26 +296,26 @@
       border-radius: 28px;
       padding: 1.2rem;
       text-align: center;
-      border: 1px solid rgba(255,215,0,0.3);
+      border: 1px solid rgba(255,107,0,0.3);
       transition: all 0.3s;
     }
-    .featured-card:hover { transform: translateY(-5px); border-color: var(--gold); }
+    .featured-card:hover { transform: translateY(-5px); border-color: var(--primary); }
     .featured-card img {
       width: 100px;
       height: 100px;
       border-radius: 50%;
       object-fit: cover;
-      border: 2px solid var(--gold);
+      border: 2px solid var(--primary);
       margin-bottom: 1rem;
     }
     .member-tag {
       display: inline-block;
-      background: rgba(255,215,0,0.15);
+      background: rgba(255,107,0,0.15);
       padding: 0.2rem 0.8rem;
       border-radius: 30px;
       font-size: 0.7rem;
       font-weight: 600;
-      color: var(--gold);
+      color: var(--primary);
       margin: 0.3rem;
     }
     /* Filter bar with dropdown */
@@ -327,36 +330,36 @@
       backdrop-filter: blur(8px);
       padding: 1rem 1.5rem;
       border-radius: 60px;
-      border: 1px solid rgba(255,215,0,0.2);
+      border: 1px solid rgba(255,107,0,0.2);
       position: relative;
     }
     .search-input {
       flex: 2;
       background: #1e1e1e;
-      border: 1px solid #333;
+      border: 1px solid #252525;
       padding: 0.8rem 1.2rem;
       border-radius: 60px;
       color: white;
       font-family: inherit;
     }
-    .search-input:focus { border-color: var(--gold); outline: none; }
+    .search-input:focus { border-color: var(--primary); outline: none; }
     .filter-dropdown {
       position: relative;
       display: inline-block;
     }
     .filter-dropdown-btn {
       background: transparent;
-      border: 1px solid var(--gold);
+      border: 1px solid var(--primary);
       border-radius: 50%;
       width: 44px;
       height: 44px;
-      color: #FFD700;
+      color: #FF6B00;
       cursor: pointer;
       font-size: 1.2rem;
       transition: 0.2s;
     }
     .filter-dropdown-btn:hover {
-      background: rgba(255,215,0,0.1);
+      background: rgba(255,107,0,0.1);
     }
     .filter-dropdown-content {
       display: none;
@@ -364,7 +367,7 @@
       right: 0;
       top: 50px;
       background: #1e1e1e;
-      border: 1px solid #FFD700;
+      border: 1px solid #FF6B00;
       border-radius: 20px;
       min-width: 160px;
       z-index: 10;
@@ -383,12 +386,12 @@
       transition: 0.2s;
     }
     .filter-dropdown-content button:hover {
-      background: rgba(255,215,0,0.2);
-      color: #FFD700;
+      background: rgba(255,107,0,0.2);
+      color: #FF6B00;
     }
     .filter-dropdown-content button.active {
-      background: #FFD700;
-      color: #121212;
+      background: #FF6B00;
+      color: #FFFFFF;
     }
     .filter-dropdown.show .filter-dropdown-content {
       display: block;
@@ -404,12 +407,12 @@
       backdrop-filter: blur(6px);
       border-radius: 28px;
       padding: 1.5rem;
-      border: 1px solid rgba(255,215,0,0.2);
+      border: 1px solid rgba(255,107,0,0.2);
       transition: all 0.3s;
     }
     .member-card:hover {
       transform: translateY(-6px);
-      border-color: var(--gold);
+      border-color: var(--primary);
       box-shadow: 0 20px 30px -12px black;
     }
     .member-avatar {
@@ -417,11 +420,11 @@
       height: 90px;
       border-radius: 50%;
       object-fit: cover;
-      border: 2px solid var(--gold);
+      border: 2px solid var(--primary);
       margin-bottom: 1rem;
     }
     .member-name { font-size: 1.4rem; font-weight: 700; color: #fff; }
-    .member-details { font-size: 0.85rem; color: #aaa; margin: 0.5rem 0; }
+    .member-details { font-size: 0.85rem; color: #B8B8B8; margin: 0.5rem 0; }
     .tag-group { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.8rem 0; }
     .status-badge {
       display: inline-block;
@@ -430,7 +433,7 @@
       font-size: 0.7rem;
       font-weight: bold;
     }
-    .status-active { background: #2ecc2e20; color: #2ecc2e; border: 1px solid #2ecc2e; }
+    .status-active { background: #32D74B20; color: #32D74B; border: 1px solid #32D74B; }
     .status-inactive { background: #e74c3c20; color: #e74c3c; border: 1px solid #e74c3c; }
     .members-list {
       display: flex;
@@ -442,23 +445,23 @@
       display: flex;
       align-items: center;
       gap: 1rem;
-      background: rgba(28,28,32,0.7);
+      background: rgba(21,21,21,0.7);
       backdrop-filter: blur(4px);
       padding: 0.8rem 1.2rem;
       border-radius: 60px;
-      border: 1px solid rgba(255,215,0,0.15);
+      border: 1px solid rgba(255,107,0,0.15);
       transition: all 0.2s;
     }
     .member-list-item:hover {
-      border-color: var(--gold);
-      background: rgba(28,28,32,0.9);
+      border-color: var(--primary);
+      background: rgba(21,21,21,0.9);
     }
     .list-avatar {
       width: 48px;
       height: 48px;
       border-radius: 50%;
       object-fit: cover;
-      border: 1px solid var(--gold);
+      border: 1px solid var(--primary);
     }
     .list-info {
       flex: 1;
@@ -491,22 +494,22 @@
     }
     .btn-load-more {
       background: transparent;
-      border: 1px solid var(--gold);
+      border: 1px solid var(--primary);
       padding: 0.8rem 2rem;
       border-radius: 60px;
-      color: var(--gold);
+      color: var(--primary);
       font-weight: 600;
       cursor: pointer;
       transition: 0.2s;
     }
     .btn-load-more:hover {
-      background: var(--gold);
-      color: #121212;
+      background: var(--primary);
+      color: #FFFFFF;
     }
     /* Footer */
     footer {
-      background: #0a0a0a;
-      border-top: 1px solid rgba(255, 215, 0, 0.2);
+      background: #0A0A0A;
+      border-top: 1px solid rgba(255,107,0,0.2);
       padding: 3rem 0 2rem;
       margin-top: 2rem;
     }
@@ -520,7 +523,7 @@
     }
     .footer-links h4 {
       font-size: 1.2rem;
-      color: #FFD700;
+      color: #FF6B00;
       margin-bottom: 1rem;
     }
     .footer-links ul {
@@ -532,13 +535,13 @@
       margin-bottom: 1rem;
     }
     .footer-links a {
-      color: #ccc;
+      color: #B8B8B8;
       text-decoration: none;
       font-size: 0.85rem;
       transition: 0.2s;
     }
     .footer-links a:hover {
-      color: #FFD700;
+      color: #FF6B00;
     }
     .footer-links .credit {
       font-size: 0.75rem;
@@ -577,8 +580,8 @@
       z-index: 5000;
     }
     .premium-modal-card {
-      background: #121212;
-      border: 1px solid #FFD700;
+      background: #151515;
+      border: 1px solid #FF6B00;
       border-radius: 40px;
       width: 90%;
       max-width: 800px;
@@ -593,28 +596,33 @@
       right: 1.5rem;
       background: transparent;
       border: none;
-      color: #FFD700;
+      color: #FF6B00;
       font-size: 1.8rem;
       cursor: pointer;
+    }
+    .modal-close-btn:hover {
+      transform: scale(1.1);
+      color: #FF8124;
     }
     .modal-title-center {
       text-align: center;
       font-size: 1.8rem;
       margin-bottom: 1.5rem;
-      color: #FFD700;
+      color: #FF6B00;
       font-weight: 700;
     }
     .field-group { margin-bottom: 1rem; position: relative; }
-    .field-group label { display: block; font-size: 0.75rem; color: #aaa; margin-bottom: 0.3rem; }
+    .field-group label { display: block; font-size: 0.75rem; color: #B8B8B8; margin-bottom: 0.3rem; }
     .field-group input, .field-group select {
       width: 100%;
       background: #1e1e1e;
-      border: 1px solid #333;
+      border: 1px solid #252525;
       border-radius: 20px;
       padding: 0.7rem 1rem;
       color: white;
       font-family: inherit;
     }
+    .field-group input:focus { border-color: #FF6B00; outline: none; }
     .password-wrapper { position: relative; }
     .password-wrapper input { padding-right: 2.5rem; }
     .toggle-password {
@@ -623,7 +631,7 @@
       top: 50%;
       transform: translateY(-50%);
       cursor: pointer;
-      color: #FFD700;
+      color: #FF6B00;
       background: transparent;
       border: none;
     }
@@ -632,23 +640,24 @@
       margin: 0.8rem auto;
       font-size: 0.9rem;
       font-weight: 600;
-      color: #FFD700;
+      color: #FF6B00;
       cursor: pointer;
       background: transparent;
-      border: 1.5px solid #FFD700;
+      border: 1.5px solid #FF6B00;
       border-radius: 40px;
       padding: 0.5rem 1rem;
       display: inline-block;
       transition: all 0.2s ease;
       width: fit-content;
     }
-    .click-to-upload:hover { background: #FFD700; color: #121212; }
+    .click-to-upload:hover { background: #FF6B00; color: #FFFFFF; }
     .remember-checkbox { display: flex; align-items: center; gap: 0.5rem; margin: 1rem 0; }
     .remember-checkbox input { width: auto; }
     .button-group-center { display: flex; justify-content: center; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap; }
-    .btn-solid-gold { background: #FFD700; border: none; color: #121212; padding: 0.7rem 1.8rem; border-radius: 60px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; }
-    .btn-outline-gold { background: transparent; border: 1.5px solid #FFD700; color: #FFD700; padding: 0.7rem 1.8rem; border-radius: 60px; font-weight: 600; cursor: pointer; }
-    .btn-outline-gold:hover { background: rgba(255,215,0,0.1); }
+    .btn-solid-gold { background: #FF6B00; border: none; color: #FFFFFF; padding: 0.7rem 1.8rem; border-radius: 60px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; }
+    .btn-solid-gold:hover { background: #FF8124; }
+    .btn-outline-gold { background: transparent; border: 1.5px solid #FF6B00; color: #FF6B00; padding: 0.7rem 1.8rem; border-radius: 60px; font-weight: 600; cursor: pointer; }
+    .btn-outline-gold:hover { background: rgba(255,107,0,0.1); }
 
     /* AI Chat Bubble (same as index.html) */
     .ai-chat-container {
@@ -666,11 +675,11 @@
       align-items: center;
       gap: 0px;
       background: linear-gradient(135deg, #1e1e1e, #0a0a0a);
-      border: 1px solid rgba(255,215,0,0.4);
+      border: 1px solid rgba(255,107,0,0.4);
       border-radius: 60px;
       padding: 0.7rem;
       cursor: pointer;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.4), 0 0 15px rgba(255,215,0,0.2);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4), 0 0 15px rgba(255,107,0,0.2);
       transition: all 0.3s cubic-bezier(0.2,0.9,0.4,1.1);
       backdrop-filter: blur(8px);
       width: fit-content;
@@ -680,7 +689,7 @@
       padding: 0.7rem 1.5rem 0.7rem 1rem;
     }
     .ai-icon {
-      background: #FFD700;
+      background: #FF6B00;
       width: 42px;
       height: 42px;
       border-radius: 50%;
@@ -688,8 +697,8 @@
       align-items: center;
       justify-content: center;
       font-size: 1.6rem;
-      color: #121212;
-      box-shadow: 0 0 12px rgba(255,215,0,0.6);
+      color: #FFFFFF;
+      box-shadow: 0 0 12px rgba(255,107,0,0.6);
       transition: transform 0.2s;
     }
     .chat-bubble:hover .ai-icon {
@@ -699,7 +708,7 @@
       font-weight: 700;
       font-size: 0rem;
       letter-spacing: 1px;
-      background: linear-gradient(120deg, #fff, #FFD700);
+      background: linear-gradient(120deg, #fff, #FF6B00);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
@@ -717,7 +726,7 @@
       height: 500px;
       background: #1a1a1a;
       border-radius: 28px;
-      border: 1px solid rgba(255,215,0,0.4);
+      border: 1px solid rgba(255,107,0,0.4);
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -736,12 +745,12 @@
       pointer-events: auto;
     }
     .chat-header {
-      background: #FFD700;
+      background: #FF6B00;
       padding: 1rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      color: #121212;
+      color: #FFFFFF;
       font-weight: 800;
     }
     .chat-header h3 {
@@ -756,7 +765,7 @@
       border: none;
       font-size: 1.4rem;
       cursor: pointer;
-      color: #121212;
+      color: #FFFFFF;
       transition: transform 0.2s;
     }
     .chat-close:hover { transform: scale(1.1); }
@@ -777,8 +786,8 @@
       line-height: 1.4;
     }
     .user-message {
-      background: #FFD700;
-      color: #121212;
+      background: #FF6B00;
+      color: #FFFFFF;
       align-self: flex-end;
       border-bottom-right-radius: 6px;
     }
@@ -787,38 +796,38 @@
       color: #eee;
       align-self: flex-start;
       border-bottom-left-radius: 6px;
-      border: 1px solid rgba(255,215,0,0.2);
+      border: 1px solid rgba(255,107,0,0.2);
     }
     .chat-input-area {
       display: flex;
       padding: 12px;
       background: #0a0a0a;
-      border-top: 1px solid rgba(255,215,0,0.2);
+      border-top: 1px solid rgba(255,107,0,0.2);
       gap: 8px;
     }
     .chat-input {
       flex: 1;
       background: #1e1e1e;
-      border: 1px solid #333;
+      border: 1px solid #252525;
       border-radius: 40px;
       padding: 10px 16px;
       color: white;
       font-family: inherit;
       outline: none;
     }
-    .chat-input:focus { border-color: #FFD700; }
+    .chat-input:focus { border-color: #FF6B00; }
     .chat-send {
-      background: #FFD700;
+      background: #FF6B00;
       border: none;
       border-radius: 40px;
       padding: 0 18px;
       font-weight: 700;
       cursor: pointer;
-      color: #121212;
+      color: #FFFFFF;
       transition: all 0.2s;
     }
     .chat-send:hover {
-      background: #e6c300;
+      background: #FF8124;
       transform: scale(1.02);
     }
     .typing-indicator {
@@ -856,7 +865,7 @@
       z-index: 999;
     }
     .floating-trial-btn {
-      background: #FFD700;
+      background: #FF6B00;
       border: none;
       padding: 1rem 2rem;
       border-radius: 60px;
@@ -864,10 +873,11 @@
       cursor: pointer;
       box-shadow: 0 8px 20px rgba(0,0,0,0.3);
       transition: 0.2s;
+      color: #FFFFFF;
     }
     .floating-trial-btn:hover {
       transform: scale(1.05);
-      background: #e6c300;
+      background: #FF8124;
     }
 
     /* Modal specific */
@@ -884,13 +894,13 @@
       justify-content: center;
     }
     .modal-content {
-      background: #121212;
+      background: #151515;
       padding: 2rem;
       border-radius: 32px;
       width: 90%;
       max-width: 450px;
       position: relative;
-      border: 1px solid #FFD700;
+      border: 1px solid #FF6B00;
       box-shadow: 0 25px 40px rgba(0,0,0,0.5);
     }
     .close-modal {
@@ -899,14 +909,14 @@
       top: 15px;
       font-size: 28px;
       cursor: pointer;
-      color: #FFD700;
+      color: #FF6B00;
       transition: transform 0.2s;
     }
     .close-modal:hover { transform: scale(1.1); }
     .modal-title {
       font-size: 1.8rem;
       text-align: center;
-      color: #FFD700;
+      color: #FF6B00;
       margin-bottom: 1.5rem;
       font-weight: 700;
     }
@@ -915,7 +925,7 @@
       padding: 14px 18px;
       margin: 10px 0;
       background: #1e1e1e;
-      border: 1px solid #333;
+      border: 1px solid #252525;
       border-radius: 40px;
       color: white;
       font-size: 1rem;
@@ -923,13 +933,13 @@
       transition: all 0.2s;
     }
     .trial-form input:focus {
-      border-color: #FFD700;
+      border-color: #FF6B00;
       outline: none;
-      box-shadow: 0 0 0 2px rgba(255,215,0,0.3);
+      box-shadow: 0 0 0 2px rgba(255,107,0,0.3);
     }
     .trial-form button {
       width: 100%;
-      background: #FFD700;
+      background: #FF6B00;
       border: none;
       padding: 14px;
       border-radius: 40px;
@@ -938,10 +948,10 @@
       cursor: pointer;
       margin-top: 15px;
       transition: all 0.2s;
-      color: #121212;
+      color: #FFFFFF;
     }
     .trial-form button:hover {
-      background: #e6c300;
+      background: #FF8124;
       transform: scale(1.02);
     }
     .trial-message {
@@ -951,13 +961,13 @@
       padding: 8px;
       border-radius: 40px;
     }
-    .trial-message.success { background: #2ecc2e20; color: #2ecc2e; }
+    .trial-message.success { background: #32D74B20; color: #32D74B; }
     .trial-message.error { background: #e74c3c20; color: #e74c3c; }
     .loading-spinner {
       display: inline-block;
       width: 18px;
       height: 18px;
-      border: 2px solid #121212;
+      border: 2px solid #FFFFFF;
       border-top-color: transparent;
       border-radius: 50%;
       animation: spin 0.6s linear infinite;
@@ -976,7 +986,7 @@
     }
     .fallback-message {
       text-align: center;
-      background: rgba(255,215,0,0.1);
+      background: rgba(255,107,0,0.1);
       padding: 2rem;
       border-radius: 28px;
       margin: 2rem 0;
@@ -1000,11 +1010,11 @@
 <header class="navbar" id="navbar">
   <div class="container nav-container">
     <div class="logo-wrapper">
-      <img src="UltraFit logo.png" alt="UltraFit Logo" class="nav-logo-img" width="38" height="38" />
-      <div class="logo"><span class="logo-ultra">ULTRA</span><span class="logo-fit">FIT</span></div>
+      <img src="DailyDoze logo.png" alt="Daily Doze Logo" class="nav-logo-img" width="38" height="38" />
+      <div class="logo"><span class="logo-ultra">DAILY</span><span class="logo-fit">DOZE</span></div>
     </div>
     <ul class="nav-links" id="navLinks">
-      <!-- Dynamic button: "Sign Up" or "UltraFit App" -->
+      <!-- Dynamic button: "Sign Up" or "Daily Doze App" -->
       <li><a href="#" class="nav-link join-now-nav" id="authNavBtn">Sign Up</a></li>
       <li><a href="index.html" class="nav-link">Home</a></li>
       <li><a href="diet.html" class="nav-link">Diet Plan</a></li>
@@ -1019,7 +1029,7 @@
 <main>
   <section class="members-hero">
     <div class="hero-content">
-      <h1>ULTRAFIT MEMBERS</h1>
+      <h1>DAILY DOZE MEMBERS</h1>
       <p class="hero-sub">An elite community built on discipline, consistency, and transformation.</p>
     </div>
   </section>
@@ -1079,7 +1089,7 @@
 <footer>
   <div class="container footer-grid">
     <div class="footer-links">
-      <h4>UltraFit Gym</h4>
+      <h4>Daily Doze Gym</h4>
       <ul>
         <li><a href="privacy.html">Privacy Policy</a></li>
         <li><a href="refund.html">Refund Policy</a></li>
@@ -1109,15 +1119,15 @@
 <div class="ai-chat-container">
   <div class="chat-bubble" id="chatBubble">
     <div class="ai-icon"><i class="fas fa-comment-dots"></i></div>
-    <span class="ai-text">UltraFit AI Coach</span>
+    <span class="ai-text">Daily Doze AI Coach</span>
   </div>
   <div class="chat-window" id="chatWindow">
     <div class="chat-header">
-      <h3><i class="fas fa-brain"></i> UltraFit AI Coach</h3>
+      <h3><i class="fas fa-brain"></i> Daily Doze AI Coach</h3>
       <button class="chat-close" id="chatCloseBtn">✕</button>
     </div>
     <div class="chat-messages" id="chatMessages">
-      <div class="message bot-message">💪 Hey! I'm your UltraFit AI Coach. Ask me anything about workouts, nutrition, or gym plans.</div>
+      <div class="message bot-message">💪 Hey! I'm your Daily Doze AI Coach. Ask me anything about workouts, nutrition, or gym plans.</div>
     </div>
     <div class="chat-input-area">
       <input type="text" class="chat-input" id="chatInput" placeholder="Ask your fitness question...">
@@ -1173,7 +1183,7 @@
   function updateNavButton() {
     const authBtn = document.getElementById('authNavBtn');
     if (memberToken && currentMember) {
-      authBtn.innerText = 'UltraFit App';
+      authBtn.innerText = 'Daily Doze App';
       authBtn.onclick = (e) => { e.preventDefault(); window.location.href = 'user.html'; };
     } else {
       authBtn.innerText = 'Sign Up';
@@ -1186,10 +1196,10 @@
     const modal = document.getElementById('authChoiceModal');
     document.getElementById('authChoiceContent').innerHTML = `
       <button class="modal-close-btn" id="closeAuthChoice">&times;</button>
-      <div class="modal-title-center">Welcome to UltraFit</div>
+      <div class="modal-title-center">Welcome to Daily Doze</div>
       <div style="display:flex; gap:1rem; justify-content:center;">
-        <div class="auth-card" style="cursor:pointer; background:rgba(255,215,0,0.1); padding:1rem; border-radius:28px; text-align:center; width:120px;" id="choiceSignup"><h3>Sign Up</h3><p>New Member</p></div>
-        <div class="auth-card" style="cursor:pointer; background:rgba(255,215,0,0.1); padding:1rem; border-radius:28px; text-align:center; width:120px;" id="choiceLogin"><h3>Log In</h3><p>Existing</p></div>
+        <div class="auth-card" style="cursor:pointer; background:rgba(255,107,0,0.1); padding:1rem; border-radius:28px; text-align:center; width:120px;" id="choiceSignup"><h3>Sign Up</h3><p>New Member</p></div>
+        <div class="auth-card" style="cursor:pointer; background:rgba(255,107,0,0.1); padding:1rem; border-radius:28px; text-align:center; width:120px;" id="choiceLogin"><h3>Log In</h3><p>Existing</p></div>
       </div>
     `;
     modal.style.display = 'flex';
@@ -1210,7 +1220,7 @@
     document.getElementById('signupContent').innerHTML = `
       <button class="modal-close-btn" id="closeSignup">&times;</button>
       <div class="modal-title-center">Create Account</div>
-      <div style="text-align:center;"><img id="signupAvatarPreview" src="defaultpfp.png" style="width:80px;height:80px;border-radius:50%;border:2px solid #FFD700;margin-bottom:0.5rem;"><div class="click-to-upload" id="signupUploadBtn">📸 Upload Profile Photo</div><input type="file" id="signupPhotoFile" accept="image/*" style="display:none;"></div>
+      <div style="text-align:center;"><img id="signupAvatarPreview" src="defaultpfp.png" style="width:80px;height:80px;border-radius:50%;border:2px solid #FF6B00;margin-bottom:0.5rem;"><div class="click-to-upload" id="signupUploadBtn">📸 Upload Profile Photo</div><input type="file" id="signupPhotoFile" accept="image/*" style="display:none;"></div>
       <div class="field-group"><label>Full Name *</label><input type="text" id="signupName" placeholder="First and last name"></div>
       <div class="field-group"><label>Email *</label><input type="email" id="signupEmail" placeholder="Email"></div>
       <div class="field-group"><label>Password *</label><div class="password-wrapper"><input type="password" id="signupPassword"><button type="button" class="toggle-password" data-target="signupPassword"><i class="fas fa-eye-slash"></i></button></div></div>

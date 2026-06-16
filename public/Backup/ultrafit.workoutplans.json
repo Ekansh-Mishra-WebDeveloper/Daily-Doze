@@ -1,0 +1,26 @@
+[{
+  "_id": {
+    "$oid": "6a1e4835f385c5ccc4c114d7"
+  },
+  "title": "Cardio Training",
+  "imageUrl": "https://images.pexels.com/photos/1954524/pexels-photo-1954524.jpeg",
+  "shortDescription": "HIIT to boost metabolic rate.",
+  "targets": [
+    "Fat Burn",
+    "Endurance"
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a1e4835f385c5ccc4c114d8"
+  },
+  "title": "Muscle Training",
+  "imageUrl": "https://images.pexels.com/photos/841130/pexels-photo-841130.jpeg",
+  "shortDescription": "Strength-focused for lean mass.",
+  "targets": [
+    "Strength",
+    "Hypertrophy"
+  ],
+  "__v": 0
+}]

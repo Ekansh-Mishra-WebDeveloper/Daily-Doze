@@ -1,0 +1,33 @@
+[{
+  "_id": {
+    "$oid": "6a1e4835f385c5ccc4c114e9"
+  },
+  "key": "veg",
+  "displayName": "🌱 Vegetarian Diet",
+  "pdfUrl": "",
+  "order": 1,
+  "active": true,
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a1e4835f385c5ccc4c114ea"
+  },
+  "key": "egg",
+  "displayName": "🥚 Eggetarian Diet",
+  "pdfUrl": "",
+  "order": 2,
+  "active": true,
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6a1e4835f385c5ccc4c114eb"
+  },
+  "key": "nonveg",
+  "displayName": "🍗 Non-Vegetarian Diet",
+  "pdfUrl": "",
+  "order": 3,
+  "active": true,
+  "__v": 0
+}]
